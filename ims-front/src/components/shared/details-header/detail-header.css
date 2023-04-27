@@ -1,0 +1,30 @@
+.upper-detail {
+    display: flex;
+    flex-direction: row;
+    position: relative;
+  }
+  .upper-detail-md {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
+  .buttongroup{
+    display: flex;
+    flex-direction: row;
+    position: absolute;
+    right: 0;
+    justify-content: flex-end;
+  
+  }
+  .buttongroup-md{
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+  
+  }
+  .textContent{
+    display: flex;
+    flex-direction: column;
+    margin: 30px
+   
+  }

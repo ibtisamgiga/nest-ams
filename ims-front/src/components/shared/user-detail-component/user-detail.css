@@ -1,0 +1,34 @@
+.ud-content-holder{
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: space-around;
+    padding: 3px;
+    flex-wrap: wrap;
+ 
+}
+
+.ud-text-col{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    height: 155px
+}
+
+
+
+.ud-text-col-md{
+    display: flex;
+    /* flex-direction: column; */
+    justify-content: space-around;
+    /* height: 155px;*/
+}
+
+.ud-content-holder-md {
+    display: flex;
+    /* flex-direction: column; */
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-around;
+    padding: 3px;
+}

@@ -1,0 +1,13 @@
+.content-holder {
+  display: flex;
+  flex-direction: row;
+  padding: 10px;
+}
+
+.text-area {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  margin-left: 2%;
+}

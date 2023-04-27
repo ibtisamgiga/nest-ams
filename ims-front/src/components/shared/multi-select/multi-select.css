@@ -1,0 +1,18 @@
+.row-multi {
+  display: flex;
+}
+.form-multi {
+ display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  align-items: flex-start;
+  margin-top: 1%;
+  margin-left: -8.5%;
+  width: 60%;
+}
+
+.form-multi-md {
+  display: flex;
+  flex-direction: row;
+  margin-top: 1%;
+}

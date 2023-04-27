@@ -1,0 +1,26 @@
+.navLogo {
+  width: 55px;
+  height: 55px;
+  border-right: solid 1px #e3e3e3;
+  padding-right: 8px;
+}
+.appbar {
+  color: white;
+}
+.avatar {
+  margin-left: auto;
+}
+
+.Links {
+  text-decoration: none;
+}
+.black {
+  color: black;
+  margin-top: 20px;
+  margin-left: 1rem;
+  font-weight: 700;
+}
+.row {
+  display: flex;
+  flex-direction: row;
+}
