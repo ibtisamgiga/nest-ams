@@ -16,7 +16,10 @@ import {
   CREATE_CATEGORY_ERROR,
   GET_CATEGORIES_COUNT_SUCCESS,
   GET_CATEGORIES_COUNT_FAILURE,
-  GET_CATEGORIES_COUNT
+  GET_CATEGORIES_COUNT,
+  GET_CATEGORIES_DETAIL_REQUEST,
+  GET_CATEGORIES_DETAIL_SUCCESS,
+  GET_CATEGORIES_DETAIL_FAILURE
   } from "../constants";
 
   export const getCategoriesRequest = () => ({
@@ -30,6 +33,21 @@ import {
   
   export const getCategoriesFailure = (error) => ({
     type: GET_CATEGORIES_FAILURE,
+    payload: { error },
+  });
+
+
+  export const getCategoriesDetail = () => ({
+    type: GET_CATEGORIES_DETAIL_REQUEST,
+  });
+  
+  export const getCategoriesDetailSuccess = (details) => ({
+    type: GET_CATEGORIES_DETAIL_SUCCESS,
+    payload: { details },
+  });
+  
+  export const getCategoriesDetailFailure = (error) => ({
+    type: GET_CATEGORIES_DETAIL_FAILURE,
     payload: { error },
   });
   

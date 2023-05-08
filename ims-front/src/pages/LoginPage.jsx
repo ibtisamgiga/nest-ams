@@ -32,7 +32,7 @@ export default function LoginPage() {
   };
   React.useEffect(() => {
     if (response.error) {
-      console.log(response,'res')
+     
       setError(response.error);
       // navigate(0);
     }
@@ -135,7 +135,7 @@ export default function LoginPage() {
               <Grid container>
                 <Grid item xs>
                   Forget Your Password?
-                  <Link href="#" variant="body2">
+                  <Link href={"/reset-password"} variant="body2">
                     {" "}
                     Reset Password
                   </Link>

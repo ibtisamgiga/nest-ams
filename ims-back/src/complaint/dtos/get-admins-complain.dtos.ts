@@ -18,7 +18,7 @@ export class GetAdminsComplaintsDto {
     return arr;
   })
   @Expose()
-  empComplaints: [];
+  complaints: [];
 
   @Transform(({ obj }) => {
     const arr = [];

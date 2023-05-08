@@ -28,6 +28,10 @@ export class GetRequestsDto {
   @Expose()
   subCategory: string;
 
+  @Transform(({ obj }) => obj?.requestType=='Faulty'?obj?.type:undefined)
+  @Expose()
+  type: string;
+
   //   @Transform(({ obj }) =>obj.image? obj.image?.image:null)
   //   @IsNotEmpty()
   //   @Expose()

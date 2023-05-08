@@ -20,7 +20,7 @@ export class Organization {
   id: number;
 
   @Column()
-  @Unique(['name'])
+//@Unique(['name'])
   name: string;
 
   @Column()
@@ -32,7 +32,7 @@ export class Organization {
   repName: string;
 
   @Column()
-  @Unique(['repContactNo'])
+  //@Unique(['repContactNo'])
   repContactNo: string;
 
   @Column()

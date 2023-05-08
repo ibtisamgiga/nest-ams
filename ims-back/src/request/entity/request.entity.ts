@@ -23,6 +23,9 @@ export class Request {
   @Column({ nullable: true })
   requestType: string;
 
+  @Column({ default: '-'  })
+  type: string;
+
   @Column({ default: '-' })
   action_by: string;
 

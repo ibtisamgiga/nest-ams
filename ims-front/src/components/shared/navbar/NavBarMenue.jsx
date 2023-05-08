@@ -23,18 +23,20 @@ export default function NavBarMenue({ user }) {
   const logout = () => {
     localStorage.clear();
     //navigate("/login");
-    navigate(0);
+    navigate("/");
+    navigate(0)
     //history.go(0)
   };
 
   return (
     <div className="row">
+      
       <Avatar
         onClick={handleClick}
-        src={"/avatar.png"}
+        src={user?.image?.image}
         sx={{ height: "55px", width: "55px" }}
       ></Avatar>
-      <span className="black">{user.role}</span>
+      <span className="black">{user.name}</span>
 
       <Menu
         id="basic-menu"

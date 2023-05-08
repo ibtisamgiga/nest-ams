@@ -18,16 +18,9 @@ import {
   CREATE_ORGANIZATION_SUCCESS,
   CREATE_ORGANIZATION_ERROR,
   GET_ORGANIZATIONS_COUNT_SUCCESS,
-GET_ORGANIZATIONS_COUNT_FAILURE,
-GET_ORGANIZATIONS_COUNT
+  GET_ORGANIZATIONS_COUNT_FAILURE,
+  GET_ORGANIZATIONS_COUNT,
 } from "../constants";
-// function* getOrganizations() {
-
-//     let  data=yield fetchData("GET", null, "http://localhost:5000/organization")
-//     console.log(data,'org-data')
-//     yield put({ type:SET_ORGANIZATION_LIST, data });
-//     return;
-//   }
 
 import {
   getOrganizationsSuccess,
@@ -41,7 +34,7 @@ import {
   createOrganizationSuccess,
   createOrganizationError,
   getOrganizationsCountSuccess,
-  getOrganizationsCountFailure
+  getOrganizationsCountFailure,
 } from "./organizationAction";
 
 // Worker saga for getting all organizations
@@ -59,12 +52,12 @@ function* getOrganizations() {
 }
 function* getCount() {
   try {
-    const count= yield fetchData(
+    const count = yield fetchData(
       "GET",
       null,
       "http://localhost:5000/organization/count"
     ); // call your API method here
-    console.log(count,'saga')
+
     yield put(getOrganizationsCountSuccess(count)); // dispatch action to update Redux store with retrieved organizations
   } catch (error) {
     yield put(getOrganizationsCountFailure(error)); // dispatch action to update Redux store with error
@@ -119,13 +112,16 @@ function* createOrganizationSaga(action) {
       body,
       `http://localhost:5000/organization`
     );
-    console.log(organization,'csaga')
-    if(organization.error){
-      yield put(createOrganizationError(organization.message));
+
+    if (organization.error) {
+      yield put({
+        type: CREATE_ORGANIZATION_ERROR,
+        payload: organization.message,
+      });
     }
     yield put(createOrganizationSuccess(organization));
   } catch (error) {
-    yield put(createOrganizationError(error));
+    yield put({ type: CREATE_ORGANIZATION_ERROR, payload: error });
   }
 }
 function* organizationSaga() {
@@ -136,6 +132,6 @@ function* organizationSaga() {
   yield takeLatest(CREATE_ORGANIZATION, createOrganizationSaga);
   yield takeLatest(UPDATE_ORGANIZATION, updateOrganizationSaga);
   yield takeLatest(DELETE_ORGANIZATION, deleteOrganizationSaga);
-  yield takeLatest(GET_ORGANIZATIONS_COUNT,getCount)
+  yield takeLatest(GET_ORGANIZATIONS_COUNT, getCount);
 }
 export default organizationSaga;

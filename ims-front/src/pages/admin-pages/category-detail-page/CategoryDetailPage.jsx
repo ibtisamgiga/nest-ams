@@ -2,19 +2,40 @@ import { Typography } from "@mui/material";
 import React from "react";
 import DetailHeader from "../../../components/shared/details-header/DetailHeader";
 import LabelText from "../../../components/shared/text-with-label/LabelText";
-import './category-detail.css'
+import { useNavigate, useParams } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { useEffect } from "react";
+import "./category-detail.css";
+import { getCategoryRequest } from "../../../redux/category/categoryAction";
 function CategoryDetailPage() {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(getCategoryRequest(id));
+  }, [dispatch]);
+  const category = useSelector((state) => state.categoryData?.category);
   return (
     <div className="body">
-      <DetailHeader />
-      <LabelText label={"Category Name"} content={"Electronics"} />
-      <LabelText label={"Sub-Category Name"} content={"Laptop"} />
-      <div className="row">
-        <LabelText label={"Total quantity"} content={1} />
-        <LabelText label={"Quantity assigined"} content={1} />
-      </div>
-      <LabelText label={"Quantity unassigined"} content={1} />
-      <LabelText label={"Quantity faulty"} content={1} />
+      <DetailHeader
+        deleteAction={() => {
+          navigate(-1);
+        }}
+        editAction={null}
+      />
+      <LabelText label={"Category Name"} content={category?.parent} />
+      <LabelText label={"Sub-Category Name"} content={category?.name} />
+
+      <LabelText label={"Total quantity"} content={category?.count?.quantity} />
+      <LabelText
+        label={"Quantity assigined"}
+        content={category?.count?.assigined}
+      />
+      <LabelText
+        label={"Quantity unassigined"}
+        content={category?.count?.unAssigned}
+      />
+      <LabelText label={"Quantity faulty"} content={category?.count?.faulty} />
       <Typography
         variant="h5"
         component={"h1"}
@@ -22,10 +43,17 @@ function CategoryDetailPage() {
       >
         Vendors
       </Typography>
-      <div className="row">
-        <LabelText label={"Name"} content={"random"} />
-        <LabelText label={"Conatct Number"} content={"26534256237272"} />
-      </div>
+      {category?.vendors.map((vendor) => {
+        return (
+          <div key={vendor?.id}>
+            <LabelText label={"Name"} content={vendor?.name} />
+            <LabelText
+              label={"Conatct Number"}
+              content={vendor?.contactNumber}
+            />
+          </div>
+        );
+      })}
     </div>
   );
 }

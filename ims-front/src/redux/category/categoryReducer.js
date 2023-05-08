@@ -18,22 +18,21 @@ import {
   GET_CATEGORIES_COUNT_SUCCESS,
   GET_CATEGORIES_COUNT_FAILURE,
   GET_CATEGORIES_COUNT,
+  GET_CATEGORIES_DETAIL_SUCCESS,
+  GET_CATEGORIES_DETAIL_FAILURE
 } from "../constants";
 
 const initialState = {
   categories: [],
+  details:[],
   category: null,
   error: null,
   count: {
     monthlyCount: [],
     currentMonth: {
-      Pending: 0,
-      Resolved: 0,
+      count:0
     },
-    total: {
-      Pending: 0,
-      Resolved: 0,
-    },
+    total:0,
   },
 };
 
@@ -61,6 +60,18 @@ export const categoryData = (state = initialState, action) => {
         categories: [],
         error: action.payload.error,
       };
+      case GET_CATEGORIES_DETAIL_SUCCESS:
+        return {
+          ...state,
+          details: action.payload.details,
+          error: null,
+        };
+      case GET_CATEGORIES_DETAIL_FAILURE:
+        return {
+          ...state,
+         details: [],
+          error: action.payload.error,
+        };
     case GET_CATEGORIES_COUNT_SUCCESS:
       return {
         ...state,
@@ -71,15 +82,11 @@ export const categoryData = (state = initialState, action) => {
       return {
         ...state,
         count: {
-          monthlyCount: [],
+          monthCount: [],
           currentMonth: {
-            Pending: 0,
-            Resolved: 0,
+            count: 0,
           },
-          total: {
-            Pending: 0,
-            Resolved: 0,
-          },
+          total: 0
         },
         error: action.payload.error,
       };

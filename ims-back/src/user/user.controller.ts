@@ -28,7 +28,10 @@ import { UserService } from './user.service';
 import { UpdateUserDto } from './dtos/update-user.dto';
 import { SendOtpDto } from 'src/otp/dtos/send-otp.dto';
 import { ResetPasswordDto } from './dtos/reset-password.dto';
-import {  RoleSerialize, Serialize } from 'src/interceptors/serialize.interceptor';
+import {
+  RoleSerialize,
+  Serialize,
+} from 'src/interceptors/serialize.interceptor';
 import { UserDto } from './dtos/user.dto';
 import { GetUsersDto } from './dtos/get-users.dto';
 import { GetSingleUsersDto } from './dtos/get-single-user.dto';
@@ -36,7 +39,6 @@ import { GetEmployeeDto } from './dtos/get-employee.dto';
 
 @Controller('users')
 export class UserController {
-
   constructor(
     private authService: AuthService,
     private userService: UserService,
@@ -46,7 +48,6 @@ export class UserController {
   @Role(Roles.SuperAdmin, Roles.Admin)
   @UseGuards(AuthGuard(), RolesGuard)
   signUp(@Body() createUserDto: CreateUserDto, @GetUser() user: User) {
-    console.log(createUserDto);
     return this.authService.createUser(createUserDto, user);
   }
 
@@ -69,16 +70,15 @@ export class UserController {
 
   @Get()
   @Role(Roles.SuperAdmin, Roles.Admin)
-  @RoleSerialize(GetUsersDto,GetEmployeeDto,Roles.Admin)
+  @RoleSerialize(GetUsersDto, GetEmployeeDto, Roles.Admin)
   //@Serialize(GetUsersDto)
   @UseGuards(AuthGuard(), RolesGuard)
   getUsers(@GetUser() user: User) {
-    //console.log(user)
     return this.userService.getUsers(user);
     //return this.userService.getMonthlyUsers()
   }
   @Get('/:id')
-  @Role(Roles.SuperAdmin, Roles.Admin)
+  @Role(Roles.SuperAdmin, Roles.Admin, Roles.Employee)
   @Serialize(GetSingleUsersDto)
   @UseGuards(AuthGuard(), RolesGuard)
   getUser(@Param('id', ParseIntPipe) id, @GetUser() user: User) {
@@ -93,7 +93,7 @@ export class UserController {
   }
 
   @Patch('/:id')
-  @Role(Roles.SuperAdmin, Roles.Admin)
+  @Role(Roles.SuperAdmin, Roles.Admin, Roles.Employee)
   @UseGuards(AuthGuard(), RolesGuard)
   updateUser(
     @Param('id', ParseIntPipe) id: number,
@@ -113,11 +113,3 @@ export class UserController {
     return await this.authService.resetPassword(resetPasswordDto);
   }
 }
-
-// @Role(Roles.SuperAdmin)
-// @UseGuards(RolesGuard)
-// @Post('/test')
-// @UseGuards(AuthGuard())
-// async test() {
-//   /***********iwas here */
-// }

@@ -39,11 +39,10 @@ export class AuthService {
       contactNo,
       organizationId,
       image,
-      departmentId
+      departmentId,
     } = userData;
     let orgId = organizationId;
-    // console.log(organizationId,orgId)
-    // console.log(orgId,organizationId,'id')
+
     const salt = await bcrypt.genSalt(); //gen salt
     const hashedPassword = await this.hashPassword(password, salt); //hasing password recvied from body
     let role = '';
@@ -64,13 +63,12 @@ export class AuthService {
       email,
       password: hashedPassword,
       privateEmail,
-      // role,
       contactNo,
       organizationId: orgId,
       rolesId,
       departmentId,
       image: myImage,
-    }); //creating instance of user before saving to DB
+    });
     const emailBody = {
       to: privateEmail,
       from: 'm.ibtisam@gigalabs.co',
@@ -95,7 +93,7 @@ export class AuthService {
   /********************************VALIDATE PASSWORD FUNCTION************************************/
   async validateUserPassowrd(signInDto: SignInDto) {
     const { email, password } = signInDto;
-    const user = await this.userRepository.findOneBy({ email  });
+    const user = await this.userRepository.findOneBy({ email });
     if (user && (await user.validatePassword(password))) {
       const payLoad = { email };
       const accessToken = await this.jwtService.sign(payLoad);

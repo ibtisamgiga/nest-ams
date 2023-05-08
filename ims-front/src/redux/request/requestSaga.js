@@ -8,7 +8,7 @@ import {
   DELETE_REQUEST,
   CREATE_REQUEST,
   GET_REQUESTS_COUNT,
-} from "../constants"
+} from "../constants";
 import {
   getRequestsSuccess,
   getRequestsFailure,
@@ -25,14 +25,20 @@ import {
 } from "./requestAction";
 
 // Worker saga for getting all requests
-function* getRequests() {
+function* getRequests(action) {
+  const { reqType } = action.payload;
+
+  const url = reqType
+    ? `http://localhost:5000/request/?type=${reqType}`
+    : "http://localhost:5000/request/";
   try {
     const requests = yield fetchData(
       "GET",
       null,
-      "http://localhost:5000/request"
+      url
+      //{ reqType?`http://localhost:5000/request/?type=${reqType}`:}
     ); // call your API method here
-    console.log(requests)
+
     yield put(getRequestsSuccess(requests)); // dispatch action to update Redux store with retrieved requests
   } catch (error) {
     yield put(getRequestsFailure(error)); // dispatch action to update Redux store with error
@@ -45,7 +51,7 @@ function* getCount() {
       null,
       "http://localhost:5000/request/count"
     ); // call your API method here
-    console.log(count, "saga");
+
     yield put(getRequestsCountSuccess(count)); // dispatch action to update Redux store with retrieved requests
   } catch (error) {
     yield put(getRequestsCountFailure(error)); // dispatch action to update Redux store with error
@@ -100,7 +106,7 @@ function* createRequestSaga(action) {
       body,
       `http://localhost:5000/request`
     );
-    console.log(request, "csaga");
+
     if (request.error) {
       yield put(createRequestError(request.message));
     }
@@ -120,5 +126,3 @@ function* requestSaga() {
   yield takeLatest(GET_REQUESTS_COUNT, getCount);
 }
 export default requestSaga;
-
-

@@ -1,11 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import {
-  createQueryBuilder,
-  EntityManager,
-  getConnection,
-  Repository,
-} from 'typeorm';
+import { EntityManager, Repository } from 'typeorm';
 import { User } from './entity/user.entity';
 import { UpdateUserDto } from './dtos/update-user.dto';
 import { OtpService } from 'src/otp/otp.service';
@@ -52,7 +47,14 @@ export class UserService {
         id,
         roles: { role: searchRole },
       },
-      relations: ['organization','items','items.category.parent','requests','requests.item.category.parent','department'],
+      relations: [
+        'organization',
+        'items',
+        'items.category.parent',
+        'requests',
+        'requests.item.category.parent',
+        'department',
+      ],
     });
     if (!user) throw new NotFoundException('User Not Found');
     return user;
@@ -74,8 +76,8 @@ export class UserService {
     if (!user) {
       throw new NotFoundException('User Not Found');
     }
-    await this.photoService.updatePhoto(attrs.image)
-    //console.log(attrs)
+    await this.photoService.updatePhoto(attrs.image);
+
     Object.assign(user, attrs);
     return {
       user: await this.userRepository.save(user),
@@ -84,7 +86,6 @@ export class UserService {
   }
 
   async findUserByemail(email: string) {
-    // console.log(email, 'user');
     const user = await this.userRepository.findOneBy({ email });
     if (!user) {
       throw new NotFoundException('User Not Found');
@@ -93,9 +94,6 @@ export class UserService {
     return user;
   }
 
-  // resetPassword(resetPasswordDto) {
-  //   this.otpService.valdiateOtp(resetPasswordDto);
-  // }
   async sendOtp(sendOtpDto: SendOtpDto) {
     const { email } = sendOtpDto;
     const user = await this.findUserByemail(email);
@@ -105,7 +103,7 @@ export class UserService {
 
   async getCount(currentUser: User) {
     const role = currentUser.rolesId == 1 ? 2 : 3;
-    // const org = currentUser.rolesId == 2 ? currentUser.organizationId : null;
+
     const where =
       currentUser.rolesId == 1
         ? 'user.rolesId = ' + role
@@ -115,19 +113,16 @@ export class UserService {
           currentUser.organizationId;
     const monthlyCount = await this.userRepository
       .createQueryBuilder('user')
-      //"To_CHAR(TO_DATE(EXTRACT(MONTH FROM DATE_TRUNC('month',organization.created_at))::text,'MM'),'Month')AS month,count(*)"
       .select(
         "To_CHAR(TO_DATE(EXTRACT(MONTH FROM DATE_TRUNC('month',created_at))::text,'MM'),'Mon')AS month",
       )
       .addSelect('COUNT(*)::int  as count')
       .where(where)
-      // .where('user.rolesId = :rolesId', { rolesId: role })
       .andWhere('EXTRACT(YEAR from created_at) = EXTRACT(YEAR from now())')
-      // .andWhere('user.organizationId = :organizationId', { organizationId: org })
       .groupBy('month')
       .getRawMany();
 
-      const total = await this.userRepository
+    const total = await this.userRepository
       .createQueryBuilder('user')
       .select('COUNT(*)::int  AS Total')
       .where(where)
@@ -139,14 +134,8 @@ export class UserService {
       .where('EXTRACT(MONTH from created_at) = EXTRACT(MONTH from now())')
       .andWhere('EXTRACT(YEAR from created_at) = EXTRACT(YEAR from now())')
       .andWhere(where)
-      // .andWhere('user.organizationId = :organizationId', { organizationId: org })
-      // .andWhere('user.rolesId = :rolesId', { rolesId: role })
       .getRawOne();
 
-console.log({
-  total_count:total.total
-})
-
-    return {monthlyCount, currentMonth ,total:total.total};
+    return { monthlyCount, currentMonth, total: total.total };
   }
 }

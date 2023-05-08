@@ -3,16 +3,32 @@ import FormHeader from "../../../components/shared/form-header/FormHeader";
 import FormInput from "../../../components/shared/form-input/FormInput";
 import { useEffect, useState } from "react";
 import "./create-category.css";
+import { useTheme, useMediaQuery } from "@mui/material";
 import Divider from "@mui/material/Divider";
 import { Typography } from "@mui/material";
 import StartIconButton from "../../../components/shared/StartIconButton";
+import { useDispatch } from "react-redux";
+import { createCategory } from "../../../redux/category/categoryAction";
+import { useNavigate } from "react-router-dom";
 function CreateCategoryPage() {
   const [formData, setFormData] = useState({
     name: "",
+    subCategories: [],
   });
+  const theme = useTheme();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const [testArr, setTestArr] = useState([]);
+  const isMatch = useMediaQuery(theme.breakpoints.down("md"));
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(formData);
+
+    testArr.forEach((test) => {
+      formData.subCategories.push(test.value);
+    });
+    setTestArr([]);
+    dispatch(createCategory(formData));
+    navigate(-1);
   };
   const inputArr = [
     {
@@ -41,9 +57,9 @@ function CreateCategoryPage() {
 
     const index = e.target.id;
     setArr((s) => {
-      const newArr = s.slice();
-       newArr[index].value = e.target.value;
-       console.log(newArr);
+      let newArr = s.slice();
+      newArr[index].value = e.target.value;
+      setTestArr(newArr);
       return newArr;
     });
   };
@@ -71,15 +87,8 @@ function CreateCategoryPage() {
           <div className="fields">
             {arr.map((item, i) => {
               return (
-                //   <input
-                //     onChange={handleChange}
-                //     value={item.value}
-                //     id={i}
-                //     type={item.type}
-                //     size="40"
-                //   />
                 <FormInput
-                  sideLabel={"sub-Category # "+(i+1)}
+                  sideLabel={"sub-Category # " + (i + 1)}
                   placeHolder={"sub-Category"}
                   id={i}
                   onChange={handleChange}
@@ -88,12 +97,11 @@ function CreateCategoryPage() {
               );
             })}
           </div>
-          <StartIconButton
-            title={"Add Sub-Category"}
-            onClick={addInput}
-            width={11}
-            left={true}
-          />
+          {isMatch ? (
+            <StartIconButton title={"Add"} onClick={addInput} right={true} />
+          ) : (
+            <StartIconButton title={"Add sub-category"} width={11} onClick={addInput} left={true} />
+          )}
         </div>
       </form>
     </div>

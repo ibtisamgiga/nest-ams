@@ -13,6 +13,27 @@ export class GetSingleUsersDto {
   @Expose()
   name: string;
 
+
+  @Transform(({ obj }) => obj?.designation)
+  @IsNotEmpty()
+  @Expose()
+  designation: string;
+
+  @Transform(({ obj }) => obj?.education)
+  @IsNotEmpty()
+  @Expose()
+  education: string;
+
+  @Transform(({ obj }) => obj?.totalExp)
+  @IsNotEmpty()
+  @Expose()
+ totalExp: string;
+
+ @Transform(({ obj }) => obj?.compExp)
+ @IsNotEmpty()
+ @Expose()
+ compExp: string;
+
   @Transform(({ obj }) => obj.email)
   @IsNotEmpty()
   @Expose()
@@ -21,6 +42,10 @@ export class GetSingleUsersDto {
   @IsNotEmpty()
   @Expose()
   department: string;
+  @Transform(({ obj }) => obj?.department)
+  @IsNotEmpty()
+  @Expose()
+  departmentDetail:{};
   @Transform(({ obj }) => obj.privateEmail)
   @IsNotEmpty()
   @Expose()

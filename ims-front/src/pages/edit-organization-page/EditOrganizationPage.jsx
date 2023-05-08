@@ -16,7 +16,7 @@ import {
 } from "../../redux/organization/organizationAction";
 import imageUploadHelper from "../../utils/imageUpload";
 import { useDispatch, useSelector } from "react-redux";
-
+import { useNavigate } from "react-router-dom";
 function EditOrganizationPage() {
   const [formData, setFormData] = useState({
     name: "",
@@ -30,6 +30,7 @@ function EditOrganizationPage() {
     country: "",
     bio: "",
   });
+  const navigate=useNavigate()
   const { id } = useParams();
   const [once, setOnce] = useState(false);
   const orgData = useSelector((state) => state.organizationData.organization);
@@ -51,10 +52,9 @@ function EditOrganizationPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     dispatch(updateOrganization(formData, id));
-    console.log(formData);
+    navigate(-1)
   };
 
-  console.log(orgData, "edit");
   useEffect(() => {
     if (!once) {
       dispatch(getOrganizationRequest(id));
@@ -118,16 +118,14 @@ function EditOrganizationPage() {
           items={countries}
           onChange={(e) => {
             setFormData({ ...formData, country: e.target.value });
-            //console.log(formData.country);
 
             const c = Countries.getCountries({
               filters: { name: e.target.value },
             })[0];
-            //console.log(c.iso2.toString())
+
             setCities(
               Cities.getCities({ filters: { country_code: c.iso2.toString() } })
             );
-            //console.log(c,"current country")
           }}
         />
 

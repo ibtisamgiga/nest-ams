@@ -8,6 +8,7 @@ import{departmentData}from "./departments/departmentReducer"
 import{categoryData}from "./category/categoryReducer"
 import { requestData } from "./request/requestReducer";
 import { vendorData } from "./vendor/vendorReducer"
+import { otpData } from "./otp/otpReducer"
 export default combineReducers({
-  userData,organizationData,usersData,complaintData,itemData,departmentData,categoryData,requestData,vendorData
+  userData,organizationData,usersData,complaintData,itemData,departmentData,categoryData,requestData,vendorData,otpData
 });

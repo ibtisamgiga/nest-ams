@@ -8,23 +8,16 @@ import { useDispatch, useSelector } from "react-redux";
 import { getItemsRequest } from "../../../redux/item/itemAction";
 import { getCategoriesRequest } from "../../../redux/category/categoryAction";
 import { useNavigate } from "react-router-dom";
+import search from "../../../utils/search";
+import extractValue from "../../../utils/objectValueExtractor";
+import CircularLoader from "../../../components/shared/circular-loader/CircularLoader";
 function InventoryPage() {
-
-  const Data = useSelector((state) => state.itemData?.items);
-  //const Data=allData.organizations
-  const [once, setOnce] = useState(false);
+  const tableData = useSelector((state) => state.itemData?.items);
+  const categories = useSelector((state) => state.categoryData?.categories);
   const dispatch = useDispatch();
-const navigate=useNavigate()
-  console.log(Data);
   useEffect(() => {
-    // if(!Array.isArray(Data)){
-    // navigate('/login')
-    // }
-
-    dispatch(getItemsRequest());
+    dispatch(getItemsRequest(null));
     dispatch(getCategoriesRequest());
-    setFilteredData(Data);
- 
   }, [dispatch]);
 
   const header = [
@@ -40,24 +33,18 @@ const navigate=useNavigate()
   const theme = useTheme();
   const isMatch = useMediaQuery(theme.breakpoints.down("md"));
 
-  const [filteredData, setFilteredData] = useState(Data);
+  const [filteredData, setFilteredData] = useState(null);
   const [searchText, setSearchText] = useState("");
-
+  const categoryResult = extractValue(
+    categories.filter((cat) => cat.parent == null),
+    "name"
+  );
+  const subCategoryResult = extractValue(
+    categories.filter((cat) => cat.parent != null),
+    "name"
+  );
   const handleSearch = (event) => {
-    setSearchText(event.target.value);
-    const filteredRows = Data.filter((row) => {
-      let shouldInclude = false;
-      Object.values(row).forEach((value) => {
-        if (
-          typeof value === "string" &&
-          value.toLowerCase().includes(event.target.value.toLowerCase())
-        ) {
-          shouldInclude = true;
-        }
-      });
-      return shouldInclude;
-    });
-    setFilteredData(filteredRows);
+    setFilteredData(search(event, tableData, setSearchText));
   };
   return (
     <div className="body">
@@ -68,12 +55,12 @@ const navigate=useNavigate()
         <SearchField setSearchData={handleSearch} />
         <SelectField
           fieldName={"Category"}
-          items={["furniture", "electronics"]}
+          items={categoryResult}
           handleSelect={handleSearch}
         />
         <SelectField
           fieldName={"Sub-Category"}
-          items={["mouse", "chair"]}
+          items={subCategoryResult}
           handleSelect={handleSearch}
         />
         <StartIconButton
@@ -82,14 +69,25 @@ const navigate=useNavigate()
           to={"/inventory/create"}
         />
       </div>
-      <MyTables
-        data={Array.isArray(Data)?Data:[]}
-        tableHeaders={header}
-        createData={(Data) => {
-          return { ...Data };
-        }}
-        routes={"/inventory/detail"}
-      />
+      {tableData.length != 0 ? (
+        <MyTables
+          data={
+            filteredData
+              ? filteredData
+              : Array.isArray(tableData)
+              ? tableData
+              : []
+          }
+          //data={Array.isArray(Data) ? Data : []}
+          tableHeaders={header}
+          createData={(Data) => {
+            return { ...Data };
+          }}
+          routes={"/inventory/detail"}
+        />
+      ) : (
+        <CircularLoader />
+      )}
     </div>
   );
 }

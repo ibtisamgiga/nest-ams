@@ -1,30 +1,47 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import FormHeader from "../../../components/shared/form-header/FormHeader";
 import { Divider } from "@mui/material";
 import FormInput from "../../../components/shared/form-input/FormInput";
 import FormSelect from "../../../components/shared/form-select/FormSelect";
 import MultiSelect from "../../../components/shared/multi-select/MultiSelect";
-
+import { useDispatch, useSelector } from "react-redux";
+import { getCategoriesRequest } from "../../../redux/category/categoryAction";
+import { createVendor } from "../../../redux/vendor/vendorAction";
+import { useNavigate } from "react-router-dom";
 function CreateVendorPage() {
   const [formData, setFormData] = useState({
     name: "",
-    ContactNumber: "",
-    category: [],
+    contactNumber: "",
+    categoryIds: [],
   });
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const categories = useSelector((state) => state.categoryData.categories);
+  const cat = categories.filter((obj) => obj.parent === null);
+  const [current, setCurrent] = useState(cat[0]);
+  //const cat =
   const [subCategories, setsubCategories] = useState([]);
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(formData);
+
+    subCategories.forEach((item) => {
+      formData.categoryIds.push(item);
+    });
+    dispatch(createVendor(formData));
+    navigate(-1);
   };
+  /*******************************/
   const handleChange = (event) => {
-        const {
-           target: { value }
-         } = event;
-         setsubCategories(
-           // On autofill we get a stringified value.
-           typeof value === "string" ? value.split(",") : value
-         );
-       };
+    const {
+      target: { value },
+    } = event;
+    setsubCategories(typeof value === "string" ? value.split(",") : value);
+  };
+  /*******************************/
+  useEffect(() => {
+    dispatch(getCategoriesRequest());
+  }, [dispatch]);
+  /*******************************/
   return (
     <div className="body">
       <FormHeader heading={"Add Vendor"} form={"createVendor"} />
@@ -47,28 +64,23 @@ function CreateVendorPage() {
           value={formData.contactNumber}
         />
         <Divider sx={{ borderBottomWidth: 4, marginTop: "20px" }} />
-       
+
         <FormSelect
-          sideLabel={"Select Category "}
+          sideLabel={"Select Category"}
           placeHolder={"select Category"}
-          items={[{ name: "electronics", id: 2 }]}
+          items={cat}
           keyId={1}
+          defaultValue={cat[0]}
           onChange={(e) => {
-            setFormData({ ...formData, categoryId: e.target.value });
+            setCurrent(...cat.filter((obj) => obj.id == e.target.value));
           }}
         />
-        {/* <FormSelect
-          sideLabel={"Select Sub-Category "}
-          placeHolder={"select Sub-Category"}
-          items={[{ name: "mouse", id: 1 }]}
-          keyId={1}
-          onChange={(e) => {
-            setFormData({ ...formData, category: e.target.value });
-          }}
-        /> */}
-
-        <MultiSelect  names ={["mouse", "keyboard", "charger", "power-Bank"]} onChange={handleChange}subCategories={subCategories}/>
-       
+        <MultiSelect
+          defaultValue={current?.children[0]}
+          names={current?.children ? current?.children : []}
+          onChange={handleChange}
+          subCategories={subCategories}
+        />
       </form>
     </div>
   );

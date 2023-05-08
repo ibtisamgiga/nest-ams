@@ -7,6 +7,7 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
@@ -20,6 +21,7 @@ import { CreateItemDto } from './dtos/create-item.dto';
 import { ItemService } from './item.service';
 import { Serialize } from 'src/interceptors/serialize.interceptor';
 import { GetItemsDto } from './dtos/get-items.dto';
+import { UpdateItemDto } from './dtos/update-item.dto';
 
 @Controller('item')
 export class ItemController {
@@ -35,8 +37,8 @@ export class ItemController {
   @Role(Roles.Admin,Roles.Employee)
   @UseGuards(AuthGuard(), RolesGuard)
   @Serialize(GetItemsDto)
-  getItems(@GetUser() user: User) {
-    return this.itemService.getItems(user);
+  getItems(@Query('type') type: string,@GetUser() user: User) {
+    return this.itemService.getItems(user,type);
   }
   @Get('count')
   @Role(Roles.Admin)
@@ -56,7 +58,16 @@ export class ItemController {
   deleteItem(@Param('id', ParseIntPipe) id: number, @GetUser() user: User) {
     return this.itemService.deleteItem(id, user);
   }
-  
+  @Patch('/:id')
+  @Role(Roles.Admin)
+  @UseGuards(AuthGuard(), RolesGuard)
+  updateItem(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() body: UpdateItemDto,
+    @GetUser() user: User,
+  ) {
+    return this.itemService.updateItem(id, body, user);
+  }
   @Patch('assign/:id')
   @Role(Roles.Admin)
   @UseGuards(AuthGuard(), RolesGuard)

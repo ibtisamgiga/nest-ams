@@ -10,6 +10,7 @@ import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchUserById, updateUser } from "../../redux/users/usersAction";
 import imageUploadHelper from "../../utils/imageUpload";
+import { useNavigate } from "react-router-dom";
 function EditAdminPage() {
   const [formData, setFormData] = useState({
     name: "",
@@ -17,6 +18,7 @@ function EditAdminPage() {
     contactNo: "",
     organizationId: null,
   });
+  const navigate=useNavigate()
   const { id } = useParams();
   const [once, setOnce] = useState(false);
   const adminData = useSelector((state) => state.usersData.selectedUser);
@@ -49,8 +51,9 @@ function EditAdminPage() {
       image: formData?.image,
     };
     dispatch(updateUser(body, id));
+    navigate(-1)
     //dispatch(updateOrganization(formData,id));
-    console.log(formData);
+  
   };
   useEffect(() => {
     if (!once) {
@@ -98,7 +101,7 @@ function EditAdminPage() {
           items={organizations}
           onChange={(e) => {
             setFormData({ ...formData, organizationId: e.target.value });
-            //console.log(formData);
+         
           }}
         />
 

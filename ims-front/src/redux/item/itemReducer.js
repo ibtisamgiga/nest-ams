@@ -27,6 +27,7 @@ import {
     count: {
       monthlyCount: [],
       currentMonth: {
+        month:'',
         count: 0,
       },
       total: 0,
@@ -67,8 +68,9 @@ import {
         return {
           ...state,
           count: {
-            monthCount: [],
+            monthlyCount: [],
             currentMonth: {
+              month:"0",
               count: "0",
             },
   

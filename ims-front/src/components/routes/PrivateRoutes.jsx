@@ -7,7 +7,7 @@ function PrivateRoutes({ children ,user}) {
   const loggedIn = user//getFromLocalStorage()?.token;
 const navigate=  useNavigate()
   if (!loggedIn) {
-  // navigate('/login')
+  // navigate('/')
   return <LoginPage/>
   }
   return children;

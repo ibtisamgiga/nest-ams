@@ -51,7 +51,7 @@ const initialState = {
 export const complaintData = (state = initialState, action) => {
   switch (action.type) {
     case GET_COMPLAINTS_SUCCESS:
-      console.log(action.payload.complaints.myComplaints)
+      
       return {
         ...state,
         complaints: action.payload.complaints.complaints,

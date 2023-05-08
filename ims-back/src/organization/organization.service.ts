@@ -15,10 +15,9 @@ import { PhotoService } from 'src/photo/photo.service';
 @Injectable()
 export class OrganizationService {
   constructor(
-  @InjectRepository(Organization)
-  private organizationRepository: Repository<Organization>,
-  private photoService: PhotoService,
-  
+    @InjectRepository(Organization)
+    private organizationRepository: Repository<Organization>,
+    private photoService: PhotoService,
   ) {}
 
   async createOrganization(organizationData: CreateOrganizationDto) {
@@ -35,8 +34,8 @@ export class OrganizationService {
       image,
     } = organizationData;
     const myImage = image
-    ? await this.photoService.createPhoto({ image })
-    : null;
+      ? await this.photoService.createPhoto({ image })
+      : null;
     const organization = this.organizationRepository.create({
       name,
       email,
@@ -47,7 +46,7 @@ export class OrganizationService {
       city,
       zip,
       country,
-      image:myImage
+      image: myImage,
     });
     try {
       return await this.organizationRepository.save(organization);
@@ -71,11 +70,7 @@ export class OrganizationService {
   }
 
   async getOrganizations() {
-    // const query =
-    //   this.organizationRepository.createQueryBuilder('organization');
-    // const organizations = await query.getMany();
     const organizations = await this.organizationRepository.find({
-    
       relations: ['image'],
     });
     return organizations;
@@ -83,7 +78,7 @@ export class OrganizationService {
 
   async getOrganizationById(id: number, user: User) {
     const organization = await this.organizationRepository.findOne({
-      where: { id},//users: { rolesId: 2 } 
+      where: { id }, //users: { rolesId: 2 }
       relations: ['users'],
     });
     if (!organization)
@@ -96,7 +91,7 @@ export class OrganizationService {
     if (!organization) {
       throw new NotFoundException('organization Not Found');
     }
-    await this.photoService.updatePhoto(attrs.image)
+    await this.photoService.updatePhoto(attrs.image);
     Object.assign(organization, attrs);
     return {
       organization: await this.organizationRepository.save(organization),
@@ -120,12 +115,10 @@ export class OrganizationService {
       .select('COUNT(*) ::int AS count')
       .where('EXTRACT(MONTH from created_at) = EXTRACT(MONTH from now())')
       .andWhere('EXTRACT(YEAR from created_at) = EXTRACT(YEAR from now())')
-      // .andWhere('user.organizationId = :organizationId', { organizationId: org })
-      // .andWhere('user.rolesId = :rolesId', { rolesId: role })
       .getRawOne();
 
-      const total = await this.organizationRepository.count()
+    const total = await this.organizationRepository.count();
 
-    return { monthlyCount, currentMonth,total };
+    return { monthlyCount, currentMonth, total };
   }
 }

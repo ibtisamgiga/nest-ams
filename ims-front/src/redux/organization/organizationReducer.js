@@ -18,10 +18,12 @@ import {
   GET_ORGANIZATIONS_COUNT_SUCCESS,
   GET_ORGANIZATIONS_COUNT_FAILURE,
   GET_ORGANIZATIONS_COUNT,
+  GET_ORGANIZATIONS_SEARCH,
 } from "../constants";
 
 const initialState = {
   organizations: [],
+  filter: [],
   organization: null,
   error: null,
   count: {
@@ -116,6 +118,8 @@ export const organizationData = (state = initialState, action) => {
         ),
       };
     case DELETE_ORGANIZATION_ERROR:
+      const error = action.payload.error;
+
       return { ...state, error: action.payload.error };
     case CREATE_ORGANIZATION:
       return { ...state };
@@ -125,7 +129,7 @@ export const organizationData = (state = initialState, action) => {
         organizations: [...state.organizations, action.payload.organization],
       };
     case CREATE_ORGANIZATION_ERROR:
-      return { ...state, error: action.payload.error };
+      return { ...state, error: action.payload };
     default:
       return state;
   }

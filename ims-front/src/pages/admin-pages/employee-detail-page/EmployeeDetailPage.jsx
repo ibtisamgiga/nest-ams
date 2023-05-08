@@ -6,14 +6,15 @@ import ImageText from "../../../components/shared/image-with-text/ImageText";
 import LabelText from "../../../components/shared/text-with-label/LabelText";
 import TabsVertical from "../../../components/shared/verticat-tabs/TabVertical";
 import MyTables from "../../../components/shared/MyTable";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchUserById } from "../../../redux/users/usersAction";
+import { deleteUser, fetchUserById } from "../../../redux/users/usersAction";
 function EmployeeDetailPage() {
   const [index, setIndex] = useState(0);
   const { id } = useParams();
   const userData = useSelector((state) => state.usersData.selectedUser);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   useEffect(() => {
     dispatch(fetchUserById(id));
   }, [dispatch]);
@@ -37,7 +38,13 @@ function EmployeeDetailPage() {
   ];
   return (
     <div className="body">
-      <DetailHeader />
+      <DetailHeader
+        editAction={"/employee/edit/" + id}
+        deleteAction={() => {
+          dispatch(deleteUser(id));
+          navigate(-1);
+        }}
+      />
       <Divider
         orientation="vertical"
         sx={{ borderRightWidth: "4px", marginTop: "20px" }}

@@ -68,6 +68,17 @@ export class User {
   //^[0-9]+$
   // @Column()
   // role: string;
+  @Column({ default: '-' })
+  education: string;
+
+  @Column({ default: '-' })
+  designation: string;
+
+  @Column({ default: '-' })
+  totalExp: string;
+
+  @Column({ default: '-' })
+  compExp: string;
 
   @ManyToOne(() => RoleEntity, (role) => role.users, {
     eager: true,
@@ -96,10 +107,12 @@ export class User {
   })
   requests: Request[];
 
-  @ManyToOne(() => Department, (department) => department.users, {onDelete: 'CASCADE'})
+  @ManyToOne(() => Department, (department) => department.users, {
+    onDelete: 'CASCADE',
+  })
   department: Department;
 
-  @Column({ nullable: true ,})
+  @Column({ nullable: true })
   departmentId: number;
 
   @Column({ type: 'date', default: () => 'CURRENT_TIMESTAMP' })

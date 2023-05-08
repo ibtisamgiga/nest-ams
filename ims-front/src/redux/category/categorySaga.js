@@ -19,7 +19,8 @@ import {
   CREATE_CATEGORY_ERROR,
   GET_CATEGORIES_COUNT_SUCCESS,
   GET_CATEGORIES_COUNT_FAILURE,
-  GET_CATEGORIES_COUNT
+  GET_CATEGORIES_COUNT,
+  GET_CATEGORIES_DETAIL_REQUEST,
 } from "../constants";
 
 import {
@@ -31,7 +32,10 @@ import {
   getCategoryCountSuccess,
   updateCategorySuccess,
   updateCategoryError,
-  createCategoryError,createCategorySuccess
+  createCategoryError,
+  createCategorySuccess,
+  getCategoriesDetailSuccess,
+  getCategoriesDetailFailure,
 } from "./categoryAction";
 // Worker saga for getting all organizations
 function* getCategories() {
@@ -46,14 +50,27 @@ function* getCategories() {
     yield put(getCategoriesFailure(error)); // dispatch action to update Redux store with error
   }
 }
+
+function* getDetails() {
+  try {
+    const details = yield fetchData(
+      "GET",
+      null,
+      "http://localhost:5000/category/details"
+    ); // call your API method here
+    yield put(getCategoriesDetailSuccess(details)); // dispatch action to update Redux store with retrieved organizations
+  } catch (error) {
+    yield put(getCategoriesDetailFailure(error)); // dispatch action to update Redux store with error
+  }
+}
 function* getCount() {
   try {
-    const count= yield fetchData(
+    const count = yield fetchData(
       "GET",
       null,
       "http://localhost:5000/category/count"
     ); // call your API method here
-    console.log(count,'saga')
+  
     yield put(getCategoryCountSuccess(count)); // dispatch action to update Redux store with retrieved organizations
   } catch (error) {
     yield put(getCategoryCountFailure(error)); // dispatch action to update Redux store with error
@@ -91,26 +108,32 @@ function* updateCategorySaga(action) {
 }
 
 function* createCategorySaga(action) {
-    const { body } = action.payload;
-    try {     const category = yield fetchData("POST", body, `http://localhost:5000/category`);
-      console.log(category, "csaga");
-      if (category.error) {
-        yield put(createCategoryError(category.message));
-      }
-      yield put(createCategorySuccess(category));
-    } catch (error) {
-      yield put(createCategoryError(error));
+  const { body } = action.payload;
+  try {
+    const category = yield fetchData(
+      "POST",
+      body,
+      `http://localhost:5000/category`
+    );
+  
+    if (category.error) {
+      yield put(createCategoryError(category.message));
     }
+    yield put(createCategorySuccess(category));
+  } catch (error) {
+    yield put(createCategoryError(error));
   }
+}
 
 function* categorySaga() {
   yield takeLatest(GET_CATEGORIES_REQUEST, getCategories);
   //yield takeEvery(CATEGORY_LIST, getOrganizations);
-
+  yield takeLatest(GET_CATEGORIES_DETAIL_REQUEST, getDetails);
   yield takeLatest(GET_CATEGORY_REQUEST, getCategory);
-  yield takeLatest(GET_CATEGORIES_COUNT,getCount)
-     yield takeLatest(CREATE_CATEGORY, createCategorySaga);
-     yield takeLatest(UPDATE_CATEGORY, updateCategorySaga);
+  yield takeLatest(GET_CATEGORIES_COUNT, getCount);
+  yield takeLatest(CREATE_CATEGORY, createCategorySaga);
+  yield takeLatest(UPDATE_CATEGORY, updateCategorySaga);
+
   //   yield takeLatest(DELETE_CATEGORY, deleteOrganizationSaga);
 }
 export default categorySaga;

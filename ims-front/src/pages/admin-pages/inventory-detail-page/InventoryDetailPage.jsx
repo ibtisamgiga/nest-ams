@@ -4,22 +4,21 @@ import DetailHeader from "../../../components/shared/details-header/DetailHeader
 import ImageText from "../../../components/shared/image-with-text/ImageText";
 import LabelText from "../../../components/shared/text-with-label/LabelText";
 import "./inventory-detail.css";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import { getItemRequest } from "../../../redux/item/itemAction";
+import { deleteItem, getItemRequest } from "../../../redux/item/itemAction";
 function InventoryDetailPage() {
   const { id } = useParams();
-
+const navigate=useNavigate()
   const dispatch = useDispatch();
 
   useEffect(() => {
     dispatch(getItemRequest(id));
   }, [dispatch]);
   const item = useSelector((state) => state.itemData?.item);
-  console.log(item)
   return (
     <div className="body">
-      <DetailHeader />
+      <DetailHeader editAction={"/inventory/edit/"+id} deleteAction={()=>{dispatch(deleteItem(id));navigate(-1)}} />
       <div className="row-inv">
         <LabelText label={"Item Name"} content={item?.name} />
         <LabelText label={"Serial Number"} content={item?.serialNumber} />

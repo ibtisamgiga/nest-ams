@@ -8,51 +8,14 @@ import { Box } from "@mui/system";
 import { useTheme, useMediaQuery } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import TabsVertical from "../../../components/shared/verticat-tabs/TabVertical";
-//import { getComplaintRequest, getComplaintsRequest } from "../redux/complaints/complaintAction";
+import {
+  getComplaintRequest,
+  getComplaintsRequest,
+} from "../../../redux/complaints/complaintAction";
+import search from "../../../utils/search";
 function AdminComplaintsPage() {
   const [index, setIndex] = useState(0);
-  // const Data = [
-  //   {
-  //     id: 1,
-  //     name: "zain",
-  //     organization: "gigalabs",
-  //     descritpion:
-  //       "Lorem ispsum sushduegjhDdSdhskdghGGHASdadgsgk udsghsdaKDfhfds ",
-  //     submissionDate: "2/03/2020",
-  //     status: "pending",
-  //    //view: "/",
-  //   },
-  //   {
-  //     id: 1,
-  //     name: "ali",
-  //     organization: "nextbridge",
-  //     descritpion:
-  //       "Lorem ispsum sushduegjhDdSdhskdghGGHASdadgsgk udsghsdaKDfhfds ",
-  //     submissionDate: "2/03/2020",
-  //     status: "resolved",
-  //     //view: "/",
-  //   },
-  //   {
-  //     id: 1,
-  //     name: "umar",
-  //     organization: "I2c",
-  //     descritpion:
-  //       "Lorem ispsum sushduegjhDdSdhskdghGGHASdadgsgk udsghsdaKDfhfds ",
-  //     submissionDate: "2/03/2020",
-  //     status: "pending",
-  //     //view: "/",
-  //   },
-  //   {
-  //     id: 1,
-  //     name: "zain",
-  //     organization: "gigalabs",
-  //     descritpion:
-  //       "Lorem ispsum sushduegjhDdSdhskdghGGHASdadgsgk udsghsdaKDfhfds ",
-  //     submissionDate: "2/03/2020",
-  //     status: "pending",
-  //     //view: "/",
-  //   },
-  // ];
+
   const empHeader = [
     "ID",
     "Employee Name",
@@ -68,42 +31,25 @@ function AdminComplaintsPage() {
     "Status",
     "Action",
   ];
-  const Data = [];
 
-  // const Data = useSelector((state) => state.complaintData.complaints);
-  //console.log(Dxata,'saga com')
-  //const Data=allData.organizations
-  const [once, setOnce] = useState(false);
+  const tableData = useSelector((state) => state.complaintData.complaints);
+  const tableData2 = useSelector((state) => state.complaintData.myComp);
+
   const dispatch = useDispatch();
   const theme = useTheme();
   const isMatch = useMediaQuery(theme.breakpoints.down("md"));
 
-  const [filteredData, setFilteredData] = useState([]);
+  const [filteredData, setFilteredData] = useState(null);
+  const [filteredData2, setFilteredData2] = useState(null);
   const [searchText, setSearchText] = useState("");
-
+  const [searchText2, setSearchText2] = useState("");
   useEffect(() => {
-    if (!once) {
-      // dispatch(getComplaintsRequest());
-      // setFilteredData(Data)
-      setOnce(true);
-    }
-  }, [dispatch, Data]);
+    dispatch(getComplaintsRequest());
+  }, [dispatch]);
 
   const handleSearch = (event) => {
-    setSearchText(event.target.value);
-    const filteredRows = Data.filter((row) => {
-      let shouldInclude = false;
-      Object.values(row).forEach((value) => {
-        if (
-          typeof value === "string" &&
-          value.toLowerCase().includes(event.target.value.toLowerCase())
-        ) {
-          shouldInclude = true;
-        }
-      });
-      return shouldInclude;
-    });
-    setFilteredData(filteredRows);
+    setFilteredData(search(event, tableData, setSearchText));
+    setFilteredData2(search(event, tableData2, setSearchText2));
   };
 
   return (
@@ -113,16 +59,19 @@ function AdminComplaintsPage() {
           <h1>Complaints</h1>
         </div>
         <SearchField setSearchData={handleSearch} />
-        <SelectField
-          fieldName={"Organization"}
-          items={["gigalabs", "tanbits", "I2C"]}
-          handleSelect={handleSearch}
-        />
+
         <SelectField
           fieldName={"Status"}
-          items={["pending", "resolved"]}
+          items={["Pending", "Resolved"]}
           handleSelect={handleSearch}
         />
+        {index == 0 ? null : (
+          <StartIconButton
+            title={"create"}
+            //width={11}
+            to={"/complaint/create"}
+          />
+        )}
       </div>
       <Box sx={{ display: "flex" }}>
         <TabsVertical
@@ -133,20 +82,23 @@ function AdminComplaintsPage() {
           onChange={(event, value) => setIndex(value)}
         />
 
-       {index == 0 ? ( <MyTables
-          data={filteredData}
-          tableHeaders={empHeader}
-          createData={(Data) => {
-            return { ...Data };
-          }}
-          routes={"/complaints/detail"}
-        />):(
-            <MyTables
-            data={filteredData}
+        {index == 0 ? (
+          <MyTables
+            data={filteredData ? filteredData : tableData}
+            tableHeaders={empHeader}
+            createData={(Data) => {
+              return { ...Data };
+            }}
+            routes={"/complaints/detail"}
+          />
+        ) : (
+          <MyTables
+            data={filteredData2 ? filteredData2 : tableData2}
             tableHeaders={subHeader}
             createData={(Data) => {
               return { ...Data };
             }}
+            query={"/?submit=true"}
             routes={"/complaints/detail"}
           />
         )}

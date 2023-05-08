@@ -24,8 +24,9 @@ import {
 //   };
 // };
 
-export const getRequestsRequest = () => ({
+export const getRequestsRequest = (reqType) => ({
   type: GET_REQUESTS_REQUEST,
+  payload: { reqType },
 });
 
 export const getRequestsSuccess = (requests) => ({

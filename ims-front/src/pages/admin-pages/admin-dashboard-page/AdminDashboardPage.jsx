@@ -2,25 +2,46 @@ import React from "react";
 import { useTheme, useMediaQuery } from "@mui/material";
 import DataCard from "../../../components/shared/DataCard";
 import Chart from "../../../components/shared/Chart";
+import { useDispatch, useSelector } from "react-redux";
+import { useState, useEffect } from "react";
 import "./admin-dashboard.css";
 import { Box } from "@mui/system";
+import { getUsersCount } from "../../../redux/users/usersAction";
+import { getCategoryCount } from "../../../redux/category/categoryAction";
+import { getVendorsCount } from "../../../redux/vendor/vendorAction";
+import { getItemsCount } from "../../../redux/item/itemAction";
+import {
+  getComplaintCount,
+  getComplaintsRequest,
+} from "../../../redux/complaints/complaintAction";
+import MyTables from "../../../components/shared/MyTable";
+import CircularLoader from "../../../components/shared/circular-loader/CircularLoader";
 function AdminDashboardPage() {
   const theme = useTheme();
   const isMatch = useMediaQuery(theme.breakpoints.down("md"));
-  const monthlyData = [
-    { name: "Jan", uv: 300, pv: 30 },
-    { name: "Feb", uv: 800, pv: 60 },
-    { name: "Mar", uv: 400, pv: 200 },
-    { name: "Apr", uv: 200, pv: 70 },
-    { name: "May", uv: 120, pv: 230 },
-    { name: "Jun", uv: 600, pv: 500 },
-    { name: "Jul", uv: 700, pv: 350 },
-    { name: "Aug", uv: 850, pv: 300 },
-    { name: "Sep", uv: 900, pv: 800 },
-    { name: "Oct", uv: 1000, pv: 900 },
-    { name: "Nov", uv: 1200, pv: 400 },
-    { name: "Dec", uv: 1300, pv: 300 },
-    // ...
+  const userCount = useSelector((state) => state.usersData?.count);
+  const categoryCount = useSelector((state) => state.categoryData?.count);
+  const vendorCount = useSelector((state) => state.vendorData?.count);
+  const itemCount = useSelector((state) => state.itemData?.count);
+  const complaintCount = useSelector((state) => state.complaintData?.count);
+  const complaints = useSelector((state) => state.complaintData.complaints);
+
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(getCategoryCount());
+    dispatch(getUsersCount());
+    dispatch(getVendorsCount());
+    dispatch(getItemsCount());
+    dispatch(getComplaintCount());
+    dispatch(getComplaintsRequest());
+  }, [dispatch]);
+  const empHeader = [
+    "ID",
+    "Employee Name",
+    "Description",
+    "Submission Date",
+    "Status",
+    "Action",
   ];
   return (
     <div className="body">
@@ -29,28 +50,70 @@ function AdminDashboardPage() {
       <div className={isMatch ? "row-md" : "row"}>
         <DataCard
           border={isMatch ? "" : "solid  #e3e3e3 2px"}
-          totalCount={500}
+          totalCount={userCount?.total}
           name={"Employees"}
-          monthDifference={10}
+          monthDifference={userCount?.currentMonth?.count}
         />
         <DataCard
           border={isMatch ? "" : "solid  #e3e3e3 2px"}
-          totalCount={200}
+          totalCount={itemCount?.total}
           name={"Inventory Items"}
-          monthDifference={10}
+          monthDifference={
+            itemCount?.currentCount?.count == undefined
+              ? 0
+              : itemCount?.currentCount?.count
+          }
         />
         <DataCard
           border={isMatch ? "" : "solid  #e3e3e3 2px"}
-          totalCount={200}
+          totalCount={vendorCount?.total}
           name={"Vendors"}
-          monthDifference={120}
+          monthDifference={
+            vendorCount?.currentMonth?.count == undefined
+              ? 0
+              : vendorCount?.currentMonth?.count
+          }
         />
-        <DataCard totalCount={200} name={"Categories"} monthDifference={8} />
+        <DataCard
+          totalCount={categoryCount?.total}
+          name={"Categories"}
+          monthDifference={categoryCount?.currentMonth?.count}
+        />
       </div>
       <div className={isMatch ? "barchart" : "barchart"}>
-        <Chart data={monthlyData} multi={true} />
-        <Chart data={monthlyData} multi={true}/>
+        {itemCount?.monthlyCount.length != 0 ? (
+          <Chart
+            data={itemCount?.monthlyCount}
+            multi={true}
+            dataKeyX={"category"}
+            dataKeyY={"Assigned"}
+            dataKeyY2={"Unassigned"}
+          />
+        ) : (
+          <CircularLoader />
+        )}
+        {complaintCount?.monthlyCount.length != 0 ? (
+          <Chart
+            data={complaintCount?.monthlyCount}
+            multi={true}
+            dataKeyX={"month"}
+            dataKeyY={"Pending"}
+            dataKeyY2={"Resolved"}
+          />
+        ) : (
+          <CircularLoader />
+        )}
       </div>
+      <Box sx={{ marginTop: "1%" }}>
+        <MyTables
+          data={complaints}
+          tableHeaders={empHeader}
+          createData={(tableData) => {
+            return { ...tableData };
+          }}
+          routes={"/complaints/detail"}
+        />
+      </Box>
     </div>
   );
 }

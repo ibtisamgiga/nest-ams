@@ -17,6 +17,9 @@ import { RolesGuard } from 'src/user/guards/role.gaurd';
 import { CategoryService } from './category.service';
 import { CreateCategoryDto } from './dtos/create-category.dto';
 import { UpdateCategoryDto } from './dtos/update-category.dto';
+import { Serialize } from 'src/interceptors/serialize.interceptor';
+import { GetCategoriesDto } from './dtos/get-categories.dto';
+import { GetCategoryDto } from './dtos/get-category.dto';
 
 @Controller('category')
 export class CategoryController {
@@ -29,7 +32,6 @@ export class CategoryController {
     @Body() createCategoryDto: CreateCategoryDto,
     @GetUser() user: User,
   ) {
-    //console.log(createCategoryDto)
     return this.categoryService.create(createCategoryDto, user);
   }
   @Get('count')
@@ -45,9 +47,18 @@ export class CategoryController {
     return this.categoryService.getCategories(user);
   }
 
+  @Get('details')
+  @Role(Roles.Admin, Roles.Employee)
+  @UseGuards(AuthGuard(), RolesGuard)
+  @Serialize(GetCategoriesDto)
+  getCategoriesCount(@GetUser() user: User) {
+    return this.categoryService.countCategories(user);
+  }
+
   @Get(':id')
   @Role(Roles.Admin, Roles.Employee)
   @UseGuards(AuthGuard(), RolesGuard)
+  @Serialize(GetCategoryDto)
   getCategory(@Param('id') id: string, @GetUser() user: User) {
     return this.categoryService.getCategoryById(+id, user);
   }

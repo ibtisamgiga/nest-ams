@@ -11,7 +11,7 @@ import {
   DELETE_USER_ERROR,
   GET_USERS_COUNT_FAILURE,
   GET_USERS_COUNT_SUCCESS,
-  GET_USERS_COUNT
+  GET_USERS_COUNT,
 } from "../constants";
 
 const initialState = {
@@ -23,7 +23,7 @@ const initialState = {
     currentMonth: {
       count: 0,
     },
-      total: 0,
+    total: 0,
   },
 };
 
@@ -40,24 +40,24 @@ export const usersData = (state = initialState, action) => {
         ...state,
         error: action.payload.error,
       };
-      case GET_USERS_COUNT_SUCCESS:
-        return {
-          ...state,
-          count: action.payload.count,
-          error: null,
-        };
-      case GET_USERS_COUNT_FAILURE:
-        return {
-          ...state,
-          count: {
-            monthCount: [],
-            currentMonth: {
-              count: "0",
-            },
-            total: 0
+    case GET_USERS_COUNT_SUCCESS:
+      return {
+        ...state,
+        count: action.payload.count,
+        error: null,
+      };
+    case GET_USERS_COUNT_FAILURE:
+      return {
+        ...state,
+        count: {
+          monthCount: [],
+          currentMonth: {
+            count: "0",
           },
-          error: action.payload.error,
-        };
+          total: 0,
+        },
+        error: action.payload.error,
+      };
     case FETCH_USER_BY_ID_SUCCESS:
       return {
         ...state,
@@ -90,9 +90,10 @@ export const usersData = (state = initialState, action) => {
         error: null,
       };
     case UPDATE_USER_ERROR:
+      state.error = action.payload.error;
+
       return {
         ...state,
-        error: action.payload.error,
       };
     case DELETE_USER_SUCCESS:
       return {
@@ -112,5 +113,3 @@ export const usersData = (state = initialState, action) => {
       return state;
   }
 };
-
-

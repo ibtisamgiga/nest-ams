@@ -16,7 +16,8 @@ CREATE_ORGANIZATION_SUCCESS,
 CREATE_ORGANIZATION_ERROR,
 GET_ORGANIZATIONS_COUNT_SUCCESS,
 GET_ORGANIZATIONS_COUNT_FAILURE,
-GET_ORGANIZATIONS_COUNT
+GET_ORGANIZATIONS_COUNT,
+GET_ORGANIZATIONS_SEARCH
 } from "../constants";
 // export const fetchOrgaizationList = () => {
 //   return {
@@ -94,10 +95,10 @@ export const createOrganizationSuccess = (organization) => ({
   payload: { body:organization },
 });
 
-export const createOrganizationError = (error) => ({
-  type: CREATE_ORGANIZATION_ERROR,
-  payload: { error },
-});
+// export const createOrganizationError = (error) => ({
+//   type: CREATE_ORGANIZATION_ERROR,
+//   payload: {error },
+// });
 
 
 export const getOrganizationsCount = () => ({

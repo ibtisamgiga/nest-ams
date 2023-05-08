@@ -3,7 +3,7 @@ import { SIGIN_IN,SET_USER, SET_ERROR } from "../constants";
 
 
 export const userData = (data ={token:getFromLocalStorage()}, action) => {
-  //console.log(data)
+
   switch (action.type) {
     case SET_USER:
         return {

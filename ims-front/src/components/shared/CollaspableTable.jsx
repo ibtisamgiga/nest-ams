@@ -14,75 +14,20 @@ import Paper from "@mui/material/Paper";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import GroupButton from "./button-group/GroupButton";
+import { Link } from "react-router-dom";
 
 export default function CollapsibleTable({ tableData }) {
-  const dummyData = [
-    {
-      id: 1,
-      category: 1,
-      subCategory: 2,
-      vendor: 8,
-      subCat: [
-        {
-          id: 3,
-          subCategoryName: "laptop",
-          vendorName: "Game Over",
-          quantity: 3,
-          qAssigined: 12,
-          qUassigined: 2,
-          qFaulty: 4,
-        },
-        {
-          id: 5,
-          subCategoryName: "mouse",
-          vendorName: "ikea",
-          quantity: 3,
-          qAssigined: 12,
-          qUassigined: 2,
-          qFaulty: 4,
-        },
-      ],
-    },
-
-    {
-      id: 2,
-      category: 5,
-      subCategory: 2,
-      vendor: 8,
-      subCat: [
-        {
-          id: 3,
-          subCategoryName: "chair",
-          vendorName: "Game Over",
-          quantity: 3,
-          qAssigined: 12,
-          qUassigined: 2,
-          qFaulty: 4,
-        },
-        {
-          id: 5,
-          subCategoryName: "table",
-          vendorName: "ikea",
-          quantity: 3,
-          qAssigined: 12,
-          qUassigined: 2,
-          qFaulty: 4,
-        },
-      ],
-    },
-  ];
-
   function createData1(id, category, subCategory, vendor, subCat) {
     let subCatogries = [];
     subCat.forEach((element) => {
       const obj = {
         id: element.id,
-        subCategoryName: element.subCategoryName,
+        subCategoryName: element.name,
         vendorName: element.vendorName,
         quantity: element.quantity,
-        qAssigined: element.qAssigined,
-        qUassigined: element.qUassigined,
-        qFaulty: element.qFaulty,
+        qAssigined: element.assigined,
+        qUassigined: element.unAssigned,
+        qFaulty: element.faulty,
       };
       subCatogries.push(obj);
     });
@@ -101,17 +46,17 @@ export default function CollapsibleTable({ tableData }) {
 
     return (
       <React.Fragment>
-        <TableRow sx={{ "& > *": { borderBottom: "unset" } }}>
+        <TableRow key={row.id} sx={{ "& > *": { borderBottom: "unset" } }}>
           <TableCell component="th" scope="row">
             {row.name}
           </TableCell>
-          <TableCell align="right">{row.id}</TableCell>
-          <TableCell align="right">{row.category}</TableCell>
-          <TableCell align="right">{row.subCategory}</TableCell>
-          <TableCell align="right">{row.vendor}</TableCell>
-          <TableCell align="right">
+          <TableCell align="center">{row.id}</TableCell>
+          <TableCell align="center">{row.category}</TableCell>
+          <TableCell align="center">{row.subCategory}</TableCell>
+          <TableCell align="center">{row.vendor}</TableCell>
+          <TableCell align="center">
             {/* <Link to={routes+'/'+row.id}>view</Link> */}
-            <GroupButton />
+            <GroupButton id={row.id} />
           </TableCell>
           <TableCell>
             <IconButton
@@ -129,27 +74,27 @@ export default function CollapsibleTable({ tableData }) {
               <Box sx={{ margin: 1 }}>
                 <Table size="small" aria-label="purchases">
                   <TableHead>
-                    <TableRow>
+                    <TableRow >
                       <TableCell sx={{ color: "#5184ec" }}>
                         Sub-Category Name
                       </TableCell>
                       <TableCell sx={{ color: "#5184ec" }}>
                         Vendor Name
                       </TableCell>
-                      <TableCell sx={{ color: "#5184ec" }} align="right">
+                      <TableCell sx={{ color: "#5184ec" }} align="center">
                         Quantity
                       </TableCell>
-                      <TableCell sx={{ color: "#5184ec" }} align="right">
+                      <TableCell sx={{ color: "#5184ec" }} align="center">
                         Quantity Assigined
                       </TableCell>
 
-                      <TableCell sx={{ color: "#5184ec" }} align="right">
+                      <TableCell sx={{ color: "#5184ec" }} align="center">
                         Quantity Unassigined
                       </TableCell>
-                      <TableCell sx={{ color: "#5184ec" }} align="right">
+                      <TableCell sx={{ color: "#5184ec" }} align="center">
                         Quantity Faulty
                       </TableCell>
-                      <TableCell sx={{ color: "#5184ec" }} align="right">
+                      <TableCell sx={{ color: "#5184ec" }} align="center">
                         Action
                       </TableCell>
                     </TableRow>
@@ -161,19 +106,21 @@ export default function CollapsibleTable({ tableData }) {
                           {historyRow.subCategoryName}
                         </TableCell>
                         <TableCell>{historyRow.vendorName}</TableCell>
-                        <TableCell align="right">
+                        <TableCell align="center">
                           {historyRow.quantity}
                         </TableCell>
-                        <TableCell align="right">
+                        <TableCell align="center">
                           {historyRow.qAssigined}
                         </TableCell>
-                        <TableCell align="right">
+                        <TableCell align="center">
                           {historyRow.qUassigined}
                         </TableCell>
-                        <TableCell align="right">
+                        <TableCell align="center">
                           {historyRow.qFaulty}
                         </TableCell>
-                        <TableCell align="right">{historyRow.id}</TableCell>
+                        <TableCell align="center">
+                        <Link to={"/category/detail" + "/" + historyRow.id}>view</Link>
+                        </TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
@@ -192,9 +139,9 @@ export default function CollapsibleTable({ tableData }) {
     rows.push(
       createData1(
         data.id,
-        data.category,
-        data.subCategory,
-        data.vendor,
+        data.name,
+        data.numberOfSubcat,
+        data.numberOfvendors,
         data.subCat
       )
     );
@@ -205,22 +152,22 @@ export default function CollapsibleTable({ tableData }) {
         <TableHead sx={{ background: "#5184ec", color: "white" }}>
           <TableRow>
             <TableCell />
-            <TableCell align="right" sx={{ color: "white" }}>
+            <TableCell align="center" sx={{ color: "white" }}>
               ID
             </TableCell>
-            <TableCell align="right" sx={{ color: "white" }}>
-              Number of Category
+            <TableCell align="center" sx={{ color: "white" }}>
+              Category Name
             </TableCell>
-            <TableCell align="right" sx={{ color: "white" }}>
+            <TableCell align="center" sx={{ color: "white" }}>
               Number of Sub-Category
             </TableCell>
-            <TableCell align="right" sx={{ color: "white" }}>
-              Number of Vendor
+            <TableCell align="center" sx={{ color: "white" }}>
+              Number of Vendors
             </TableCell>
-            <TableCell align="right" sx={{ color: "white", width: "0%" }}>
+            <TableCell align="center" sx={{ color: "white", width: "0%" }}>
               Action
             </TableCell>
-            <TableCell align="right" sx={{ color: "white" }}></TableCell>
+            <TableCell align="center" sx={{ color: "white" }}></TableCell>
           </TableRow>
         </TableHead>
         <TableBody>

@@ -10,6 +10,7 @@ import { User } from 'src/user/entity/user.entity';
 import { ArrayContains, Repository } from 'typeorm';
 import { CreateVendorDto } from './dtos/create-vendor.dto';
 import { Vendor } from './entity/vendor.entity';
+import { UpdateVendorDto } from './dtos/update-vendor.dto';
 
 @Injectable()
 export class VendorService {
@@ -34,18 +35,42 @@ export class VendorService {
     return await this.VendorRepository.save(vendor);
   }
 
+  async updateVendor(id: number, updateVendorDto: UpdateVendorDto, user: User) {
+    const { name, contactNumber, categoryIds } = updateVendorDto;
+    const vendor = await this.VendorRepository.findOne({
+      relations: ['categories', 'categories.parent', 'items'],
+      where: { id, categories: { organizationId: user.organizationId } },
+      order: { items: { created_at: 'DESC' } },
+    });
+    if (!vendor) throw new NotFoundException('vendor not found');
+    const categories = await this.categoryService.findByIds(categoryIds);
+    if (categories.length == 0)
+      throw new BadRequestException('invalid sub-category/category');
+
+    vendor.name = name;
+    vendor.contactNumber = contactNumber;
+    let difference = categories.filter((x) => !vendor.categories.includes(x));
+    //difference
+    difference.map((category) => {
+      vendor.categories.push(category);
+    });
+    // vendor.categories = categories;
+
+    return await this.VendorRepository.save(vendor);
+  }
+
   async getVendors(user: User) {
     const vendors = await this.VendorRepository.find({
-      relations: ['categories', 'categories.parent','items'],
+      relations: ['categories', 'categories.parent', 'items'],
       where: { categories: { organizationId: user.organizationId } },
     });
     return vendors;
   }
   async getVendor(id: number, user: User) {
     const vendor = await this.VendorRepository.findOne({
-      relations: ['categories', 'categories.parent','items'],
+      relations: ['categories', 'categories.parent', 'items'],
       where: { id, categories: { organizationId: user.organizationId } },
-      order: { items:{created_at: 'DESC'} },
+      order: { items: { created_at: 'DESC' } },
     });
     if (!vendor) throw new NotFoundException('vendor not found');
     return vendor;
@@ -60,7 +85,7 @@ export class VendorService {
       'vendor',
     )
       .select(
-        "To_CHAR(TO_DATE(EXTRACT(MONTH FROM DATE_TRUNC('month',vendor.created_at))::text,'MM'),'Mon')AS month,count(*)",
+        "To_CHAR(TO_DATE(EXTRACT(MONTH FROM DATE_TRUNC('month',vendor.created_at))::text,'MM'),'Mon')AS month,count(DISTINCT  vendor.id)",
       )
       .innerJoin('vendor.categories', 'category')
       .where('category.organizationId = :organizationId', {
@@ -72,7 +97,9 @@ export class VendorService {
       .groupBy('month')
       .getRawOne();
 
-    return { totalCount, currentMonth };
+    //const total= await this.VendorRepository.count({relations:['categories'],where:{categories: { organizationId: user.organizationId }}})
+
+    return { total: totalCount, currentMonth: currentMonth ? currentMonth : 0 };
   }
   async deleteVendor(id: number, user: User) {
     const vendor = await this.VendorRepository.findOne({

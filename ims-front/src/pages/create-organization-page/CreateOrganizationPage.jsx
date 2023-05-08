@@ -8,15 +8,15 @@ import FormInput from "../../components/shared/form-input/FormInput";
 import { Countries, States, Cities } from "countries-states-cities-service";
 import FormSelect from "../../components/shared/form-select/FormSelect";
 import { useDispatch, useSelector } from "react-redux";
-import {
- createOrganization
-} from "../../redux/organization/organizationAction";
+import { createOrganization } from "../../redux/organization/organizationAction";
 import imageUploadHelper from "../../utils/imageUpload";
 import { useNavigate } from "react-router-dom";
+import CircularLoader from "../../components/shared/circular-loader/CircularLoader";
 function CreateOrganizationPage() {
-  const [error,setError]=useState(null)
-  const navigate=useNavigate()
+  const [error, setError] = useState(null);
+  const navigate = useNavigate();
   const [url, setUrl] = useState(defaultImage);
+  const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
   const [formData, setFormData] = useState({
     name: "",
@@ -28,45 +28,33 @@ function CreateOrganizationPage() {
     zip: "",
     country: "",
     bio: "",
-    image:""
+    image: "",
   });
   const [countries, setCountries] = useState([]);
   const [cities, setCities] = useState([]);
   const [currentCountry, setCurrentCountry] = useState({});
-  const response = useSelector(
-    (state) => state.organizationData
-  );
-  const handleFiles =async(files) => {
+  const response = useSelector((state) => state.organizationData);
+  const handleFiles = async (files) => {
     const imgdata = new FormData();
     imgdata.append("file", files.fileList[0]);
     imgdata.append("upload_preset", "fqje0r0l");
     imgdata.append("cloud_name", "dntzlt0mt");
+    setLoading(true);
     let imageuploaded = await imageUploadHelper(imgdata);
     formData.image = imageuploaded.url;
     setUrl(imageuploaded.url);
+    setLoading(false);
     //setUrl(files.base64);
   };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     dispatch(createOrganization(formData));
-   // navigate(-1)
-    console.log(formData);
+    setError(response?.error);
+    navigate(-1);
   };
   useEffect(() => {
-    //console.log(currentCountry);
     setCountries(Countries.getCountries());
-    console.log(response.error,'res')
-    if (response.error) {
-      console.log(response.error,'res')
-      setError(response.error);
-      
-      // navigate(0);
-    }
-     else {
-      console.log(response,'else')
-      setError(null);
-      //   // navigate(0);
-    }
   }, [response]);
 
   return (
@@ -76,13 +64,17 @@ function CreateOrganizationPage() {
         form={"createOrganization"}
       />
       <form onSubmit={handleSubmit} id={"createOrganization"}>
-        <FormImageHolder
-          handleFiles={handleFiles}
-          image={url}
-          label={"Organization Logo"}
-          subLabel={"upload a logo with minimum resoulation of 800*800px"}
-        />
-        {error&&<div>{error}</div>}
+        {loading == true ? (
+          <CircularLoader display={"left"} size={"2rem"} />
+        ) : (
+          <FormImageHolder
+            handleFiles={handleFiles}
+            image={url}
+            label={"Organization Logo"}
+            subLabel={"upload a logo with minimum resoulation of 800*800px"}
+          />
+        )}
+        {error && <div>{error}</div>}
         <FormInput
           sideLabel={"Name of Organization"}
           placeHolder={"Name of Organization"}
@@ -121,25 +113,25 @@ function CreateOrganizationPage() {
         />
 
         <FormSelect
+          defaultValue={""}
           sideLabel={"  "}
           placeHolder={"select Country"}
           items={countries}
           onChange={(e) => {
             setFormData({ ...formData, country: e.target.value });
-            //console.log(formData.country);
 
             const c = Countries.getCountries({
               filters: { name: e.target.value },
             })[0];
-            //console.log(c.iso2.toString())
+
             setCities(
               Cities.getCities({ filters: { country_code: c.iso2.toString() } })
             );
-            //console.log(c,"current country")
           }}
         />
 
         <FormSelect
+          defaultValue={""}
           sideLabel={"  "}
           placeHolder={"select City"}
           items={cities}
@@ -170,7 +162,7 @@ function CreateOrganizationPage() {
           onChange={(e) => {
             setFormData({ ...formData, repContactNo: e.target.value });
           }}
-             value={formData.repContactNo}
+          value={formData.repContactNo}
         />
       </form>
     </div>
@@ -178,3 +170,8 @@ function CreateOrganizationPage() {
 }
 
 export default CreateOrganizationPage;
+// if (response.error) {
+//   setError(response.error);
+// } else {
+//   setError(null);
+// }

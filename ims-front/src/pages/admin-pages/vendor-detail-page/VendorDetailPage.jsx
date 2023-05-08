@@ -2,45 +2,40 @@ import React from "react";
 import DetailHeader from "../../../components/shared/details-header/DetailHeader";
 import MyTables from "../../../components/shared/MyTable";
 import LabelText from "../../../components/shared/text-with-label/LabelText";
-
+import { useNavigate, useParams } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { useEffect } from "react";
+import {
+  deleteVendor,
+  getVendorRequest,
+} from "../../../redux/vendor/vendorAction";
 function VendorDetailPage() {
-  const Data = [
-    {
-      id: 1,
-      name: "zain",
-      email: "hello@gmail.com",
-      number: "923342251274",
-      department: "HR",
-    },
-
-    {
-      id: 2,
-      name: "mustafa",
-      email: "next@gmail.com",
-      number: "11111122222222",
-      department: "DEV",
-    },
-  ];
-  const header = [
-    "ID",
-    "Name",
-    "Email",
-    "Contact Number",
-    "Department",
-  ];
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(getVendorRequest(id));
+  }, [dispatch]);
+  const vendor = useSelector((state) => state.vendorData?.vendor);
   return (
     <div className="body">
-      <DetailHeader />
-      <LabelText label={"Name"} content={"john Doe"} divider />
-      <LabelText label={"Contact Number"} content={"12354628"} divider />
-      <LabelText label={"Category"} content={"Electronics"} divider />
-      <LabelText label={"Recent Orders"} />
-      <MyTables
-        data={Data}
-        tableHeaders={header}
-        createData={(Data) => {
-          return { ...Data };
+      <DetailHeader
+        editAction={"/vendor/edit/" + id}
+        deleteAction={() => {
+          dispatch(deleteVendor(id));
+          navigate(-1);
         }}
+      />
+      <LabelText label={"Name"} content={vendor?.name} divider />
+      <LabelText
+        label={"Contact Number"}
+        content={vendor?.contactNumber}
+        divider
+      />
+      <LabelText
+        label={"Category"}
+        content={vendor?.categories[0]?.parent?.name}
+        divider
       />
     </div>
   );

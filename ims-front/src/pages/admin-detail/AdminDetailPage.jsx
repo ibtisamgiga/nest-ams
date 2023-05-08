@@ -8,7 +8,9 @@ import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { deleteUser, fetchUserById } from "../../redux/users/usersAction";
 import { usersData } from "../../redux/users/usersReducer";
+import { useNavigate } from "react-router-dom";
 function AdminDetailPage() {
+  const navigate = useNavigate();
   const { id } = useParams();
   const userData = useSelector((state) => state.usersData.selectedUser);
   const [once, setOnce] = useState(false);
@@ -22,7 +24,14 @@ function AdminDetailPage() {
 
   return (
     <div className="body">
-      <DetailHeader heading={"Admin Detail"}  editAction={"/admin/edit/"+id} deleteAction={()=>dispatch(deleteUser(id))} />
+      <DetailHeader
+        heading={"Admin Detail"}
+        editAction={"/admin/edit/" + id}
+        deleteAction={() => {
+          dispatch(deleteUser(id));
+          navigate(-1);
+        }}
+      />
       <ImageText
         image={userData?.image?.image}
         name={userData?.name}

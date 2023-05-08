@@ -10,6 +10,7 @@ import { Repository } from 'typeorm';
 import { AssiginItemDto } from './dtos/assign-item.dto';
 import { CreateItemDto } from './dtos/create-item.dto';
 import { Item } from './entity/item.entity';
+import { UpdateItemDto } from './dtos/update-item.dto';
 
 @Injectable()
 export class ItemService {
@@ -27,7 +28,25 @@ export class ItemService {
     }
   }
 
-  async getItems(user: User) {
+  async getItems(user: User, type) {
+    if (type == 'Faulty') {
+      return await this.ItemRepository.find({
+        relations: ['vendor', 'category', 'category.parent', 'user'], //'vendor.categories'
+        where: {
+          category: { organizationId: user.organizationId },
+          userId: user.id,
+        },
+      });
+    }
+    if (type == 'Acquisition') {
+      return await this.ItemRepository.find({
+        relations: ['vendor', 'category', 'category.parent', 'user'], //'vendor.categories'
+        where: {
+          category: { organizationId: user.organizationId },
+          assigned_to: false,
+        },
+      });
+    }
     return await this.ItemRepository.find({
       relations: ['vendor', 'category', 'category.parent', 'user'], //'vendor.categories'
       where: { category: { organizationId: user.organizationId } },
@@ -55,7 +74,7 @@ export class ItemService {
   }
 
   async assiginItem(id: number, attrs: AssiginItemDto, currentUser: User) {
-    let newDate = new Date()
+    let newDate = new Date();
     const { userId } = attrs;
     const item = await this.ItemRepository.findOne({
       relations: ['vendor', 'category', 'category.parent'], //'vendor.categories'
@@ -66,8 +85,8 @@ export class ItemService {
     }
     item.userId = userId;
     item.assigned_to = true;
-    item.assigned_by=currentUser.name
-    item.assigined_at=newDate
+    item.assigned_by = currentUser.name;
+    item.assigined_at = newDate;
     return {
       user: await this.ItemRepository.save(item),
       message: 'item assigned',
@@ -91,16 +110,24 @@ export class ItemService {
   }
 
   async getCount(currentUser: User) {
+    const role = currentUser.rolesId == 1 ? 2 : 3;
+
     const monthlyCount = await this.ItemRepository.createQueryBuilder('item')
-      .select(
-        "To_CHAR(TO_DATE(EXTRACT(MONTH FROM DATE_TRUNC('month',item.created_at))::text,'MM'),'Mon')AS month,t3.name as cat,count(*),item.assigned_to as assignedTo",
+      .select('category.name As category')
+      .addSelect(
+        'COUNT(CASE WHEN item.assigned_to is true THEN 1 ELSE NULL END)',
+        'Assigned',
       )
-      .innerJoin(Category, 't2', 't2.id = item.categoryId') //INNER JOIN table2 t2 ON t1.id = t2.id
-      .innerJoin(Category, 't3', 't3.id = t2.parentId')
-      .where('t2.organizationId= :organizationId', {
-        organizationId: currentUser.organizationId,
-      }) //"user.rolesId = :rolesId", { rolesId: 2 }
-      .groupBy('cat,month,assignedTo')
+      .addSelect(
+        'COUNT(CASE WHEN item.assigned_to is false THEN 1 ELSE NULL END)',
+        'Unassigned',
+      )
+      .innerJoin('item.category', 'subCategory')
+      .innerJoin('subCategory.parent', 'category')
+      .innerJoin('category.organization', 'org')
+      .where(`org.id= ${currentUser.organizationId}`)
+      .groupBy('category.name')
+      .orderBy('COUNT(item.assigned_to)', 'ASC')
       .getRawMany();
 
     const currentCount = await this.ItemRepository.createQueryBuilder('item')
@@ -118,6 +145,25 @@ export class ItemService {
       )
       .groupBy('month')
       .getRawOne();
-    return { monthlyCount, currentCount };
+
+    const total = await this.ItemRepository.count({
+      relations: ['category', 'category.organization'],
+      where: { category: { organizationId: currentUser.organizationId } },
+    });
+    return { monthlyCount, currentCount, total };
+  }
+
+  async updateItem(id: number, attrs: UpdateItemDto, currentUser: User) {
+    //  const role = currentUser.roles.role == 'superadmin' ? 'admin' : 'employee';
+    const item = await this.ItemRepository.findOneBy({ id });
+    if (!item) {
+      throw new NotFoundException('Item Not Found');
+    }
+
+    Object.assign(item, attrs);
+    return {
+      item: await this.ItemRepository.save(item),
+      message: 'item Updated',
+    };
   }
 }

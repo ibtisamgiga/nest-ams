@@ -8,6 +8,7 @@ import departmentSaga from "./departments/departmentSaga";
 import categorySaga from "./category/categorySaga";
 import vendorSaga from "./vendor/vendorSaga";
 import requestSaga from "./request/requestSaga";
+import otpSaga from "./otp/otpSaga";
 export default function * rootSaga(){
     yield fork(userSaga)
     yield fork(organizationSaga)
@@ -18,4 +19,5 @@ export default function * rootSaga(){
     yield fork(categorySaga)
     yield fork(requestSaga)
     yield fork(vendorSaga)
+    yield fork(otpSaga)
 }

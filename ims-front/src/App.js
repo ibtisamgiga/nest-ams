@@ -19,7 +19,6 @@ function App() {
   // };
 
   const data = useSelector((state)=>state.userData)//{ name: "ali", role: "employee" };
-  
   useEffect(()=>{
     //console.log(data.token,'user')
   },[data])

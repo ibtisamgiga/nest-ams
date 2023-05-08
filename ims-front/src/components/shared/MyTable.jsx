@@ -12,7 +12,7 @@ import Avatar from "@mui/material/Avatar";
 import { useTheme, useMediaQuery } from "@mui/material";
 import { Link } from "react-router-dom";
 import { useState } from "react";
-export default function MyTables({ data, createData, tableHeaders, routes}) {
+export default function MyTables({ data, createData, tableHeaders, routes,query}) {
   const theme = useTheme();
   const isMatch = useMediaQuery(theme.breakpoints.down("md"));
   const style = isMatch
@@ -109,7 +109,7 @@ export default function MyTables({ data, createData, tableHeaders, routes}) {
 
                 {routes ? (
                   <StyledTableCell align="center">
-                    <Link to={routes + "/" + row.id}>view</Link>
+                    <Link to={routes + "/" + row.id+query}>view</Link>
                   </StyledTableCell>
                 ) : null}
               </StyledTableRow>
@@ -126,4 +126,7 @@ export default function MyTables({ data, createData, tableHeaders, routes}) {
       />
     </TableContainer>
   );
+}
+MyTables.defaultProps={
+  query:""
 }

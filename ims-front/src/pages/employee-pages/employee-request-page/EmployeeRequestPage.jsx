@@ -1,50 +1,34 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import SearchField from "../../../components/shared/SearchField";
 import SelectField from "../../../components/shared/SelectField";
 import MyTables from "../../../components/shared/MyTable";
 import StartIconButton from "../../../components/shared/StartIconButton";
 import { useTheme, useMediaQuery } from "@mui/material";
+import { useDispatch, useSelector } from "react-redux";
+import { getRequestsRequest } from "../../../redux/request/requestAction";
 function EmployeeRequestPage() {
-  const Data = [
-    {
-      id: 1,
-      name: "mouse",
-      description: "lorem ispsum lorem ispsum lorem ispsum lorem ispsum",
-      category: "electronics",
-      subCategory: "MOUSE",
-      price: 1234,
-    },
+  
+  const tableData = useSelector((state) => state.requestData?.requests);
 
-    {
-      id: 2,
-      name: "chair",
-      description: "lorem ispsum lorem ispsum lorem ispsum lorem ispsum",
-      category: "furniture",
-      subCategory: "CHAIR",
-      price: 127,
-    },
-    {
-      id: 3,
-      name: "head-phone",
-      description: "lorem ispsum lorem ispsum lorem ispsum lorem ispsum",
-      category: "electronics",
-      subCategory: "Wearables",
-      price: 4000,
-    },
-  ];
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(getRequestsRequest(null));
+  }, [dispatch]);
+
   const header = [
     "ID",
     "Item Name",
-    "Description",
     "Category",
     "Sub-category",
-    "Price",
+    "Type",
+    "Date",
+    "Status",
     "Action",
   ];
 
   const theme = useTheme();
   const isMatch = useMediaQuery(theme.breakpoints.down("md"));
-
 
   return (
     <div className="body">
@@ -52,11 +36,16 @@ function EmployeeRequestPage() {
         <div>
           <h1>Requests</h1>
         </div>
-        
-        <StartIconButton title={"create Request"} width={11} to={"/request/create"} />
+
+        <StartIconButton
+          title={isMatch?"create":"create Request"}
+          width={isMatch?6:11}
+          noIcon={isMatch?true:false}
+          to={"/request/create"}
+        />
       </div>
       <MyTables
-        data={Data}
+        data={tableData}
         tableHeaders={header}
         createData={(Data) => {
           return { ...Data };

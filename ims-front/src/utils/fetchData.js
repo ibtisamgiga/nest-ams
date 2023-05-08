@@ -2,7 +2,6 @@
 import { getFromLocalStorage } from "./localStorageHelper";
 
 const fetchData = (method, body, endpoint) => {
-  console.log(getFromLocalStorage()?.token,'token')
   if (!body) {
     return fetch(`${endpoint}`, {
       method: method,

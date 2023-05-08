@@ -16,6 +16,9 @@ function* siginIn({data}) {
    };
 }
 
+
+
+
 function* userSaga() {
   yield takeLatest(SIGIN_IN, siginIn);
   //   yield takeEvery(EVENT_LIST, getEvents);

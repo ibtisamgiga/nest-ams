@@ -7,7 +7,7 @@ import {
   DELETE_USER,
   GET_USERS_COUNT_FAILURE,
   GET_USERS_COUNT_SUCCESS,
-  GET_USERS_COUNT
+  GET_USERS_COUNT,
 } from "../constants";
 import {
   fetchUserListSuccess,
@@ -20,15 +20,16 @@ import {
   updateUserError,
   deleteUserSuccess,
   deleteUserError,
-  getUsersCountFailure,getUsersCountSuccess
+  getUsersCountFailure,
+  getUsersCountSuccess,
 } from "./usersAction";
 import fetchData from "../../utils/fetchData";
 
 function* fetchUserListSaga() {
   try {
-    const users=yield fetchData("GET",null,"http://localhost:5000/users") //yield call(api.get, '/users');
-    //console.log(response)
-      yield put(fetchUserListSuccess(users));
+    const users = yield fetchData("GET", null, "http://localhost:5000/users"); //yield call(api.get, '/users');
+
+    yield put(fetchUserListSuccess(users));
   } catch (error) {
     yield put(fetchUserListError(error));
   }
@@ -37,7 +38,11 @@ function* fetchUserListSaga() {
 function* fetchUserByIdSaga(action) {
   const { id } = action.payload;
   try {
-    const user=yield fetchData("GET",null,`http://localhost:5000/users/${id}`) 
+    const user = yield fetchData(
+      "GET",
+      null,
+      `http://localhost:5000/users/${id}`
+    );
     yield put(fetchUserByIdSuccess(user));
   } catch (error) {
     yield put(fetchUserByIdError(error));
@@ -45,12 +50,12 @@ function* fetchUserByIdSaga(action) {
 }
 function* getCount() {
   try {
-    const count= yield fetchData(
+    const count = yield fetchData(
       "GET",
       null,
       "http://localhost:5000/users/count"
     ); // call your API method here
-    console.log(count,'saga')
+
     yield put(getUsersCountSuccess(count)); // dispatch action to update Redux store with retrieved organizations
   } catch (error) {
     yield put(getUsersCountFailure(error)); // dispatch action to update Redux store with error
@@ -64,8 +69,7 @@ function* createUserSaga(action) {
       "POST",
       body,
       `http://localhost:5000/users/signup`
-    );//call(api.post, '/users', user);
-    console.log(user)
+    );
     yield put(createUserSuccess(user));
   } catch (error) {
     yield put(createUserError(error));
@@ -73,30 +77,31 @@ function* createUserSaga(action) {
 }
 
 function* updateUserSaga(action) {
-  const { body,id} = action.payload;
-  console.log(body)
-  try {
-    const user = yield fetchData(
-      "PATCH",
-      body,
-      `http://localhost:5000/users/${id}`
-    );
-    console.log(user)
-    yield put(updateUserSuccess(user));
-  } catch (error) {
-    yield put(updateUserError(error));
+  const { body, id } = action.payload;
+
+  const user = yield fetchData(
+    "PATCH",
+    body,
+    `http://localhost:5000/users/${id}`
+  );
+
+  if (user.statusCode == 400) {
+    yield put(updateUserError(user.message));
   }
+  yield put(updateUserSuccess(user));
 }
 
 function* deleteUserSaga(action) {
   const { id } = action.payload;
   try {
-   const response= yield fetchData("DELETE", null, `http://localhost:5000/users/${id}`); //call(api.delete, /users/${id});
+    const response = yield fetchData(
+      "DELETE",
+      null,
+      `http://localhost:5000/users/${id}`
+    ); //call(api.delete, /users/${id});
 
     yield put(deleteUserSuccess(id));
-    console.log(response)
   } catch (error) {
-    console.log(error,'erroe')
     yield put(deleteUserError(error.message));
   }
 }
@@ -107,5 +112,5 @@ export default function* usersSaga() {
   yield takeLatest(CREATE_USER, createUserSaga);
   yield takeLatest(UPDATE_USER, updateUserSaga);
   yield takeLatest(DELETE_USER, deleteUserSaga);
-  yield takeLatest(GET_USERS_COUNT,getCount)
+  yield takeLatest(GET_USERS_COUNT, getCount);
 }

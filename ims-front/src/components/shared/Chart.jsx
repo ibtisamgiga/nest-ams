@@ -9,25 +9,25 @@ import {
   Legend,
 } from "recharts";
 
-const Chart = ({ data, multi,dataKeyX,dataKeyY }) => {
+const Chart = ({ data, multi,dataKeyX,dataKeyY,dataKeyY2 }) => {
   return (
     <ResponsiveContainer width={"100%"} height={"100%"}>
       {multi ? (
         <BarChart data={data}>
-          <XAxis dataKey="name" />
+          <XAxis dataKey={dataKeyX} />
           <YAxis />
           <Tooltip />
           <Legend />
           <Bar
             barSize={60}
             margin={{ bottom: 20 }}
-            dataKey="pv"
+            dataKey={dataKeyY}
             fill="#5184ec"
           />
           <Bar
             barSize={60}
             margin={{ bottom: 20 }}
-            dataKey="uv"
+            dataKey={dataKeyY2 }
             fill="#2ab38e"
           />
         </BarChart>

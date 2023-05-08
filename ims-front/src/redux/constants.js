@@ -1,6 +1,14 @@
 export const SIGIN_IN = "SIGIN_IN";
 export const SET_USER = "SET_USER";
 export const SET_ERROR = "SET_ERROR";
+export const SEND_OTP = "SEND_OTP";
+export const  SET_OTP_ERROR="SET_OTP_ERROR"
+export const  SET_OTP="SET_OTP"
+
+export const SEND_PASSWORD = "SEND_PASSWORD";
+export const  SET_PASSWORD_ERROR="SET_PASSWORD_ERROR"
+export const  SET_PASSWORD="SET_PASSWORD"
+
 export const SET_ORGANIZATION_LIST = "SET_ORGANIZATION_LIST";
 export const ORGANIZATION_LIST = "ORGANIZATION_LIST";
 /***********LOGIN ACTIONS*********************/
@@ -33,6 +41,8 @@ export const GET_ORGANIZATIONS_COUNT_SUCCESS =
 export const GET_ORGANIZATIONS_COUNT_FAILURE =
   " GET_ORGANIZATIONS_COUNT_FAILURE";
 export const GET_ORGANIZATIONS_COUNT = "GET_ORGANIZATIONS_COUNT";
+
+export const GET_ORGANIZATIONS_SEARCH="GET_ORGANIZATIONS_SEARCH"
 
 /****************************USERS----CONSTANTS******************************************************/
 export const FETCH_USER_LIST = "FETCH_USER_LIST";
@@ -152,6 +162,9 @@ export const GET_CATEGORIES_COUNT_SUCCESS = "GET_CATEGORIES_COUNT_SUCCESS";
 export const GET_CATEGORIES_COUNT_FAILURE = " GET_CATEGORIES_COUNT_FAILURE";
 export const GET_CATEGORIES_COUNT = "GET_CATEGORIES_COUNT";
 
+export const GET_CATEGORIES_DETAIL_REQUEST = "GET_CATEGORIES_DETAIL_REQUEST";
+export const GET_CATEGORIES_DETAIL_SUCCESS = "GET_CATEGORIES_DETAIL_SUCCESS";
+export const GET_CATEGORIES_DETAIL_FAILURE = "GET_CATEGORIES_DETAIL_FAILURE";
 
 /***********************************************REQUEST_CONSTATNTS***********************************/
 

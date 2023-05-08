@@ -38,7 +38,6 @@ export class ComplaintService {
       }
       return await this.ComplaintRepository.save(compalint);
     } catch (error) {
-      console.log(error);
       throw new InternalServerErrorException();
     }
   }
@@ -58,9 +57,9 @@ export class ComplaintService {
     if (user.roles.role == 'admin') {
       return { compalints, myCompalints };
     } else if (user.roles.role == 'employee') {
-      return {myCompalints};
+      return { compalints: myCompalints };
     }
-    return {compalints};
+    return { compalints };
   }
 
   async getComplaintById(id: number, user: User) {
@@ -95,16 +94,32 @@ export class ComplaintService {
           'AND user.organizationId = ' +
           currentUser.organizationId;
 
-    const monthlyCount = await this.ComplaintRepository.createQueryBuilder(
-      'complaint',
-    )
-      .select(
-        "To_CHAR(TO_DATE(EXTRACT(MONTH FROM DATE_TRUNC('month',complaint.created_at))::text,'MM'),'Mon')AS month,status,count(*):: int",
-      )
-      .innerJoin(User, 'user', 'user.id= complaint.userId')
-      .where(where) //"user.rolesId = :rolesId", { rolesId: 2 }
-      .groupBy('status,month')
-      .getRawMany();
+    const monthlyCount =
+      currentUser.roles.role == 'superadmin'
+        ? await this.ComplaintRepository.createQueryBuilder('complaint')
+            .select(
+              "To_CHAR(TO_DATE(EXTRACT(MONTH FROM DATE_TRUNC('month',complaint.created_at))::text,'MM'),'Mon')AS month,status,count(*):: int",
+            )
+            .innerJoin(User, 'user', 'user.id= complaint.userId')
+            .where(where) //"user.rolesId = :rolesId", { rolesId: 2 }
+            .groupBy('status,month')
+            .getRawMany()
+        : await this.ComplaintRepository.createQueryBuilder('complaint')
+            .select(
+              "TO_CHAR(TO_DATE(EXTRACT(Month from complaint.created_at)::text, 'MM'), 'Mon') AS month",
+            )
+            .addSelect(
+              "COUNT(CASE WHEN complaint.status = 'Pending' THEN 1 ELSE NULL END)",
+              'Pending',
+            )
+            .addSelect(
+              "COUNT(CASE WHEN complaint.status = 'Resolved' THEN 1 ELSE NULL END)",
+              'Resolved',
+            )
+            .innerJoin(User, 'user', 'user.id = complaint.userId')
+            .where(where)
+            .groupBy('month')
+            .getRawMany();
 
     const currentMonth = await this.ComplaintRepository.createQueryBuilder(
       'complaint',
@@ -126,7 +141,7 @@ export class ComplaintService {
       .where(where) //"user.rolesId = :rolesId", { rolesId: 2 }
       .groupBy('status')
       .getRawMany();
- 
+
     const currentMonthData =
       currentMonth.length == 1
         ? currentMonth[0].status == 'Resolved'
@@ -136,6 +151,7 @@ export class ComplaintService {
             Pending: currentMonth[0]?.count,
             Resolved: currentMonth[1]?.count,
           };
+
     const totalData =
       total.length == 1
         ? total[0].status == 'Resolved'
@@ -145,7 +161,7 @@ export class ComplaintService {
             Pending: total[0]?.count,
             Resolved: total[1]?.count,
           };
-  
+
     return {
       monthlyCount,
       currentMonth: currentMonthData,

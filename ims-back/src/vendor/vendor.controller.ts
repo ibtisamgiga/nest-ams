@@ -1,7 +1,16 @@
-import { Body, Controller, Delete, Get, Param, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { GetUser } from 'src/user/decorators/get-user.decorator';
-import { Role} from 'src/user/decorators/user-role.decorator';
+import { Role } from 'src/user/decorators/user-role.decorator';
 import { User } from 'src/user/entity/user.entity';
 import { Roles } from 'src/user/enums/roles.enum';
 import { RolesGuard } from 'src/user/guards/role.gaurd';
@@ -9,6 +18,7 @@ import { CreateVendorDto } from './dtos/create-vendor.dto';
 import { VendorService } from './vendor.service';
 import { Serialize } from 'src/interceptors/serialize.interceptor';
 import { GetVendorsDto } from './dtos/get-vendors.dto';
+import { UpdateVendorDto } from './dtos/update-vendor.dto';
 
 @Controller('vendor')
 export class VendorController {
@@ -18,15 +28,15 @@ export class VendorController {
   @Role(Roles.Admin)
   @UseGuards(AuthGuard(), RolesGuard)
   createVendor(@Body() vendorData: CreateVendorDto) {
-   return this.vendorService.createVendor(vendorData)
+    return this.vendorService.createVendor(vendorData);
   }
 
   @Get()
   @Role(Roles.Admin)
   @UseGuards(AuthGuard(), RolesGuard)
   @Serialize(GetVendorsDto)
-  getVendors(@GetUser()user:User){
-    return this.vendorService.getVendors(user)
+  getVendors(@GetUser() user: User) {
+    return this.vendorService.getVendors(user);
   }
   @Get('count')
   @Role(Roles.Admin)
@@ -38,13 +48,22 @@ export class VendorController {
   @Role(Roles.Admin)
   @UseGuards(AuthGuard(), RolesGuard)
   getVendor(@Param('id') id: string, @GetUser() user: User) {
-    return this.vendorService.getVendor(+id,user);
+    return this.vendorService.getVendor(+id, user);
   }
-
+  @Patch(':id')
+  @Role(Roles.Admin)
+  @UseGuards(AuthGuard(), RolesGuard)
+  async update(
+    @Param('id') id: string,
+    @Body() body: UpdateVendorDto,
+    @GetUser() user: User,
+  ) {
+    return this.vendorService.updateVendor(+id, body, user);
+  }
   @Delete(':id')
   @Role(Roles.Admin)
   @UseGuards(AuthGuard(), RolesGuard)
   deleteVendor(@Param('id') id: string, @GetUser() user: User) {
-    return this.vendorService.deleteVendor(+id,user);
+    return this.vendorService.deleteVendor(+id, user);
   }
 }

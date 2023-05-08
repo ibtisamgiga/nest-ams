@@ -9,7 +9,10 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { RoleSerialize, Serialize } from 'src/interceptors/serialize.interceptor';
+import {
+  RoleSerialize,
+  Serialize,
+} from 'src/interceptors/serialize.interceptor';
 import { GetUser } from 'src/user/decorators/get-user.decorator';
 import { Role } from 'src/user/decorators/user-role.decorator';
 import { User } from 'src/user/entity/user.entity';
@@ -31,15 +34,14 @@ export class ComplaintController {
     @Body() createComplaintDto: CreateCompalintDto,
     @GetUser() user: User,
   ) {
-    console.log(createComplaintDto)
     return this.complaintService.createCompliant(createComplaintDto, user);
   }
 
   @Get()
- @Role(Roles.SuperAdmin, Roles.Admin, Roles.Employee)
+  @Role(Roles.SuperAdmin, Roles.Admin, Roles.Employee)
   @UseGuards(AuthGuard(), RolesGuard)
- @RoleSerialize(GetComplaintsDto,GetAdminsComplaintsDto,Roles.Admin)
- //@Serialize(GetComplaintsDto)
+  @RoleSerialize(GetComplaintsDto, GetAdminsComplaintsDto, Roles.Admin)
+  //@Serialize(GetComplaintsDto)
   getComplaints(@GetUser() user: User) {
     return this.complaintService.getComplaints(user);
   }
@@ -57,7 +59,7 @@ export class ComplaintController {
     return this.complaintService.getComplaintById(id, user);
   }
   @Put('/:id')
-  @Role(Roles.SuperAdmin,Roles.Admin)
+  @Role(Roles.SuperAdmin, Roles.Admin)
   @UseGuards(AuthGuard(), RolesGuard)
   updateComplaintStatus(
     @Param('id', ParseIntPipe) id,

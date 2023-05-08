@@ -8,32 +8,12 @@ import { useTheme, useMediaQuery } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
 import { fetchUserList } from "../../../redux/users/usersAction";
+import search from "../../../utils/search";
+import { getDepartmentsRequest } from "../../../redux/departments/departmentAction";
+import extractValue from "../../../utils/objectValueExtractor";
+import CircularLoader from "../../../components/shared/circular-loader/CircularLoader";
 
 function EmployeePage() {
-  // const Data = [
-  //   {
-  //     id: 1,
-  //     name: "zain",
-  //     email: "hello@gmail.com",
-  //     number: "923342251274",
-  //     department: "HR",
-  //   },
-
-  //   {
-  //     id: 2,
-  //     name: "mustafa",
-  //     email: "next@gmail.com",
-  //     number: "11111122222222",
-  //     department: "DEV",
-  //   },
-  //   {
-  //     id: 3,
-  //     name: "Ali",
-  //     email: "next@gmail.com",
-  //     number: "11111122222222",
-  //     department: "QA",
-  //   },
-  // ];
   const header = [
     "ID",
     "Name",
@@ -43,35 +23,21 @@ function EmployeePage() {
     "Action",
   ];
 
-  const Data = useSelector((state) => state.usersData.userList);
-  const [once, setOnce] = useState(false);
+  const tableData = useSelector((state) => state.usersData.userList);
+  const departments = useSelector((state) => state.departmentData.departments);
   const dispatch = useDispatch();
   const theme = useTheme();
   const isMatch = useMediaQuery(theme.breakpoints.down("md"));
-  const [filteredData, setFilteredData] = useState(Data);
+  const [filteredData, setFilteredData] = useState(null);
   const [searchText, setSearchText] = useState("");
-
+  const result = extractValue(departments, "name");
   useEffect(() => {
     dispatch(fetchUserList());
-    console.log(Data)
+    dispatch(getDepartmentsRequest());
   }, [dispatch]);
 
-
   const handleSearch = (event) => {
-    setSearchText(event.target.value);
-    const filteredRows = Data.filter((row) => {
-      let shouldInclude = false;
-      Object.values(row).forEach((value) => {
-        if (
-          typeof value === "string" &&
-          value.toLowerCase().includes(event.target.value.toLowerCase())
-        ) {
-          shouldInclude = true;
-        }
-      });
-      return shouldInclude;
-    });
-    setFilteredData(filteredRows);
+    setFilteredData(search(event, tableData, setSearchText));
   };
 
   return (
@@ -83,19 +49,23 @@ function EmployeePage() {
         <SearchField setSearchData={handleSearch} />
         <SelectField
           fieldName={"Departments"}
-          items={["HR", "DEV", "QA"]}
+          items={result}
           handleSelect={handleSearch}
         />
         <StartIconButton title={"add"} to="/employee/create" />
       </div>
-      <MyTables
-        data={filteredData}
-        tableHeaders={header}
-        createData={(Data) => {
-          return { ...Data };
-        }}
-        routes={"/employee/detail"}
-      />
+      {tableData.length != 0 ? (
+        <MyTables
+          data={filteredData ? filteredData : tableData}
+          tableHeaders={header}
+          createData={(Data) => {
+            return { ...Data };
+          }}
+          routes={"/employee/detail"}
+        />
+      ) : (
+        <CircularLoader />
+      )}
     </div>
   );
 }

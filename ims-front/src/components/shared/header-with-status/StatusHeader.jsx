@@ -6,7 +6,7 @@ import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 import { useNavigate } from "react-router-dom";
 import { useTheme, useMediaQuery } from "@mui/material";
 
-function StatusHeader({ label, heading, status, date,reject ,nobutton,markResolveAction}) {
+function StatusHeader({ label, heading, status, date,reject ,nobutton,markResolveAction,rejectAction,markText}) {
   const navigate = useNavigate();
   const theme = useTheme();
   const isMatch = useMediaQuery(theme.breakpoints.down("md"));
@@ -66,7 +66,7 @@ function StatusHeader({ label, heading, status, date,reject ,nobutton,markResolv
               "&:hover": { backgroundColor: "#2ab38e" },
             }}
           >
-            Mark as Resolved
+           {markText}
           </Button>}
           {reject && (
             <Button
@@ -78,7 +78,9 @@ function StatusHeader({ label, heading, status, date,reject ,nobutton,markResolv
                 borderRadius: "15px",
                 marginLeft: "10px",
                 "&:hover": { backgroundColor: "red" },
+              
               }}
+              onClick={rejectAction}
             >
               {reject}
             </Button>
@@ -91,3 +93,7 @@ function StatusHeader({ label, heading, status, date,reject ,nobutton,markResolv
 }
 
 export default StatusHeader;
+
+StatusHeader.defaultProps={
+ markText: "Mark as Resolved"
+}

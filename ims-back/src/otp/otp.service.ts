@@ -47,7 +47,8 @@ export class OtpService {
     };
     const otp = this.otpRepository.create(otpData);
     try {
-      await this.mailService.sendMail(emailBody);
+     await this.mailService.sendMail(emailBody);
+     
       //sendgrid.send(emailBody)
       return await this.otpRepository.save(otp);
     } catch (error) {

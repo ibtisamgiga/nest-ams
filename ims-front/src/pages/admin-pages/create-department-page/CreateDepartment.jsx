@@ -5,6 +5,7 @@ import FormInput from "../../../components/shared/form-input/FormInput";
 import FormSelect from "../../../components/shared/form-select/FormSelect";
 import { useDispatch, useSelector } from "react-redux";
 import { createDepartment } from "../../../redux/departments/departmentAction";
+import { useNavigate } from "react-router-dom";
 function CreateDepartmentPage() {
   const [formData, setFormData] = useState({
     name: "",
@@ -12,11 +13,12 @@ function CreateDepartmentPage() {
     email: "",
   });
   const dispatch = useDispatch();
-
+const navigate=useNavigate()
   const handleSubmit = async (e) => {
     e.preventDefault();
     dispatch(createDepartment(formData));
-    console.log(formData);
+    navigate(-1)
+    
   };
   const response = useSelector((state) => state.departmentData);
   useEffect(() => {}, [response]);

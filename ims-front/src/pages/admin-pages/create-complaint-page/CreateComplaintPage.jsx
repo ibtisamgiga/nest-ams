@@ -9,19 +9,30 @@ import FormImageHolder from "../../../components/shared/form-image/FormImageHold
 import Divider from "@mui/material/Divider";
 import FormInput from "../../../components/shared/form-input/FormInput";
 import FormSelect from "../../../components/shared/form-select/FormSelect";
+import imageUploadHelper from "../../../utils/imageUpload";
+import { useDispatch } from "react-redux";
+import { createComplaint } from "../../../redux/complaints/complaintAction";
 function CreateComplaintPage() {
   const [url, setUrl] = useState(defaultImage);
+  const dispatch=useDispatch()
   const [formData, setFormData] = useState({
-    images: "",
-    description: "",
-    title: "",
+    images: [],
+    description: ""
   });
-  const handleFiles = (files) => {
-    // console.log(files.base64,'hello');
-    setUrl(files.base64);
+  const handleFiles =async(files) => {
+    const imgdata = new FormData();
+    imgdata.append("file", files.fileList[0]);
+    imgdata.append("upload_preset", "fqje0r0l");
+    imgdata.append("cloud_name", "dntzlt0mt");
+    let imageuploaded = await imageUploadHelper(imgdata);
+    formData.images.push(imageuploaded.url)
+    //formData.image = imageuploaded.url;
+    setUrl(imageuploaded.url);
+    //setUrl(files.base64);
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
+    dispatch(createComplaint(formData))
     console.log(formData);
   };
 
@@ -34,9 +45,9 @@ function CreateComplaintPage() {
           placeHolder={"Description..."}
           multiLine={true}
           onChange={(e) => {
-            setFormData({ ...formData, name: e.target.value });
+            setFormData({ ...formData, description: e.target.value });
           }}
-          value={formData.name}
+          value={formData.description}
         />
        
 

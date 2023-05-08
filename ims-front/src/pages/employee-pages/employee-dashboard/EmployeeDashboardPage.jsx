@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useTheme, useMediaQuery, Divider, Typography } from "@mui/material";
 import "./employee-dashboard.css";
 import StartIconButton from "../../../components/shared/StartIconButton";
@@ -6,7 +6,11 @@ import UserDetails from "../../../components/shared/user-detail-component/UserDe
 import { Link } from "react-router-dom";
 import ExpandTables from "../../../components/shared/expand-tables/ExpandTables";
 import MyTables from "../../../components/shared/MyTable";
-function EmployeeDashboardPage({handleChange}) {
+import { useDispatch, useSelector } from "react-redux";
+import { fetchUserById } from "../../../redux/users/usersAction";
+import { getRequestsRequest } from "../../../redux/request/requestAction";
+import { getComplaintsRequest } from "../../../redux/complaints/complaintAction";
+function EmployeeDashboardPage({ handleChange }) {
   const Data = [
     {
       id: 1,
@@ -47,9 +51,27 @@ function EmployeeDashboardPage({handleChange}) {
     "Status",
     "Action",
   ];
-
+  const compHeader = [
+    "ID",
+    "Title",
+    "Description",
+    "Submission Date",
+    "Status",
+    "Action",
+  ];
   const theme = useTheme();
   const isMatch = useMediaQuery(theme.breakpoints.down("md"));
+  const logIn = useSelector((state) => state.userData); //{ name: "ali", role: "employee" };
+  const id = logIn.token.id;
+  const userData = useSelector((state) => state.usersData.selectedUser);
+  const requestData = useSelector((state) => state.requestData?.requests);
+  const complaintData = useSelector((state) => state.complaintData.complaints);
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(fetchUserById(id));
+    dispatch(getRequestsRequest(null));
+    dispatch(getComplaintsRequest());
+  }, [dispatch]);
 
   return (
     <div className="body">
@@ -60,17 +82,27 @@ function EmployeeDashboardPage({handleChange}) {
         </div>
 
         <StartIconButton
-          title={"Edit Profile"}
+          title={isMatch ? "Edit" : "Edit Profile"}
           width={8}
           editIcon={true}
           to={"/employee/edit"}
         />
       </div>
-      <UserDetails />
+      <UserDetails
+        image={userData?.image?.image}
+        name={userData?.name}
+        email={userData?.email}
+        number={userData?.contactNo}
+        totalExp={userData?.totalExp}
+        companyExp={userData?.compExp}
+        education={userData?.education}
+        department={userData?.department}
+        desiganation={userData?.designation}
+      />
       <Divider sx={{ borderBottomWidth: 2, marginTop: "20px" }} />
       <ExpandTables heading={"Recent Requests"} to={"/requests"} />
       <MyTables
-        data={Data}
+        data={requestData}
         tableHeaders={header}
         createData={(Data) => {
           return { ...Data };
@@ -79,12 +111,12 @@ function EmployeeDashboardPage({handleChange}) {
       />
       <ExpandTables heading={"Recent Complaints"} to={"/complaints"} />
       <MyTables
-        data={Data}
-        tableHeaders={header}
+        data={complaintData}
+        tableHeaders={compHeader}
         createData={(Data) => {
           return { ...Data };
         }}
-        routes={"/request/detail"}
+        routes={"/complaints/detail"}
       />
     </div>
   );

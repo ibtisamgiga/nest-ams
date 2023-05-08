@@ -7,20 +7,22 @@ import { useDispatch, useSelector } from "react-redux";
 import { getCategoriesRequest } from "../../../redux/category/categoryAction";
 import { SignalCellularNullSharp } from "@mui/icons-material";
 import { createItem } from "../../../redux/item/itemAction";
+import { useNavigate } from "react-router-dom";
 function CreateItemPage() {
   const dispatch = useDispatch();
 
   const categories = useSelector((state) => state.categoryData.categories);
-
+const navigate=useNavigate()
   const cat = categories.filter((obj) => obj.parent === null);
   const [current, setCurrent] = useState(cat[0]); //cat.filter(obj => obj.parent === null);
-  const [currSubCat,setCurrSubCat]=useState(cat[0]?.children[0]?cat[0]?.children[0]:[{}])
+  const [currSubCat, setCurrSubCat] = useState(
+    cat[0]?.children[0] ? cat[0]?.children[0] : [{}]
+  );
   useEffect(() => {
     dispatch(getCategoriesRequest());
     //setCurrent(cat[0]);
   }, [dispatch]);
 
- 
   const [formData, setFormData] = useState({
     name: "",
     serialNumber: "",
@@ -31,11 +33,10 @@ function CreateItemPage() {
   });
   const handleSubmit = async (e) => {
     e.preventDefault();
-    dispatch(createItem(formData))
-    console.log(formData);
+    dispatch(createItem(formData));
+    navigate(-1)
   };
 
-  console.log(cat, "categories");
   return (
     <div className="body">
       <FormHeader heading={""} form={"createItem"} />
@@ -69,6 +70,7 @@ function CreateItemPage() {
         />
         <Divider sx={{ borderBottomWidth: 4, marginTop: "20px" }} />
         <FormSelect
+          defaultValue={""}
           sideLabel={"Select Category "}
           placeHolder={"select Category"}
           items={cat}
@@ -79,13 +81,16 @@ function CreateItemPage() {
           }}
         />
         <FormSelect
+          defaultValue={""}
           sideLabel={"Select Sub-Category "}
           placeHolder={"select Sub-Category"}
-          items={current?.children}//current[0]?.children
+          items={current?.children} //current[0]?.children
           keyId={1}
           onChange={(e) => {
             setFormData({ ...formData, categoryId: e.target.value });
-            setCurrSubCat(...current.children.filter((obj) => obj.id == e.target.value));
+            setCurrSubCat(
+              ...current.children.filter((obj) => obj.id == e.target.value)
+            );
           }}
         />
         <Divider sx={{ borderBottomWidth: 4, marginTop: "20px" }} />
@@ -99,9 +104,10 @@ function CreateItemPage() {
         />
         <Divider sx={{ borderBottomWidth: 4, marginTop: "20px" }} />
         <FormSelect
+          defaultValue={""}
           sideLabel={"Select Vendor  "}
           placeHolder={"select Vendor"}
-          items={currSubCat.vendors.length==0?[]:currSubCat.vendors}
+          items={currSubCat.vendors.length == 0 ? [] : currSubCat.vendors}
           keyId={1}
           onChange={(e) => {
             setFormData({ ...formData, vendorId: e.target.value });

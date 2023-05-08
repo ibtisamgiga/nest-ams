@@ -4,49 +4,22 @@ import { Expose, Transform } from 'class-transformer';
 import { IsIn, IsNotEmpty, IsNumber, IsOptional } from 'class-validator';
 
 export class GetComplaintsDto {
-  // @Transform(({ obj }) => obj.id)
-  // @Expose()
-  // @IsNumber()
-  // id: number;
-
-  // @Transform(({ obj }) =>  obj.user.name)
-  // @Expose()
-  // name: string
-
-
-  // @Transform(({ obj }) =>   obj.user.organization.name)
-  // @Expose()
-  // organizationName:string
-
-  // @Transform(({ obj }) => obj.description)
-  // @Expose()
-  // description: string;
-
-
-
-  // @Transform(({ obj }) => obj.submissionDate)
-  // @Expose()
-  // submissionDate: Date;
-
-  // @Transform(({ obj }) => obj.title)
- 
-  // title: string;
-
-  // @Transform(({ obj }) => obj.status)
-  // @Expose()
-  // status: string;
-
-
   @Transform(({ obj }) => {
     const arr = [];
     obj.compalints.map((compalint) => {
       arr.push({
         id: compalint?.id,
-        name: compalint?.user?.name,
-        org:compalint?.organization?.name,
+        name:
+          compalint.user.roles.role == 'employee'
+            ? compalint?.title
+            : compalint?.user?.name,
+        org:
+          compalint.user.roles.role == 'employee'
+            ? undefined
+            : compalint?.user?.organization?.name,
         descritption: compalint?.description,
         submissionDate: compalint?.submissionDate,
-        title: compalint?.title,
+        //title: compalint.user.roles.role=='employee'? undefined:compalint?.title,
         status: compalint?.status,
       });
     });
@@ -54,7 +27,6 @@ export class GetComplaintsDto {
   })
   @Expose()
   complaints: [];
-
 
   @Transform(({ obj }) => {
     return {
@@ -64,7 +36,6 @@ export class GetComplaintsDto {
       //organizationImage:obj.user.organization.image
     };
   })
-
   organization: {};
 
   @Transform(({ obj }) => {
@@ -73,10 +44,9 @@ export class GetComplaintsDto {
       userId: obj.user.id,
       userEmail: obj.user.email,
       userContactNo: obj.user.contactNo,
-      userImage:obj.user.image
+      userImage: obj.user.image,
       //organizationImage:obj.user.organization.image
     };
   })
-
   user: {};
 }

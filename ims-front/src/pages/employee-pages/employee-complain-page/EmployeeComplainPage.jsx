@@ -1,63 +1,26 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import StartIconButton from "../../../components/shared/StartIconButton";
 import MyTables from "../../../components/shared/MyTable";
 import AddIcon from "@mui/icons-material/Add";
 import { useTheme, useMediaQuery } from "@mui/material";
+import { useDispatch, useSelector } from "react-redux";
+import { getComplaintsRequest } from "../../../redux/complaints/complaintAction";
 
 function EmployeeComplainPage() {
-  const Data = [
-    {
-      id: 1,
-      name: "zain",
-      organization: "gigalabs",
-      descritpion:
-        "Lorem ispsum sushduegjhDdSdhskdghGGHASdadgsgk udsghsdaKDfhfds ",
-      submissionDate: "2/03/2020",
-      status: "pending",
-      //view: "/",
-    },
-    {
-      id: 1,
-      name: "ali",
-      organization: "nextbridge",
-      descritpion:
-        "Lorem ispsum sushduegjhDdSdhskdghGGHASdadgsgk udsghsdaKDfhfds ",
-      submissionDate: "2/03/2020",
-      status: "resolved",
-      //view: "/",
-    },
-    {
-      id: 1,
-      name: "umar",
-      organization: "I2c",
-      descritpion:
-        "Lorem ispsum sushduegjhDdSdhskdghGGHASdadgsgk udsghsdaKDfhfds ",
-      submissionDate: "2/03/2020",
-      status: "pending",
-      //view: "/",
-    },
-    {
-      id: 1,
-      name: "zain",
-      organization: "gigalabs",
-      descritpion:
-        "Lorem ispsum sushduegjhDdSdhskdghGGHASdadgsgk udsghsdaKDfhfds ",
-      submissionDate: "2/03/2020",
-      status: "pending",
-      //view: "/",
-    },
-  ];
+  const dispatch = useDispatch();
+  const Data = useSelector((state) => state.complaintData.complaints);
   const header = [
     "ID",
-    "Admin Name",
-    "Organization",
+    "Title",
     "Description",
     "Submission Date",
     "Status",
     "Action",
   ];
-
+  useEffect(() => {
+    dispatch(getComplaintsRequest());
+  }, [dispatch]);
   const theme = useTheme();
   const isMatch = useMediaQuery(theme.breakpoints.down("md"));
 
@@ -67,8 +30,13 @@ function EmployeeComplainPage() {
         <div>
           <h1>Complaints</h1>
         </div>
-        
-        <StartIconButton title={"create complaints"} width={11} to={"/complaint/create"} />
+
+        <StartIconButton
+          title={isMatch?"create":"create complaints"}
+          width={isMatch?6:11}
+          noIcon={isMatch?true:false}
+          to={"/complaint/create"}
+        />
       </div>
       <MyTables
         data={Data}

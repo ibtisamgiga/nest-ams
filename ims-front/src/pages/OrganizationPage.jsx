@@ -10,6 +10,8 @@ import {
   getOrganizationsRequest,
 } from "../redux/organization/organizationAction";
 import { useDispatch, useSelector } from "react-redux";
+import CircularLoader from "../components/shared/circular-loader/CircularLoader";
+import search from "../utils/search";
 
 function OrganizationPage() {
   const header = [
@@ -22,42 +24,23 @@ function OrganizationPage() {
     "Action",
   ];
 
-  const Data = useSelector((state) => state.organizationData?.organizations);
-  //const Data=allData.organizations
-  const [once, setOnce] = useState(false);
+  const tableData = useSelector(
+    (state) => state.organizationData?.organizations
+  );
   const dispatch = useDispatch();
   const theme = useTheme();
   const isMatch = useMediaQuery(theme.breakpoints.down("md"));
 
-  const [filteredData, setFilteredData] = useState([]);
+  const [filteredData, setFilteredData] = useState(null);
   const [searchText, setSearchText] = useState("");
 
   useEffect(() => {
-    if(!once){
     dispatch(getOrganizationsRequest());
-    setFilteredData(Data)
-    setOnce(true)
-     }
-  }, [dispatch,Data]);
-
+  }, [dispatch]);
 
   const handleSearch = (event) => {
-    setSearchText(event.target.value);
-    const filteredRows = Data?.filter((row) => {
-      let shouldInclude = false;
-      Object.values(row).forEach((value) => {
-        if (
-          typeof value === "string" &&
-          value.toLowerCase().includes(event.target.value.toLowerCase())
-        ) {
-          shouldInclude = true;
-        }
-      });
-      return shouldInclude;
-    });
-    setFilteredData(filteredRows);
+    setFilteredData(search(event, tableData, setSearchText));
   };
-
   return (
     <div className="body">
       <div className={isMatch ? "uppersection-md" : "uppersection"}>
@@ -72,9 +55,9 @@ function OrganizationPage() {
         />
         <StartIconButton title={"add"} to="/create/organization" />
       </div>
-      {Data.length != 0 ? (
+      {tableData.length != 0 ? (
         <MyTables
-          data={Data?Data:[]}
+          data={filteredData ? filteredData : tableData}
           tableHeaders={header}
           createData={(Data) => {
             return { ...Data };
@@ -82,7 +65,7 @@ function OrganizationPage() {
           routes={"/organization/detail"}
         />
       ) : (
-        <div>Loading....</div>
+        <CircularLoader />
       )}
     </div>
   );

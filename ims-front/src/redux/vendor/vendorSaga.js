@@ -9,13 +9,6 @@ import {
   CREATE_VENDOR,
   GET_VENDORS_COUNT,
 } from "../constants";
-// function* getVendors() {
-
-//     let  data=yield fetchData("GET", null, "http://localhost:5000/vendor")
-//     console.log(data,'org-data')
-//     yield put({ type:SET_VENDOR_LIST, data });
-//     return;
-//   }
 
 import {
   getVendorsSuccess,
@@ -52,7 +45,6 @@ function* getCount() {
       null,
       "http://localhost:5000/vendor/count"
     ); // call your API method here
-    console.log(count, "saga");
     yield put(getVendorsCountSuccess(count)); // dispatch action to update Redux store with retrieved vendors
   } catch (error) {
     yield put(getVendorsCountFailure(error)); // dispatch action to update Redux store with error
@@ -107,7 +99,6 @@ function* createVendorSaga(action) {
       body,
       `http://localhost:5000/vendor`
     );
-    console.log(vendor, "csaga");
     if (vendor.error) {
       yield put(createVendorError(vendor.message));
     }
@@ -127,5 +118,3 @@ function* vendorSaga() {
   yield takeLatest(GET_VENDORS_COUNT, getCount);
 }
 export default vendorSaga;
-
-

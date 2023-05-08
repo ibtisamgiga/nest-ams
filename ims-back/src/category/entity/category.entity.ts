@@ -26,26 +26,21 @@ export class Category {
   @ManyToOne(() => Category, (category) => category.children)
   parent: Category;
 
-
   @ManyToOne(() => Organization, (organization) => organization.categories, {
-    eager:false,
+    eager: false,
   })
-  organization:Organization;
- 
+  organization: Organization;
+
   @Column()
   organizationId: number;
 
-  @ManyToMany(() => Vendor, vendor => vendor.categories)
+  @ManyToMany(() => Vendor, (vendor) => vendor.categories)
   @JoinTable()
   vendors: Vendor[];
-  
+
   @OneToMany(() => Item, (item) => item.category, { eager: false })
   items: Item[];
 
-  // @OneToMany(() => Request, (request) => request.category, { eager: false })
-  // requests: Request[];
-  
-  @Column({ type: 'date', default: () => 'CURRENT_TIMESTAMP'})
+  @Column({ type: 'date', default: () => 'CURRENT_TIMESTAMP' })
   created_at: Date;
- 
 }

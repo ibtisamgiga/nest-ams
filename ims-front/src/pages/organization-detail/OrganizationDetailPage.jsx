@@ -7,6 +7,7 @@ import LabelText from "../../components/shared/text-with-label/LabelText";
 import TabsVertical from "../../components/shared/verticat-tabs/TabVertical";
 import MyTables from "../../components/shared/MyTable";
 import { useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import {
   deleteOrganization,
   fetchOrgaizationList,
@@ -16,11 +17,11 @@ import { useDispatch, useSelector } from "react-redux";
 function OrganizationDetailPage() {
   const [index, setIndex] = React.useState(0);
   const { id } = useParams();
-
+const navigate=useNavigate()
   const header = ["ID", "Image", "Name", "Email", "Contact No.", "Action"];
   const orgData = useSelector((state) => state.organizationData.organization);
   const Data = orgData?.admins?.filter((user) => user.roles == "admin");
-  console.log(Data,'s')
+
   const [once, setOnce] = useState(false);
   const dispatch = useDispatch();
   useEffect(() => {
@@ -32,7 +33,7 @@ function OrganizationDetailPage() {
 
   return (
     <div className="body">
-      <DetailHeader editAction={"/organization/edit/"+id} deleteAction={()=>dispatch(deleteOrganization(id))} />
+      <DetailHeader editAction={"/organization/edit/"+id} deleteAction={()=>{dispatch(deleteOrganization(id));navigate(-1)}} />
       <Divider
         orientation="vertical"
         sx={{ borderRightWidth: "4px", marginTop: "20px" }}

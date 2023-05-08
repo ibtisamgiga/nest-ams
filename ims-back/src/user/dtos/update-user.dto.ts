@@ -33,6 +33,17 @@ export class UpdateUserDto {
   @IsOptional()
   organizationId: number;
 
+
+  @IsOptional()
+  totalExp:string;
+  @IsOptional()
+  compExp:string;
+  @IsOptional()
+  education:string;
+  @IsOptional()
+  designation:string;
+
+
   @IsOptional()
   image:{}
 

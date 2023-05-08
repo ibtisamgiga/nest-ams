@@ -1,4 +1,14 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  ParseIntPipe,
+  Patch,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { Role } from 'src/user/decorators/user-role.decorator';
 import { Roles } from 'src/user/enums/roles.enum';
@@ -10,6 +20,7 @@ import { User } from 'src/user/entity/user.entity';
 import { Serialize } from 'src/interceptors/serialize.interceptor';
 import { GetDepartmentsDto } from './dtos/get-departments.dto';
 import { GetDepartmentDto } from './dtos/get-department.dto';
+import { UpdateDepartmentDto } from './dtos/update-department.dto';
 
 @Controller('department')
 @Role(Roles.Admin)
@@ -36,11 +47,22 @@ export class DepartmentController {
   @Get('/:id')
   @Serialize(GetDepartmentDto)
   getItem(@Param('id', ParseIntPipe) id: number, @GetUser() user: User) {
-    return this.departmentService.getDepartmentById(id,user)
+    return this.departmentService.getDepartmentById(id, user);
   }
 
   @Delete('/:id')
   deleteItem(@Param('id', ParseIntPipe) id: number, @GetUser() user: User) {
     return this.departmentService.deleteDepartment(id, user);
+  }
+
+  @Patch('/:id')
+  @Role(Roles.Admin)
+  @UseGuards(AuthGuard(), RolesGuard)
+  updateUser(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() body: UpdateDepartmentDto,
+    @GetUser() user: User,
+  ) {
+    return this.departmentService.updateDepartment(id, body, user);
   }
 }

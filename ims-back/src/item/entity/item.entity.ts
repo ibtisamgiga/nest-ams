@@ -56,6 +56,9 @@ export class Item {
   @Column({ default: false, nullable: true })
   assigned_to: boolean;
 
+  @Column({ default: false})
+  faulty: boolean;
+
   @Column({ nullable: true })
   assigned_by: string;
 
