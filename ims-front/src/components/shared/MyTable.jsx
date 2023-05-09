@@ -12,9 +12,10 @@ import Avatar from "@mui/material/Avatar";
 import { useTheme, useMediaQuery } from "@mui/material";
 import { Link } from "react-router-dom";
 import { useState } from "react";
+import CircleIcon from "@mui/icons-material/Circle";
 export default function MyTables({
   data,
- 
+
   tableHeaders,
   routes,
   query,
@@ -24,7 +25,7 @@ export default function MyTables({
   const style = isMatch
     ? { minWidth: 500, width: "100%", display: "block", overflowX: "auto" }
     : { minWidth: 500 };
-// createData,
+  // createData,
   let rows = [];
   const createData = (Data) => {
     return { ...Data };
@@ -88,15 +89,30 @@ export default function MyTables({
               // {rows.map((row) => (
               <StyledTableRow key={row.id}>
                 {keys.map((key) => {
-                  // if (key == "view") {
-                  //   return (
-                  //     <StyledTableCell align="center">
-                  //       <Link to={row[key]}>view</Link>
-                  //     </StyledTableCell>
-                  //   );
-                  // }
                   if (key == "roles") {
                     return null;
+                  }
+                  if (key == "status") {
+                    return (
+                      <StyledTableCell align="center">
+                        <span>
+                          <CircleIcon
+                            sx={{
+                              fontSize: 12,
+                              color:
+                                row[key] == "Rejected"
+                                  ? "#de0202"
+                                  : row[key] == "Approved"
+                                  ? "#2ab38e"
+                                  : row[key] == "Resolved"
+                                  ? "#2ab38e"
+                                  : "#5184ec",
+                            }}
+                          />
+                          {row[key]}
+                        </span>
+                      </StyledTableCell>
+                    );
                   }
                   if (key == "image") {
                     return (
