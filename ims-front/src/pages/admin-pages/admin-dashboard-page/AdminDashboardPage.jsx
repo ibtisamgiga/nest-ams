@@ -108,9 +108,6 @@ function AdminDashboardPage() {
         <MyTables
           data={complaints}
           tableHeaders={empHeader}
-          createData={(tableData) => {
-            return { ...tableData };
-          }}
           routes={"/complaints/detail"}
         />
       </Box>

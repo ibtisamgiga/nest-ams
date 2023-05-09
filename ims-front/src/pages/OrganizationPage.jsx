@@ -59,9 +59,6 @@ function OrganizationPage() {
         <MyTables
           data={filteredData ? filteredData : tableData}
           tableHeaders={header}
-          createData={(Data) => {
-            return { ...Data };
-          }}
           routes={"/organization/detail"}
         />
       ) : (

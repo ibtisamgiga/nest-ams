@@ -69,7 +69,7 @@ function InventoryPage() {
           to={"/inventory/create"}
         />
       </div>
-      {tableData.length != 0 ? (
+      {tableData ? (
         <MyTables
           data={
             filteredData
@@ -80,9 +80,6 @@ function InventoryPage() {
           }
           //data={Array.isArray(Data) ? Data : []}
           tableHeaders={header}
-          createData={(Data) => {
-            return { ...Data };
-          }}
           routes={"/inventory/detail"}
         />
       ) : (

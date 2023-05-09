@@ -9,7 +9,7 @@ import { getComplaintsRequest } from "../../../redux/complaints/complaintAction"
 
 function EmployeeComplainPage() {
   const dispatch = useDispatch();
-  const Data = useSelector((state) => state.complaintData.complaints);
+  const tableData = useSelector((state) => state.complaintData.complaints);
   const header = [
     "ID",
     "Title",
@@ -32,18 +32,15 @@ function EmployeeComplainPage() {
         </div>
 
         <StartIconButton
-          title={isMatch?"create":"create complaints"}
-          width={isMatch?6:11}
-          noIcon={isMatch?true:false}
+          title={isMatch ? "create" : "create complaints"}
+          width={isMatch ? 6 : 11}
+          noIcon={isMatch ? true : false}
           to={"/complaint/create"}
         />
       </div>
       <MyTables
-        data={Data}
+        data={tableData}
         tableHeaders={header}
-        createData={(Data) => {
-          return { ...Data };
-        }}
         routes={"/complaints/detail"}
       />
     </div>

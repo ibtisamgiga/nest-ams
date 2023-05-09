@@ -68,7 +68,7 @@ export class CategoryService {
   async getCategoryById(id: number, user: User) {
     const category = await this.CategoryRepository.findOne({
       where: { id, organizationId: user.organizationId },
-      relations: ['vendors', 'parent', 'items'],
+      relations: ['vendors', 'parent', 'items', 'children'],
     });
     if (!category) throw new NotFoundException('category doesnot exist');
     return category;
@@ -87,12 +87,16 @@ export class CategoryService {
     const parentCategory = await this.CategoryRepository.findOne({
       where: { id },
     });
-    const childCategory = this.CategoryRepository.create({
-      name: updateData.name,
-      organizationId,
-      parent: parentCategory,
+
+    updateData.subCategories.map(async (subCat) => {
+      const childCategory = this.CategoryRepository.create({
+        name: subCat,
+        organizationId,
+        parent: parentCategory,
+      });
+      await this.CategoryRepository.save(childCategory);
     });
-    return this.CategoryRepository.save(childCategory);
+    return { message: 'updated' };
   }
 
   async deleteCategory(id: number, user: User) {

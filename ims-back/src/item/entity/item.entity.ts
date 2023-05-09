@@ -39,6 +39,7 @@ export class Item {
 
   @ManyToOne(() => Category, (category) => category.items, {
     eager: false,
+    onDelete: 'CASCADE',
   })
   category: Category;
 
@@ -65,7 +66,9 @@ export class Item {
   @Column({ type: 'date', nullable: true })
   assigined_at: Date;
 
-  @OneToMany(() => Request, (request) => request.item)
+  @OneToMany(() => Request, (request) => request.item,{
+    onDelete: 'CASCADE',
+  })
   requests: Request[];
   
   @Column({ type: 'date', default: () => 'CURRENT_TIMESTAMP' })

@@ -15,6 +15,7 @@ import { setLocalStorage } from "../../utils/localStorageHelper";
 import { useState } from "react";
 import { resetPassword, sendOtp } from "../../redux/otp/otpAction";
 import { EmailRounded } from "@mui/icons-material";
+import CircularLoader from "../../components/shared/circular-loader/CircularLoader";
 const theme = createTheme();
 
 export default function ResetPasswordPage() {
@@ -24,11 +25,19 @@ export default function ResetPasswordPage() {
     otp: "",
     password: "",
   };
+
   const [email, setEmail] = useState("");
   const [currentOtp, setCurrentOtp] = useState("");
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const [loading, setLoading] = useState(false);
   const [index, setIndex] = useState(0);
+  const buttonText =
+    index == 1
+      ? "Send Otp"
+      : index == 2
+      ? "Reset Password"
+      : "Send Verfication Code";
   const response = useSelector((state) => state.otpData);
   const otp = useSelector((state) => state.otpData.otp);
   const myerror = useSelector((state) => state.otpData.error);
@@ -38,11 +47,14 @@ export default function ResetPasswordPage() {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     setEmail(data.get("email"));
+    setLoading(true);
     dispatch(sendOtp({ email: data.get("email") }));
+    setLoading(false);
   };
   const handleOtp = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
+
     setCurrentOtp(data.get("otp"));
     body.email = email;
     setIndex(2);
@@ -54,15 +66,13 @@ export default function ResetPasswordPage() {
     body.email = email;
     body.password = data.get("password");
     dispatch(resetPassword(body));
-    
-    console.log(body);
+    navigate("/")
   };
   console.log(newPassword, "opt");
   console.log(passwordError, "error");
   React.useEffect(() => {
     if (otp) {
       setIndex(1);
-      console.log("index:1");
     }
   }, [dispatch, response]);
 
@@ -139,7 +149,8 @@ export default function ResetPasswordPage() {
                     id="otp"
                     label="Enter otp"
                     name="otp"
-                    autoComplete="otp"
+                    //autoComplete="otp"
+                    defaultValue={body.otp}
                     autoFocus
                     required
                   />
@@ -150,7 +161,8 @@ export default function ResetPasswordPage() {
                     id="password"
                     label="Enter password"
                     name="password"
-                    autoComplete="password"
+                    defaultValue=""
+                    // autoComplete="password"
                     autoFocus
                     required
                   />
@@ -161,33 +173,34 @@ export default function ResetPasswordPage() {
                     id="email"
                     label="Enter Email Address"
                     name="email"
-                    autoComplete="email"
+                    //autoComplete="email"
                     autoFocus
                     required
                   />
                 )}
                 <div className="error">{myerror}</div>
-                <Button
-                  type="submit"
-                  fullWidth
-                  variant="contained"
-                  sx={{
-                    mt: 3,
-                    mb: 2,
-                    backgroundColor: "#2ab38e",
-                    borderRadius: "12px",
-                  }}
-                >
-                  Send verification code
-                </Button>
+                {loading ? (
+                  <CircularLoader />
+                ) : (
+                  <Button
+                    type="submit"
+                    fullWidth
+                    variant="contained"
+                    sx={{
+                      mt: 3,
+                      mb: 2,
+                      backgroundColor: "#2ab38e",
+                      borderRadius: "12px",
+                    }}
+                  >
+                    {buttonText}
+                  </Button>
+                )}
               </Box>
               <Grid container>
                 <Grid item xs>
                   Forget Your Password?
-                  <Link href="#" variant="body2">
-                    {" "}
-                    Reset Password
-                  </Link>
+                 <Link to></Link>
                 </Grid>
               </Grid>
             </Box>

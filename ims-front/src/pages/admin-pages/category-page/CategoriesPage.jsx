@@ -43,7 +43,7 @@ function CategoriesPage() {
           to={"/category/create"}
         />
       </div>
-      {tableData.length != 0 ? (
+      {tableData ? (
         <CollapsibleTable tableData={filteredData ? filteredData : tableData} />
       ) : (
         <CircularLoader />

@@ -60,9 +60,6 @@ function AdminPage() {
         <MyTables
           data={filteredData ? filteredData : tableData}
           tableHeaders={header}
-          createData={(Data) => {
-            return { ...Data };
-          }}
           routes={"/admin/detail"}
         />
       ) : (

@@ -36,13 +36,10 @@ function DepartmentPage() {
         <SearchField setSearchData={handleSearch} />
         <StartIconButton title={"Add"} to={"/department/create"} />
       </div>
-      {tableData.length != 0 ? (
+      {tableData ? (
         <MyTables
           data={filteredData ? filteredData : tableData}
           tableHeaders={header}
-          createData={(Data) => {
-            return { ...Data };
-          }}
           routes={"/department/detail"}
         />
       ) : (

@@ -36,6 +36,8 @@ import {
   createCategorySuccess,
   getCategoriesDetailSuccess,
   getCategoriesDetailFailure,
+  deleteCategorySuccess,
+  deleteCategoryError,
 } from "./categoryAction";
 // Worker saga for getting all organizations
 function* getCategories() {
@@ -70,7 +72,7 @@ function* getCount() {
       null,
       "http://localhost:5000/category/count"
     ); // call your API method here
-  
+
     yield put(getCategoryCountSuccess(count)); // dispatch action to update Redux store with retrieved organizations
   } catch (error) {
     yield put(getCategoryCountFailure(error)); // dispatch action to update Redux store with error
@@ -96,7 +98,7 @@ function* updateCategorySaga(action) {
   const { id, body } = action.payload;
   try {
     const category = yield fetchData(
-      "PUT",
+      "PATCH",
       body,
       `http://localhost:5000/category/${id}`
     );
@@ -115,13 +117,23 @@ function* createCategorySaga(action) {
       body,
       `http://localhost:5000/category`
     );
-  
+
     if (category.error) {
       yield put(createCategoryError(category.message));
     }
     yield put(createCategorySuccess(category));
   } catch (error) {
     yield put(createCategoryError(error));
+  }
+}
+function* deleteCategorySaga(action) {
+  const { id } = action.payload;
+  try {
+    yield fetchData("DELETE", null, `http://localhost:5000/category/${id}`);
+  
+    yield put(deleteCategorySuccess(action.payload.id));
+  } catch (error) {
+    yield put(deleteCategoryError(error));
   }
 }
 
@@ -133,6 +145,7 @@ function* categorySaga() {
   yield takeLatest(GET_CATEGORIES_COUNT, getCount);
   yield takeLatest(CREATE_CATEGORY, createCategorySaga);
   yield takeLatest(UPDATE_CATEGORY, updateCategorySaga);
+  yield takeLatest(DELETE_CATEGORY,deleteCategorySaga)
 
   //   yield takeLatest(DELETE_CATEGORY, deleteOrganizationSaga);
 }

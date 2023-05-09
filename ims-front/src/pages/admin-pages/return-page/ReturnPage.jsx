@@ -54,13 +54,10 @@ function ReturnPage() {
           handleSelect={handleSearch}
         />
       </div>
-      {tableData.length != 0 ? (
+      {tableData ? (
         <MyTables
           data={filteredData ? filteredData : tableData}
           tableHeaders={header}
-          createData={(Data) => {
-            return { ...Data };
-          }}
           routes={"/return/detail"}
         />
       ) : (

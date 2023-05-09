@@ -7,7 +7,6 @@ import { useTheme, useMediaQuery } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { getRequestsRequest } from "../../../redux/request/requestAction";
 function EmployeeRequestPage() {
-  
   const tableData = useSelector((state) => state.requestData?.requests);
 
   const dispatch = useDispatch();
@@ -38,18 +37,15 @@ function EmployeeRequestPage() {
         </div>
 
         <StartIconButton
-          title={isMatch?"create":"create Request"}
-          width={isMatch?6:11}
-          noIcon={isMatch?true:false}
+          title={isMatch ? "create" : "create Request"}
+          width={isMatch ? 6 : 11}
+          noIcon={isMatch ? true : false}
           to={"/request/create"}
         />
       </div>
       <MyTables
         data={tableData}
         tableHeaders={header}
-        createData={(Data) => {
-          return { ...Data };
-        }}
         routes={"/request/detail"}
       />
     </div>

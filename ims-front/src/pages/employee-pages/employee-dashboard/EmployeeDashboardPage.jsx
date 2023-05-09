@@ -11,36 +11,6 @@ import { fetchUserById } from "../../../redux/users/usersAction";
 import { getRequestsRequest } from "../../../redux/request/requestAction";
 import { getComplaintsRequest } from "../../../redux/complaints/complaintAction";
 function EmployeeDashboardPage({ handleChange }) {
-  const Data = [
-    {
-      id: 1,
-      name: "jhon doe",
-      itemName: "Mac-book",
-      category: "electronics",
-      subCategory: "laptop",
-      date: "1/3/23",
-      status: "pending",
-    },
-
-    {
-      id: 2,
-      name: "jhon doe",
-      itemName: "Mac-book",
-      category: "electronics",
-      subCategory: "laptop",
-      date: "1/3/23",
-      status: "approved",
-    },
-    {
-      id: 3,
-      name: "jhon doe",
-      itemName: "Mac-book",
-      category: "electronics",
-      subCategory: "laptop",
-      date: "1/3/23",
-      status: "resolved",
-    },
-  ];
   const header = [
     "ID",
     "Employee Name",
@@ -104,18 +74,12 @@ function EmployeeDashboardPage({ handleChange }) {
       <MyTables
         data={requestData}
         tableHeaders={header}
-        createData={(Data) => {
-          return { ...Data };
-        }}
         routes={"/request/detail"}
       />
       <ExpandTables heading={"Recent Complaints"} to={"/complaints"} />
       <MyTables
         data={complaintData}
         tableHeaders={compHeader}
-        createData={(Data) => {
-          return { ...Data };
-        }}
         routes={"/complaints/detail"}
       />
     </div>

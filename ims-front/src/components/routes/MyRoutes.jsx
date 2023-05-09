@@ -49,6 +49,7 @@ import EditDepartmentPage from "../../pages/admin-pages/edit-department-page/Edi
 import EditEmployeeInfoPage from "../../pages/admin-pages/edit-employee-page/EditEmployeePage";
 import EditVendorPage from "../../pages/admin-pages/edit-vendor-page/EditVendorPage";
 import ResetPasswordPage from "../../pages/reset-password-page/ResetPasswordPage";
+import AddSubCategoryPage from "../../pages/admin-pages/Add-category-page/AddSubCategoryPage";
 function MyRoutes({ user }) {
   return (
     <Routes>
@@ -287,6 +288,17 @@ function MyRoutes({ user }) {
           <PrivateRoutes user={user}>
             <ProtectedRoutes role={["admin"]} user={user}>
               <CategoryDetailPage />
+            </ProtectedRoutes>
+          </PrivateRoutes>
+        }
+      />
+
+      <Route
+        path="/category/edit/:id"
+        element={
+          <PrivateRoutes user={user}>
+            <ProtectedRoutes role={["admin"]} user={user}>
+             <AddSubCategoryPage/>
             </ProtectedRoutes>
           </PrivateRoutes>
         }

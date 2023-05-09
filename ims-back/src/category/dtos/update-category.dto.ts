@@ -1,9 +1,19 @@
 import { PartialType } from '@nestjs/mapped-types';
-import { IsNotEmpty, IsString } from 'class-validator';
-import { CreateCategoryDto } from './create-category.dto';
+import {
+  ArrayMinSize,
+  IsArray,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 
 export class UpdateCategoryDto {
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   name: string;
+
+  @IsArray()
+  @ArrayMinSize(1)
+  @IsOptional()
+  subCategories: any[];
 }

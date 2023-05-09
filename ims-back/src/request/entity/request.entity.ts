@@ -44,6 +44,7 @@ export class Request {
 
   @ManyToOne(() => Item, (item) => item.requests, {
     eager: false,
+    onDelete: 'CASCADE'
   })
   item: Item;
   @Column()

@@ -94,9 +94,6 @@ function SADashboardPage() {
         <MyTables
           data={tableData}
           tableHeaders={header}
-          createData={(tableData) => {
-            return { ...tableData };
-          }}
           routes={"/complaints/detail"}
         />
       </Box>

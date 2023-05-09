@@ -66,9 +66,6 @@ function ComplaintsPage() {
           data={filteredData ? filteredData : tableData}
           tableHeaders={header}
           routes={"/complaints/detail"}
-          createData={(tableData) => {
-            return { ...tableData };
-          }}
         />
       ) : (
         <CircularLoader />

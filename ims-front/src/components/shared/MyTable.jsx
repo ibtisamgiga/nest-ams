@@ -12,15 +12,23 @@ import Avatar from "@mui/material/Avatar";
 import { useTheme, useMediaQuery } from "@mui/material";
 import { Link } from "react-router-dom";
 import { useState } from "react";
-export default function MyTables({ data, createData, tableHeaders, routes,query}) {
+export default function MyTables({
+  data,
+ 
+  tableHeaders,
+  routes,
+  query,
+}) {
   const theme = useTheme();
   const isMatch = useMediaQuery(theme.breakpoints.down("md"));
   const style = isMatch
     ? { minWidth: 500, width: "100%", display: "block", overflowX: "auto" }
     : { minWidth: 500 };
-
+// createData,
   let rows = [];
-
+  const createData = (Data) => {
+    return { ...Data };
+  };
   data?.forEach((element) => {
     rows.push(createData(element));
   });
@@ -87,9 +95,8 @@ export default function MyTables({ data, createData, tableHeaders, routes,query}
                   //     </StyledTableCell>
                   //   );
                   // }
-                  if(key == "roles"){
-                    return null
-
+                  if (key == "roles") {
+                    return null;
                   }
                   if (key == "image") {
                     return (
@@ -109,16 +116,16 @@ export default function MyTables({ data, createData, tableHeaders, routes,query}
 
                 {routes ? (
                   <StyledTableCell align="center">
-                    <Link to={routes + "/" + row.id+query}>view</Link>
+                    <Link to={routes + "/" + row.id + query}>view</Link>
                   </StyledTableCell>
                 ) : null}
               </StyledTableRow>
             ))}
         </TableBody>
       </Table>
-     <Pagination
+      <Pagination
         sx={{ position: "absolute", right: "0", marginTop: "10px" }}
-        count={data.length/10}
+        count={data.length / 10}
         page={page}
         variant="outlined"
         shape="rounded"
@@ -127,6 +134,6 @@ export default function MyTables({ data, createData, tableHeaders, routes,query}
     </TableContainer>
   );
 }
-MyTables.defaultProps={
-  query:""
-}
+MyTables.defaultProps = {
+  query: "",
+};

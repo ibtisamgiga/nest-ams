@@ -86,18 +86,12 @@ function AdminComplaintsPage() {
           <MyTables
             data={filteredData ? filteredData : tableData}
             tableHeaders={empHeader}
-            createData={(Data) => {
-              return { ...Data };
-            }}
             routes={"/complaints/detail"}
           />
         ) : (
           <MyTables
             data={filteredData2 ? filteredData2 : tableData2}
             tableHeaders={subHeader}
-            createData={(Data) => {
-              return { ...Data };
-            }}
             query={"/?submit=true"}
             routes={"/complaints/detail"}
           />

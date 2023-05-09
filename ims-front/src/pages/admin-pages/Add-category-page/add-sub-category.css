@@ -1,0 +1,10 @@
+.column{
+    display: flex;
+    flex-direction: column;
+    padding: 2%;
+}
+.field{
+    margin-bottom: 2%;
+    display: flex;
+    flex-direction: column
+}

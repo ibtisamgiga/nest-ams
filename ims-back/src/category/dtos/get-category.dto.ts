@@ -51,4 +51,8 @@ export class GetCategoryDto {
   @Transform(({ obj }) => obj?.vendors) //
   @Expose()
   vendors: [];
+
+  @Transform(({ obj }) => obj?.children) //
+  @Expose()
+  subcategories: [];
 }
