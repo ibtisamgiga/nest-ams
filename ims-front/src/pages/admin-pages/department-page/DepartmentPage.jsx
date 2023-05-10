@@ -8,6 +8,7 @@ import { useTheme, useMediaQuery } from "@mui/material";
 import { getDepartmentsRequest } from "../../../redux/departments/departmentAction";
 import search from "../../../utils/search";
 import CircularLoader from "../../../components/shared/circular-loader/CircularLoader";
+import { AdminDepartmentHeader } from "../../../constants/table-constants/tableConstants";
 function DepartmentPage() {
   const tableData = useSelector((state) => state.departmentData?.departments);
 
@@ -15,8 +16,6 @@ function DepartmentPage() {
   useEffect(() => {
     dispatch(getDepartmentsRequest());
   }, [dispatch]);
-
-  const header = ["ID", "Name", "Email", "Contact Number", "Action"];
 
   const theme = useTheme();
   const isMatch = useMediaQuery(theme.breakpoints.down("md"));
@@ -39,7 +38,7 @@ function DepartmentPage() {
       {tableData ? (
         <MyTables
           data={filteredData ? filteredData : tableData}
-          tableHeaders={header}
+          tableHeaders={AdminDepartmentHeader}
           routes={"/department/detail"}
         />
       ) : (

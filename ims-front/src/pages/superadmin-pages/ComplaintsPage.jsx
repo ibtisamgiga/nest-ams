@@ -1,31 +1,21 @@
 import React, { useEffect, useState } from "react";
-import SearchField from "../components/shared/SearchField";
-import SelectField from "../components/shared/SelectField";
-import StartIconButton from "../components/shared/StartIconButton";
-import MyTables from "../components/shared/MyTable";
+import SearchField from "../../components/shared/SearchField";
+import SelectField from "../../components/shared/SelectField";
+import StartIconButton from "../../components/shared/StartIconButton";
+import MyTables from "../../components/shared/MyTable";
 import AddIcon from "@mui/icons-material/Add";
 import { useTheme, useMediaQuery } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
-import { getComplaintsRequest } from "../redux/complaints/complaintAction";
-import CircularLoader from "../components/shared/circular-loader/CircularLoader";
-import { getOrganizationsRequest } from "../redux/organization/organizationAction";
-import extractValue from "../utils/objectValueExtractor";
-import search from "../utils/search";
+import { getComplaintsRequest } from "../../redux/complaints/complaintAction";
+import CircularLoader from "../../components/shared/circular-loader/CircularLoader";
+import { getOrganizationsRequest } from "../../redux/organization/organizationAction";
+import extractValue from "../../utils/objectValueExtractor";
+import search from "../../utils/search";
+import { SuperAdminComplainHeader } from "../../constants/table-constants/tableConstants";
 function ComplaintsPage() {
-  const header = [
-    "ID",
-    "Admin Name",
-    "Organization",
-    "Description",
-    "Submission Date",
-    "Status",
-    "Action",
-  ];
-
-  const tableData = useSelector((state) => state.complaintData.complaints);
-  const organizations = useSelector(
-    (state) => state.organizationData?.organizations
-  );
+  const { complaintData, organizationData } = useSelector((state) => state);
+  const tableData = complaintData.complaints;
+  const organizations = organizationData?.organizations;
   const result = extractValue(organizations, "name");
   const dispatch = useDispatch();
   const theme = useTheme();
@@ -64,7 +54,7 @@ function ComplaintsPage() {
       {tableData.length != 0 ? (
         <MyTables
           data={filteredData ? filteredData : tableData}
-          tableHeaders={header}
+          tableHeaders={SuperAdminComplainHeader}
           routes={"/complaints/detail"}
         />
       ) : (

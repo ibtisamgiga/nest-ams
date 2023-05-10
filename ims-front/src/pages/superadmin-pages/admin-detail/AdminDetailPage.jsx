@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
-import DetailHeader from "../../components/shared/details-header/DetailHeader";
-import ImageText from "../../components/shared/image-with-text/ImageText";
+import DetailHeader from "../../../components/shared/details-header/DetailHeader";
+import ImageText from "../../../components/shared/image-with-text/ImageText";
 import { Divider, Typography } from "@mui/material";
-import dp from "../../components/shared/image-with-text/dummy";
-import LabelText from "../../components/shared/text-with-label/LabelText";
+import dp from "../../../components/shared/image-with-text/dummy";
+import LabelText from "../../../components/shared/text-with-label/LabelText";
 import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { deleteUser, fetchUserById } from "../../redux/users/usersAction";
-import { usersData } from "../../redux/users/usersReducer";
+import { deleteUser, fetchUserById } from "../../../redux/users/usersAction";
+import { usersData } from "../../../redux/users/usersReducer";
 import { useNavigate } from "react-router-dom";
 function AdminDetailPage() {
   const navigate = useNavigate();

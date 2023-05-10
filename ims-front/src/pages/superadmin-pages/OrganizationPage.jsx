@@ -1,29 +1,20 @@
 import React, { useEffect, useState } from "react";
-import SearchField from "../components/shared/SearchField";
-import SelectField from "../components/shared/SelectField";
-import StartIconButton from "../components/shared/StartIconButton";
-import MyTables from "../components/shared/MyTable";
+import SearchField from "../../components/shared/SearchField";
+import SelectField from "../../components/shared/SelectField";
+import StartIconButton from "../../components/shared/StartIconButton";
+import MyTables from "../../components/shared/MyTable";
 import AddIcon from "@mui/icons-material/Add";
 import { useTheme, useMediaQuery } from "@mui/material";
 import {
   fetchOrgaizationList,
   getOrganizationsRequest,
-} from "../redux/organization/organizationAction";
+} from "../../redux/organization/organizationAction";
 import { useDispatch, useSelector } from "react-redux";
-import CircularLoader from "../components/shared/circular-loader/CircularLoader";
-import search from "../utils/search";
+import CircularLoader from "../../components/shared/circular-loader/CircularLoader";
+import search from "../../utils/search";
+import { SuperAdminOrganizationHeader } from "../../constants/table-constants/tableConstants";
 
 function OrganizationPage() {
-  const header = [
-    "ID",
-    "Image",
-    "Name",
-    "Location",
-    "Email",
-    "Contact No.",
-    "Action",
-  ];
-
   const tableData = useSelector(
     (state) => state.organizationData?.organizations
   );
@@ -58,7 +49,7 @@ function OrganizationPage() {
       {tableData.length != 0 ? (
         <MyTables
           data={filteredData ? filteredData : tableData}
-          tableHeaders={header}
+          tableHeaders={SuperAdminOrganizationHeader}
           routes={"/organization/detail"}
         />
       ) : (

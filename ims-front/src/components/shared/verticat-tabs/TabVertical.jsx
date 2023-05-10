@@ -5,7 +5,14 @@ import Tab from "@mui/joy/Tab";
 import TabPanel from "@mui/joy/TabPanel";
 import { Divider } from "@mui/material";
 
-export default function TabsVertical({ tab1, tab2, tab3, index, onChange ,display}) {
+export default function TabsVertical({
+  tab1,
+  tab2,
+  tab3,
+  index,
+  onChange,
+  display,
+}) {
   // const[index,setIndex]=React.useState()
   return (
     <div>
@@ -43,6 +50,6 @@ export default function TabsVertical({ tab1, tab2, tab3, index, onChange ,displa
     </div>
   );
 }
-TabsVertical.defaultProps={
-  display:'vertical'
-}
+TabsVertical.defaultProps = {
+  display: "vertical",
+};

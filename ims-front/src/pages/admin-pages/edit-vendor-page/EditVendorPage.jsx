@@ -20,8 +20,9 @@ function EditVendorPage() {
   });
   const dispatch = useDispatch();
   const { id } = useParams();
-  const categories = useSelector((state) => state.categoryData.categories);
-  const vendorData = useSelector((state) => state.vendorData.vendor);
+  const { categoryData, vendorData } = useSelector((state) => state);
+  const categories = categoryData.categories;
+  const vendor = vendorData.vendor;
   const cat = categories.filter((obj) => obj.parent === null);
   const [current, setCurrent] = useState(cat[0]);
   const navigate = useNavigate();
@@ -32,6 +33,7 @@ function EditVendorPage() {
     subCategories.forEach((item) => {
       formData.categoryIds.push(item);
     });
+    
     dispatch(updateVendor(formData, id));
     navigate(-1);
   };
@@ -46,7 +48,7 @@ function EditVendorPage() {
   useEffect(() => {
     dispatch(getCategoriesRequest());
     dispatch(getVendorRequest(id));
-    setFormData({ ...formData, ...vendorData });
+    setFormData({ ...formData, ...vendor });
     //setCurrent(cat[0]);
   }, [dispatch]);
   /*******************************/
@@ -60,7 +62,7 @@ function EditVendorPage() {
           onChange={(e) => {
             setFormData({ ...formData, name: e.target.value });
           }}
-          defaultValue={vendorData?.name}
+          defaultValue={vendor?.name}
         />
         <Divider sx={{ borderBottomWidth: 4, marginTop: "20px" }} />
         <FormInput
@@ -69,7 +71,7 @@ function EditVendorPage() {
           onChange={(e) => {
             setFormData({ ...formData, contactNumber: e.target.value });
           }}
-          defaultValue={vendorData?.contactNumber}
+          defaultValue={vendor?.contactNumber}
         />
         <Divider sx={{ borderBottomWidth: 4, marginTop: "20px" }} />
 
@@ -78,13 +80,13 @@ function EditVendorPage() {
           placeHolder={"select Category"}
           items={cat}
           keyId={1}
-          defaultValue={vendorData?.categories[0]?.parent}
+          defaultValue={vendor?.categories[0]?.parent}
           onChange={(e) => {
             setCurrent(...cat.filter((obj) => obj.id == e.target.value));
           }}
         />
         <MultiSelect
-          defaultValue={vendorData?.categories}
+          defaultValue={vendor?.categories}
           names={current?.children ? current?.children : []}
           onChange={handleChange}
           subCategories={subCategories}

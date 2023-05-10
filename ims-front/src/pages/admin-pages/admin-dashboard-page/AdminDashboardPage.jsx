@@ -16,15 +16,18 @@ import {
 } from "../../../redux/complaints/complaintAction";
 import MyTables from "../../../components/shared/MyTable";
 import CircularLoader from "../../../components/shared/circular-loader/CircularLoader";
+import { AdminDashboardHeader } from "../../../constants/table-constants/tableConstants";
 function AdminDashboardPage() {
   const theme = useTheme();
   const isMatch = useMediaQuery(theme.breakpoints.down("md"));
-  const userCount = useSelector((state) => state.usersData?.count);
-  const categoryCount = useSelector((state) => state.categoryData?.count);
-  const vendorCount = useSelector((state) => state.vendorData?.count);
-  const itemCount = useSelector((state) => state.itemData?.count);
-  const complaintCount = useSelector((state) => state.complaintData?.count);
-  const complaints = useSelector((state) => state.complaintData.complaints);
+  const { usersData, categoryData, vendorData, itemData, complaintData } =
+    useSelector((state) => state);
+  const userCount = usersData?.count;
+  const categoryCount = categoryData?.count;
+  const vendorCount = vendorData?.count;
+  const itemCount = itemData?.count;
+  const complaintCount = complaintData?.count;
+  const complaints = complaintData.complaints;
 
   const dispatch = useDispatch();
   useEffect(() => {
@@ -35,14 +38,7 @@ function AdminDashboardPage() {
     dispatch(getComplaintCount());
     dispatch(getComplaintsRequest());
   }, [dispatch]);
-  const empHeader = [
-    "ID",
-    "Employee Name",
-    "Description",
-    "Submission Date",
-    "Status",
-    "Action",
-  ];
+
   return (
     <div className="body">
       <h1>Dashboard</h1>
@@ -107,8 +103,9 @@ function AdminDashboardPage() {
       <Box sx={{ marginTop: "1%" }}>
         <MyTables
           data={complaints}
-          tableHeaders={empHeader}
+          tableHeaders={AdminDashboardHeader}
           routes={"/complaints/detail"}
+          noPagination={true}
         />
       </Box>
     </div>

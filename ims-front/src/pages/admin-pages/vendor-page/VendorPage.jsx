@@ -11,9 +11,11 @@ import search from "../../../utils/search";
 import CircularLoader from "../../../components/shared/circular-loader/CircularLoader";
 import extractValue from "../../../utils/objectValueExtractor";
 import { getCategoriesRequest } from "../../../redux/category/categoryAction";
+import { AdminVendorHeader } from "../../../constants/table-constants/tableConstants";
 
 function VendorPage() {
-  const tableData = useSelector((state) => state.vendorData?.vendors);
+  const { vendorData, categoryData } = useSelector((state) => state);
+  const tableData = vendorData?.vendors;
 
   const dispatch = useDispatch();
 
@@ -22,19 +24,9 @@ function VendorPage() {
     dispatch(getCategoriesRequest());
   }, [dispatch]);
 
-  const header = [
-    "ID",
-    "Vendor Name",
-    "Contact Number",
-    "Category",
-    "Sub-category",
-    "Total Spending",
-    "Action",
-  ];
-
   const theme = useTheme();
   const isMatch = useMediaQuery(theme.breakpoints.down("md"));
-  const categories = useSelector((state) => state.categoryData?.categories);
+  const categories = categoryData?.categories;
   const [filteredData, setFilteredData] = useState(null);
   const [searchText, setSearchText] = useState("");
   const categoryResult = extractValue(
@@ -71,10 +63,7 @@ function VendorPage() {
       {tableData.length != 0 ? (
         <MyTables
           data={filteredData ? filteredData : tableData}
-          tableHeaders={header}
-          createData={(Data) => {
-            return { ...Data };
-          }}
+          tableHeaders={AdminVendorHeader}
           routes={"/vendor/detail"}
         />
       ) : (

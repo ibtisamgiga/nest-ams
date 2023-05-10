@@ -10,29 +10,29 @@ import NavBarMenue from "./NavBarMenue";
 import SuperAdminTabs from "./tabs/SuperAdminTabs";
 import AdminTabs from "./tabs/AdminTabs";
 import EmployeeTabs from "./tabs/EmployeeTabs";
-function NavBar({ user}) {
-  const [value, setValue] = React.useState("/");
+import currentTab from "../../../utils/currentTab";
+function NavBar({ user }) {
+  const [value, setValue] = React.useState(currentTab);
+  let path = window.location.pathname;
+  //const [value, setValue] = React.useState("/");
   const theme = useTheme();
   const isMatch = useMediaQuery(theme.breakpoints.down("md"));
   const navigate = useNavigate();
   const handleChange = (event, newValue) => {
-    
-    
-   //console.log(location.pathname.toString())
+    //console.log(location.pathname.toString())
     setValue(newValue);
     navigate(newValue);
- 
-  
-    
   };
-
+  useEffect(() => {
+    setValue(currentTab);
+  }, [path]);
   return (
     <AppBar sx={{ background: "white" }}>
       <Toolbar>
         <img className="navLogo" src="/gigalabs.png" alt="logo" />
         {isMatch ? (
           <>
-            <DrawerComp user={user}/>
+            <DrawerComp user={user} />
           </>
         ) : (
           <TabContext value={value}>

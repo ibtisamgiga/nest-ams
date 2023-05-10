@@ -1,23 +1,15 @@
 import React, { useEffect, useState } from "react";
-
 import StartIconButton from "../../../components/shared/StartIconButton";
 import MyTables from "../../../components/shared/MyTable";
 import AddIcon from "@mui/icons-material/Add";
 import { useTheme, useMediaQuery } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { getComplaintsRequest } from "../../../redux/complaints/complaintAction";
+import { EmployeeComplainPageheader } from "../../../constants/table-constants/tableConstants";
 
 function EmployeeComplainPage() {
   const dispatch = useDispatch();
   const tableData = useSelector((state) => state.complaintData.complaints);
-  const header = [
-    "ID",
-    "Title",
-    "Description",
-    "Submission Date",
-    "Status",
-    "Action",
-  ];
   useEffect(() => {
     dispatch(getComplaintsRequest());
   }, [dispatch]);
@@ -40,7 +32,7 @@ function EmployeeComplainPage() {
       </div>
       <MyTables
         data={tableData}
-        tableHeaders={header}
+        tableHeaders={EmployeeComplainPageheader}
         routes={"/complaints/detail"}
       />
     </div>

@@ -11,24 +11,16 @@ import { useNavigate } from "react-router-dom";
 import search from "../../../utils/search";
 import extractValue from "../../../utils/objectValueExtractor";
 import CircularLoader from "../../../components/shared/circular-loader/CircularLoader";
+import { AdminInventoryHeader } from "../../../constants/table-constants/tableConstants";
 function InventoryPage() {
-  const tableData = useSelector((state) => state.itemData?.items);
-  const categories = useSelector((state) => state.categoryData?.categories);
+  const { itemData, categoryData } = useSelector((state) => state);
+  const tableData = itemData?.items;
+  const categories = categoryData?.categories;
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(getItemsRequest(null));
     dispatch(getCategoriesRequest());
   }, [dispatch]);
-
-  const header = [
-    "ID",
-    "Item Name",
-    "Description",
-    "Category",
-    "Sub-category",
-    "Price",
-    "Action",
-  ];
 
   const theme = useTheme();
   const isMatch = useMediaQuery(theme.breakpoints.down("md"));
@@ -79,7 +71,7 @@ function InventoryPage() {
               : []
           }
           //data={Array.isArray(Data) ? Data : []}
-          tableHeaders={header}
+          tableHeaders={AdminInventoryHeader}
           routes={"/inventory/detail"}
         />
       ) : (

@@ -1,26 +1,27 @@
 import * as React from "react";
 import { useEffect, useState } from "react";
 import Divider from "@mui/material/Divider";
-import { defaultImage, AvatarInput } from "../../constants/organizationConst";
-import FormHeader from "../../components/shared/form-header/FormHeader";
-import FormImageHolder from "../../components/shared/form-image/FormImageHolder";
-import FormInput from "../../components/shared/form-input/FormInput";
+import { defaultImage, AvatarInput } from "../../../constants/organizationConst";
+import FormHeader from "../../../components/shared/form-header/FormHeader";
+import FormImageHolder from "../../../components/shared/form-image/FormImageHolder";
+import FormInput from "../../../components/shared/form-input/FormInput";
 import { Countries, States, Cities } from "countries-states-cities-service";
-import FormSelect from "../../components/shared/form-select/FormSelect";
+import FormSelect from "../../../components/shared/form-select/FormSelect";
+import { useParams } from "react-router-dom";
+import fetchData from "../../../utils/fetchData";
+import {
+  fetchOrgaizationList,
+  getOrganizationRequest,
+  updateOrganization,
+} from "../../../redux/organization/organizationAction";
+import imageUploadHelper from "../../../utils/imageUpload";
 import { useDispatch, useSelector } from "react-redux";
-import { createOrganization } from "../../redux/organization/organizationAction";
-import imageUploadHelper from "../../utils/imageUpload";
 import { useNavigate } from "react-router-dom";
-import CircularLoader from "../../components/shared/circular-loader/CircularLoader";
-function CreateOrganizationPage() {
-  const [error, setError] = useState(null);
-  const navigate = useNavigate();
-  const [url, setUrl] = useState(defaultImage);
-  const [loading, setLoading] = useState(false);
-  const dispatch = useDispatch();
+function EditOrganizationPage() {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
+    repName: "",
     repContactNo: "",
     repName: "",
     address: "",
@@ -28,60 +29,59 @@ function CreateOrganizationPage() {
     zip: "",
     country: "",
     bio: "",
-    image: "",
   });
+  const navigate=useNavigate()
+  const { id } = useParams();
+  const [once, setOnce] = useState(false);
+  const orgData = useSelector((state) => state.organizationData.organization);
+  const [url, setUrl] = useState(formData?.image?.image);
+  const dispatch = useDispatch();
   const [countries, setCountries] = useState([]);
   const [cities, setCities] = useState([]);
   const [currentCountry, setCurrentCountry] = useState({});
-  const response = useSelector((state) => state.organizationData);
   const handleFiles = async (files) => {
+    //formData.image.image=files.base64
     const imgdata = new FormData();
     imgdata.append("file", files.fileList[0]);
     imgdata.append("upload_preset", "fqje0r0l");
     imgdata.append("cloud_name", "dntzlt0mt");
-    setLoading(true);
     let imageuploaded = await imageUploadHelper(imgdata);
-    formData.image = imageuploaded.url;
+    formData.image.image = imageuploaded.url;
     setUrl(imageuploaded.url);
-    setLoading(false);
-    //setUrl(files.base64);
   };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
-    dispatch(createOrganization(formData));
-    setError(response?.error);
-    navigate(-1);
+    dispatch(updateOrganization(formData, id));
+    navigate(-1)
   };
+
   useEffect(() => {
-    setCountries(Countries.getCountries());
-  }, [response]);
+    if (!once) {
+      dispatch(getOrganizationRequest(id));
+      setCountries(Countries.getCountries());
+      setFormData({ ...formData, ...orgData });
+      setUrl(orgData.image.image);
+      setOnce(true);
+    }
+  }, [orgData]);
 
   return (
     <div className="body">
-      <FormHeader
-        heading={"Add New Organization"}
-        form={"createOrganization"}
-      />
-      <form onSubmit={handleSubmit} id={"createOrganization"}>
-        {loading == true ? (
-          <CircularLoader display={"left"} size={"2rem"} />
-        ) : (
-          <FormImageHolder
-            handleFiles={handleFiles}
-            image={url}
-            label={"Organization Logo"}
-            subLabel={"upload a logo with minimum resoulation of 800*800px"}
-          />
-        )}
-        {error && <div>{error}</div>}
+      <FormHeader heading={"Edit Organization"} form={"editOrganization"} />
+      <form onSubmit={handleSubmit} id={"editOrganization"}>
+        <FormImageHolder
+          handleFiles={handleFiles}
+          image={url}
+          label={"Organization Logo"}
+          subLabel={"upload a logo with minimum resoulation of 800*800px"}
+        />
         <FormInput
+          defaultValue={orgData?.name}
           sideLabel={"Name of Organization"}
           placeHolder={"Name of Organization"}
           onChange={(e) => {
             setFormData({ ...formData, name: e.target.value });
           }}
-          value={formData.name}
         />
         <Divider sx={{ borderBottomWidth: 4, marginTop: "20px" }} />
         <FormInput
@@ -90,7 +90,7 @@ function CreateOrganizationPage() {
           onChange={(e) => {
             setFormData({ ...formData, email: e.target.value });
           }}
-          value={formData.email}
+          defaultValue={orgData?.email}
         />
         <Divider sx={{ borderBottomWidth: 4, marginTop: "20px" }} />
         <FormInput
@@ -100,7 +100,7 @@ function CreateOrganizationPage() {
           onChange={(e) => {
             setFormData({ ...formData, bio: e.target.value });
           }}
-          value={formData.bio}
+          defaultValue={orgData?.bio}
         />
         <Divider sx={{ borderBottomWidth: 4, marginTop: "20px" }} />
         <FormInput
@@ -109,11 +109,10 @@ function CreateOrganizationPage() {
           onChange={(e) => {
             setFormData({ ...formData, address: e.target.value });
           }}
-          value={formData.address}
+          defaultValue={orgData?.address}
         />
 
         <FormSelect
-          defaultValue={""}
           sideLabel={"  "}
           placeHolder={"select Country"}
           items={countries}
@@ -131,7 +130,6 @@ function CreateOrganizationPage() {
         />
 
         <FormSelect
-          defaultValue={""}
           sideLabel={"  "}
           placeHolder={"select City"}
           items={cities}
@@ -145,7 +143,7 @@ function CreateOrganizationPage() {
           onChange={(e) => {
             setFormData({ ...formData, zip: e.target.value });
           }}
-          value={formData.zip}
+          defaultValue={orgData?.zip}
         />
         <Divider sx={{ borderBottomWidth: 4, marginTop: "20px" }} />
         <FormInput
@@ -154,7 +152,7 @@ function CreateOrganizationPage() {
           onChange={(e) => {
             setFormData({ ...formData, repName: e.target.value });
           }}
-          value={formData.repName}
+          defaultValue={orgData?.repName}
         />
         <FormInput
           sideLabel={"Representative Contact No."}
@@ -162,16 +160,11 @@ function CreateOrganizationPage() {
           onChange={(e) => {
             setFormData({ ...formData, repContactNo: e.target.value });
           }}
-          value={formData.repContactNo}
+          defaultValue={orgData?.repContactNo}
         />
       </form>
     </div>
   );
 }
 
-export default CreateOrganizationPage;
-// if (response.error) {
-//   setError(response.error);
-// } else {
-//   setError(null);
-// }
+export default EditOrganizationPage;

@@ -8,23 +8,13 @@ import { useDispatch, useSelector } from "react-redux";
 import { getRequestsRequest } from "../../../redux/request/requestAction";
 import search from "../../../utils/search";
 import CircularLoader from "../../../components/shared/circular-loader/CircularLoader";
+import { AdminReturnHeader } from "../../../constants/table-constants/tableConstants";
 function ReturnPage() {
   const tableData = useSelector((state) => state.requestData?.requests);
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(getRequestsRequest("Faulty"));
   }, [dispatch]);
-  const header = [
-    "ID",
-    "Employee Name",
-    "Item Name",
-    "Category",
-    "Sub-category",
-    "Type",
-    "Date",
-    "Status",
-    "Action",
-  ];
 
   const theme = useTheme();
   const isMatch = useMediaQuery(theme.breakpoints.down("md"));
@@ -57,7 +47,7 @@ function ReturnPage() {
       {tableData ? (
         <MyTables
           data={filteredData ? filteredData : tableData}
-          tableHeaders={header}
+          tableHeaders={AdminReturnHeader}
           routes={"/return/detail"}
         />
       ) : (

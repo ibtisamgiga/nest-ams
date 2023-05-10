@@ -34,7 +34,7 @@ export class Item {
   })
   vendor: Vendor;
 
-  @Column()
+  @Column({nullable:true})
   vendorId: number;
 
   @ManyToOne(() => Category, (category) => category.items, {

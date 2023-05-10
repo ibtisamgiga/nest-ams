@@ -13,27 +13,16 @@ import {
   getComplaintsRequest,
 } from "../../../redux/complaints/complaintAction";
 import search from "../../../utils/search";
+import {
+  AdminComplainHeader,
+  AdminEmpComplainHeader,
+} from "../../../constants/table-constants/tableConstants";
 function AdminComplaintsPage() {
   const [index, setIndex] = useState(0);
 
-  const empHeader = [
-    "ID",
-    "Employee Name",
-    "Description",
-    "Submission Date",
-    "Status",
-    "Action",
-  ];
-  const subHeader = [
-    "ID",
-    "Description",
-    "Submission Date",
-    "Status",
-    "Action",
-  ];
-
-  const tableData = useSelector((state) => state.complaintData.complaints);
-  const tableData2 = useSelector((state) => state.complaintData.myComp);
+  const { complaintData } = useSelector((state) => state);
+  const tableData = complaintData.complaints;
+  const tableData2 = complaintData.myComp;
 
   const dispatch = useDispatch();
   const theme = useTheme();
@@ -85,13 +74,13 @@ function AdminComplaintsPage() {
         {index == 0 ? (
           <MyTables
             data={filteredData ? filteredData : tableData}
-            tableHeaders={empHeader}
+            tableHeaders={AdminEmpComplainHeader}
             routes={"/complaints/detail"}
           />
         ) : (
           <MyTables
             data={filteredData2 ? filteredData2 : tableData2}
-            tableHeaders={subHeader}
+            tableHeaders={AdminComplainHeader}
             query={"/?submit=true"}
             routes={"/complaints/detail"}
           />

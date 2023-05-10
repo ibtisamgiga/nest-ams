@@ -1,34 +1,29 @@
 import React from "react";
-import DataCard from "../../components/shared/DataCard";
+import DataCard from "../../../components/shared/DataCard";
 import { useTheme, useMediaQuery, Box } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { useState, useEffect } from "react";
 // import { BarChart } from '@mui/icons-material';
 // import countBarChart from './BarChart';
-import Chart from "../../components/shared/Chart";
+import Chart from "../../../components/shared/Chart";
 import "./sadashboard.css";
-import { getOrganizationsCount } from "../../redux/organization/organizationAction";
-import { getUsersCount } from "../../redux/users/usersAction";
+import { getOrganizationsCount } from "../../../redux/organization/organizationAction";
+import { getUsersCount } from "../../../redux/users/usersAction";
 import {
   getComplaintCount,
   getComplaintsRequest,
-} from "../../redux/complaints/complaintAction";
-import GraphTabs from "../../components/shared/graph-tabs/GraphTabs";
-import MyTables from "../../components/shared/MyTable";
+} from "../../../redux/complaints/complaintAction";
+import GraphTabs from "../../../components/shared/graph-tabs/GraphTabs";
+import MyTables from "../../../components/shared/MyTable";
+import { SuperAdminDashboardHeader } from "../../../constants/table-constants/tableConstants";
 function SADashboardPage() {
-  const header = [
-    "ID",
-    "Admin Name",
-    "Organization",
-    "Description",
-    "Submission Date",
-    "Status",
-    "Action",
-  ];
-  const tableData = useSelector((state) => state.complaintData.complaints);
-  const orgCount = useSelector((state) => state.organizationData?.count);
-  const userCount = useSelector((state) => state.usersData?.count);
-  const complaintCount = useSelector((state) => state.complaintData?.count);
+  const { complaintData, organizationData, usersData } = useSelector(
+    (state) => state
+  );
+  const tableData = complaintData.complaints;
+  const orgCount = organizationData?.count;
+  const userCount = usersData?.count;
+  const complaintCount = complaintData?.count;
   const dispatch = useDispatch();
   const theme = useTheme();
   const isMatch = useMediaQuery(theme.breakpoints.down("md"));
@@ -93,7 +88,7 @@ function SADashboardPage() {
       <Box sx={{ marginTop: "1%" }}>
         <MyTables
           data={tableData}
-          tableHeaders={header}
+          tableHeaders={SuperAdminDashboardHeader}
           routes={"/complaints/detail"}
         />
       </Box>

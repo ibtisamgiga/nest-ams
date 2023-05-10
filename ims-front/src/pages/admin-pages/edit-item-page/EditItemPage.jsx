@@ -6,24 +6,30 @@ import FormSelect from "../../../components/shared/form-select/FormSelect";
 import { useDispatch, useSelector } from "react-redux";
 import { getCategoriesRequest } from "../../../redux/category/categoryAction";
 import { useNavigate, useParams } from "react-router-dom";
-import { createItem, getItemRequest, updateItem } from "../../../redux/item/itemAction";
+import {
+  createItem,
+  getItemRequest,
+  updateItem,
+} from "../../../redux/item/itemAction";
 function EditItemPage() {
   const dispatch = useDispatch();
-  const navigate=useNavigate()
-  const categories = useSelector((state) => state.categoryData.categories);
-  const item = useSelector((state) => state.itemData?.item);
+  const navigate = useNavigate();
+  const { categoryData, itemData } = useSelector((state) => state);
+  const categories = categoryData.categories;
+  const item = itemData?.item;
   const { id } = useParams();
   const cat = categories.filter((obj) => obj.parent === null);
   const [current, setCurrent] = useState(cat[0]); //cat.filter(obj => obj.parent === null);
-  const [currSubCat,setCurrSubCat]=useState(cat[0]?.children[0]?cat[0]?.children[0]:[{}])
+  const [currSubCat, setCurrSubCat] = useState(
+    cat[0]?.children[0] ? cat[0]?.children[0] : [{}]
+  );
   useEffect(() => {
     dispatch(getCategoriesRequest());
-    dispatch(getItemRequest(id))
+    dispatch(getItemRequest(id));
     //setCurrent(cat[0]);
     setFormData({ ...formData, ...item });
   }, [dispatch]);
 
- 
   const [formData, setFormData] = useState({
     name: "",
     serialNumber: "",
@@ -40,15 +46,13 @@ function EditItemPage() {
       description: formData.description,
       vendorId: formData.vendorId,
       price: formData.price,
-      categoryId:formData.categoryId
+      categoryId: formData.categoryId,
     };
-    dispatch(updateItem(body,id))
-    navigate(-1)
-   // dispatch(createItem(formData))
-   
+    dispatch(updateItem(body, id));
+    navigate(-1);
+    // dispatch(createItem(formData))
   };
 
-  
   return (
     <div className="body">
       <FormHeader heading={"Edit Item"} form={"editItem"} />
@@ -59,7 +63,7 @@ function EditItemPage() {
           onChange={(e) => {
             setFormData({ ...formData, name: e.target.value });
           }}
-         defaultValue={item?.name}
+          defaultValue={item?.name}
         />
         <Divider sx={{ borderBottomWidth: 4, marginTop: "20px" }} />
         <FormInput
@@ -78,11 +82,11 @@ function EditItemPage() {
           onChange={(e) => {
             setFormData({ ...formData, description: e.target.value });
           }}
-         defaultValue={item?.description}
+          defaultValue={item?.description}
         />
         <Divider sx={{ borderBottomWidth: 4, marginTop: "20px" }} />
         <FormSelect
-        defaultValue={item?.category?.parent?.id}
+          defaultValue={item?.category?.parent?.id}
           sideLabel={"Select Category "}
           placeHolder={"select Category"}
           items={cat}
@@ -96,11 +100,13 @@ function EditItemPage() {
           defaultValue={item?.category?.id}
           sideLabel={"Select Sub-Category "}
           placeHolder={"select Sub-Category"}
-          items={current?.children}//current[0]?.children
+          items={current?.children} //current[0]?.children
           keyId={1}
           onChange={(e) => {
             setFormData({ ...formData, categoryId: e.target.value });
-            setCurrSubCat(...current.children.filter((obj) => obj.id == e.target.value));
+            setCurrSubCat(
+              ...current.children.filter((obj) => obj.id == e.target.value)
+            );
           }}
         />
         <Divider sx={{ borderBottomWidth: 4, marginTop: "20px" }} />
@@ -114,10 +120,10 @@ function EditItemPage() {
         />
         <Divider sx={{ borderBottomWidth: 4, marginTop: "20px" }} />
         <FormSelect
-        defaultValue={item?.vendor?.id}
+          defaultValue={item?.vendor?.id}
           sideLabel={"Select Vendor  "}
           placeHolder={"select Vendor"}
-          items={currSubCat.vendors.length==0?[]:currSubCat.vendors}
+          items={currSubCat.vendors.length == 0 ? [] : currSubCat.vendors}
           keyId={1}
           onChange={(e) => {
             setFormData({ ...formData, vendorId: e.target.value });

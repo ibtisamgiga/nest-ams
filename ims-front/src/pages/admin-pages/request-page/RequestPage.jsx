@@ -8,6 +8,7 @@ import { useTheme, useMediaQuery } from "@mui/material";
 import { getRequestsRequest } from "../../../redux/request/requestAction";
 import search from "../../../utils/search";
 import CircularLoader from "../../../components/shared/circular-loader/CircularLoader";
+import { AdminRequestHeader } from "../../../constants/table-constants/tableConstants";
 function RequestPage() {
   const tableData = useSelector((state) => state.requestData?.requests);
 
@@ -16,17 +17,6 @@ function RequestPage() {
   useEffect(() => {
     dispatch(getRequestsRequest("Acquisition"));
   }, [dispatch]);
-
-  const header = [
-    "ID",
-    "Employee Name",
-    "Item Name",
-    "Category",
-    "Sub-category",
-    "Date",
-    "Status",
-    "Action",
-  ];
 
   const theme = useTheme();
   const isMatch = useMediaQuery(theme.breakpoints.down("md"));
@@ -54,7 +44,7 @@ function RequestPage() {
       {tableData ? (
         <MyTables
           data={filteredData ? filteredData : tableData}
-          tableHeaders={header}
+          tableHeaders={AdminRequestHeader}
           routes={"/request/detail"}
         />
       ) : (

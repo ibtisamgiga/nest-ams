@@ -12,19 +12,12 @@ import search from "../../../utils/search";
 import { getDepartmentsRequest } from "../../../redux/departments/departmentAction";
 import extractValue from "../../../utils/objectValueExtractor";
 import CircularLoader from "../../../components/shared/circular-loader/CircularLoader";
+import { AdminEmployeeHeader } from "../../../constants/table-constants/tableConstants";
 
 function EmployeePage() {
-  const header = [
-    "ID",
-    "Name",
-    "Email",
-    "Contact Number",
-    "Department",
-    "Action",
-  ];
-
-  const tableData = useSelector((state) => state.usersData.userList);
-  const departments = useSelector((state) => state.departmentData.departments);
+  const { usersData, departmentData } = useSelector((state) => state);
+  const tableData = usersData?.userList;
+  const departments = departmentData?.departments;
   const dispatch = useDispatch();
   const theme = useTheme();
   const isMatch = useMediaQuery(theme.breakpoints.down("md"));
@@ -57,10 +50,7 @@ function EmployeePage() {
       {tableData.length != 0 ? (
         <MyTables
           data={filteredData ? filteredData : tableData}
-          tableHeaders={header}
-          createData={(Data) => {
-            return { ...Data };
-          }}
+          tableHeaders={AdminEmployeeHeader}
           routes={"/employee/detail"}
         />
       ) : (

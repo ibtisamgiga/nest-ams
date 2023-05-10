@@ -1,5 +1,5 @@
 import React from "react";
-import SADashboardPage from "../../pages/saDashboard/SADashboardPage";
+import SADashboardPage from "../../pages/superadmin-pages/saDashboard/SADashboardPage";
 //mport { getFromLocalStorage } from "../../utils/LocalStorageHelper";
 
 function PublicRoutes({ children }) {

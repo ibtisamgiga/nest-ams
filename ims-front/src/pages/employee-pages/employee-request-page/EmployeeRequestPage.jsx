@@ -6,6 +6,7 @@ import StartIconButton from "../../../components/shared/StartIconButton";
 import { useTheme, useMediaQuery } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { getRequestsRequest } from "../../../redux/request/requestAction";
+import { EmployeeRequestPageheader } from "../../../constants/table-constants/tableConstants";
 function EmployeeRequestPage() {
   const tableData = useSelector((state) => state.requestData?.requests);
 
@@ -14,17 +15,6 @@ function EmployeeRequestPage() {
   useEffect(() => {
     dispatch(getRequestsRequest(null));
   }, [dispatch]);
-
-  const header = [
-    "ID",
-    "Item Name",
-    "Category",
-    "Sub-category",
-    "Type",
-    "Date",
-    "Status",
-    "Action",
-  ];
 
   const theme = useTheme();
   const isMatch = useMediaQuery(theme.breakpoints.down("md"));
@@ -45,7 +35,7 @@ function EmployeeRequestPage() {
       </div>
       <MyTables
         data={tableData}
-        tableHeaders={header}
+        tableHeaders={EmployeeRequestPageheader}
         routes={"/request/detail"}
       />
     </div>

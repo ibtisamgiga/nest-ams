@@ -30,7 +30,6 @@ function EditDepartmentPage() {
     dispatch(updateDepartment(body, id));
     navigate(-1);
   };
-  const response = useSelector((state) => state.departmentData);
   useEffect(() => {
     dispatch(getDepartmentRequest(id));
     setFormData({ ...formData, ...department });

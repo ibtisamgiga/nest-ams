@@ -1,15 +1,15 @@
 import * as React from "react";
 import { useEffect, useState } from "react";
-import { defaultImage, AvatarInput } from "../../constants/organizationConst";
-import FormHeader from "../../components/shared/form-header/FormHeader";
-import FormImageHolder from "../../components/shared/form-image/FormImageHolder";
+import { defaultImage, AvatarInput } from "../../../constants/organizationConst";
+import FormHeader from "../../../components/shared/form-header/FormHeader";
+import FormImageHolder from "../../../components/shared/form-image/FormImageHolder";
 import Divider from "@mui/material/Divider";
-import FormInput from "../../components/shared/form-input/FormInput";
-import FormSelect from "../../components/shared/form-select/FormSelect";
+import FormInput from "../../../components/shared/form-input/FormInput";
+import FormSelect from "../../../components/shared/form-select/FormSelect";
 import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchUserById, updateUser } from "../../redux/users/usersAction";
-import imageUploadHelper from "../../utils/imageUpload";
+import { fetchUserById, updateUser } from "../../../redux/users/usersAction";
+import imageUploadHelper from "../../../utils/imageUpload";
 import { useNavigate } from "react-router-dom";
 function EditAdminPage() {
   const [formData, setFormData] = useState({
@@ -18,16 +18,14 @@ function EditAdminPage() {
     contactNo: "",
     organizationId: null,
   });
-  const navigate=useNavigate()
+  const navigate = useNavigate();
   const { id } = useParams();
   const [once, setOnce] = useState(false);
-  const adminData = useSelector((state) => state.usersData.selectedUser);
-  const organizations = useSelector(
-    (state) => state.organizationData.organizations
-  );
-  const error = useSelector(
-    (state) => state.usersData.error
-  );
+  const { usersData, organizationData } = useSelector((state) => state);
+  const adminData = usersData.selectedUser;
+  const organizations = organizationData.organizations;
+  const error = usersData.error;
+
   const [url, setUrl] = useState(formData?.image?.image);
   const dispatch = useDispatch();
   const handleFiles = async (files) => {
@@ -51,9 +49,8 @@ function EditAdminPage() {
       image: formData?.image,
     };
     dispatch(updateUser(body, id));
-    navigate(-1)
+    navigate(-1);
     //dispatch(updateOrganization(formData,id));
-  
   };
   useEffect(() => {
     if (!once) {
@@ -101,7 +98,6 @@ function EditAdminPage() {
           items={organizations}
           onChange={(e) => {
             setFormData({ ...formData, organizationId: e.target.value });
-         
           }}
         />
 

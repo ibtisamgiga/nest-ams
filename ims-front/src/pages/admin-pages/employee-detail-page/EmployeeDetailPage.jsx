@@ -9,6 +9,12 @@ import MyTables from "../../../components/shared/MyTable";
 import { useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { deleteUser, fetchUserById } from "../../../redux/users/usersAction";
+import {
+  AdminEmployeeDetailInventoryHeader,
+  AdminEmployeeDetailRequestHeader,
+} from "../../../constants/table-constants/tableConstants";
+import { useTheme, useMediaQuery } from "@mui/material";
+import { boxStyle } from "./employeeDetailStyles";
 function EmployeeDetailPage() {
   const [index, setIndex] = useState(0);
   const { id } = useParams();
@@ -18,24 +24,8 @@ function EmployeeDetailPage() {
   useEffect(() => {
     dispatch(fetchUserById(id));
   }, [dispatch]);
-  const Data = [];
-
-  const header = [
-    "ID",
-    "Item Name",
-    "Category",
-    "Sub-Category",
-    "Assigined Date",
-    "Assigined By",
-  ];
-  const Iheader = [
-    "ID",
-    "Item Name",
-    "Category",
-    "sub-category",
-    "Status",
-    "Action By",
-  ];
+  const theme = useTheme();
+  const isMatch = useMediaQuery(theme.breakpoints.down("md"));
   return (
     <div className="body">
       <DetailHeader
@@ -49,23 +39,17 @@ function EmployeeDetailPage() {
         orientation="vertical"
         sx={{ borderRightWidth: "4px", marginTop: "20px" }}
       />
-      <Box sx={{ display: "flex" }}>
+      <Box sx={{ display: "flex", flexDirection: isMatch ? "column" : "row" }}>
         <TabsVertical
-          tab1={"General Information"}
+          tab1={isMatch ? "Info" : "General Information"}
           tab2={"Inventory"}
           tab3={"Request"}
           index={index}
+          display={isMatch ? "horizontal" : "vertical"}
           onChange={(event, value) => setIndex(value)}
         />
         {index == 0 ? (
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              width: "80%",
-              marginLeft: "2%",
-            }}
-          >
+          <Box sx={boxStyle}>
             <ImageText image={userData?.image?.image} name={userData?.name} />
             <Divider sx={{ borderBottomWidth: 2, marginTop: "20px" }} />
 
@@ -85,20 +69,17 @@ function EmployeeDetailPage() {
           <Box sx={{ width: "70%", marginLeft: "4%" }}>
             <MyTables
               data={userData?.items}
-              tableHeaders={header}
-              createData={(Data) => {
-                return { ...Data };
-              }}
+              tableHeaders={AdminEmployeeDetailRequestHeader}
+              noPagination={true}
             />
           </Box>
         ) : (
           <Box sx={{ width: "70%", marginLeft: "4%" }}>
             <MyTables
               data={userData?.requests}
-              tableHeaders={Iheader}
-              createData={(Data) => {
-                return { ...Data };
-              }}
+              tableHeaders={AdminEmployeeDetailInventoryHeader}
+              noPagination={true}
+
               //routes={"/admin/detail"}
             />
           </Box>

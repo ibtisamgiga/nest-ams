@@ -1,26 +1,25 @@
 import * as React from "react";
 import { useState } from "react";
-import { defaultImage, AvatarInput } from "../constants/organizationConst";
-import FormHeader from "../components/shared/form-header/FormHeader";
-import FormImageHolder from "../components/shared/form-image/FormImageHolder";
+import { defaultImage, AvatarInput } from "../../constants/organizationConst";
+import FormHeader from "../../components/shared/form-header/FormHeader";
+import FormImageHolder from "../../components/shared/form-image/FormImageHolder";
 import Divider from "@mui/material/Divider";
-import FormInput from "../components/shared/form-input/FormInput";
-import FormSelect from "../components/shared/form-select/FormSelect";
-import imageUploadHelper from "../utils/imageUpload";
+import FormInput from "../../components/shared/form-input/FormInput";
+import FormSelect from "../../components/shared/form-select/FormSelect";
+import imageUploadHelper from "../../utils/imageUpload";
 import { useDispatch, useSelector } from "react-redux";
 import { Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import { createUser } from "../redux/users/usersAction";
-import CircularLoader from "../components/shared/circular-loader/CircularLoader";
+import { createUser } from "../../redux/users/usersAction";
+import CircularLoader from "../../components/shared/circular-loader/CircularLoader";
 function CreateAdminPage() {
   const navigate = useNavigate();
   const [url, setUrl] = useState(defaultImage);
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
-  const organizations = useSelector(
-    (state) => state.organizationData.organizations
-  );
-  const error = useSelector((state) => state.usersData.error);
+  const { organizationData, usersData } = useSelector((state) => state);
+  const organizations = organizationData.organizations;
+  const error = usersData.error;
   const [formData, setFormData] = useState({
     name: "",
     email: "",

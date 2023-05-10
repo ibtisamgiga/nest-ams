@@ -20,8 +20,9 @@ function EditEmployeeInfoPage() {
   const navigate = useNavigate();
   const { id } = useParams();
   const dispatch = useDispatch();
-  const departments = useSelector((state) => state.departmentData.departments);
-  const employeeData = useSelector((state) => state.usersData.selectedUser);
+  const { departmentData, usersData } = useSelector((state) => state);
+  const departments = departmentData.departments;
+  const employeeData = usersData.selectedUser;
   const [formData, setFormData] = useState({
     departmentId: employeeData?.departmentDetail?.id,
     name: "",

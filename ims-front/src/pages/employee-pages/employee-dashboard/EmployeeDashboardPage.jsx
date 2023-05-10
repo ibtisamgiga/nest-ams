@@ -10,32 +10,21 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchUserById } from "../../../redux/users/usersAction";
 import { getRequestsRequest } from "../../../redux/request/requestAction";
 import { getComplaintsRequest } from "../../../redux/complaints/complaintAction";
+import {
+  EmployeeDashBoardComplaintsHeader,
+  EmployeeDashBoardRequestHeader,
+} from "../../../constants/table-constants/tableConstants";
 function EmployeeDashboardPage({ handleChange }) {
-  const header = [
-    "ID",
-    "Employee Name",
-    "Item Name",
-    "Category",
-    "Sub-category",
-    "Date",
-    "Status",
-    "Action",
-  ];
-  const compHeader = [
-    "ID",
-    "Title",
-    "Description",
-    "Submission Date",
-    "Status",
-    "Action",
-  ];
   const theme = useTheme();
   const isMatch = useMediaQuery(theme.breakpoints.down("md"));
   const logIn = useSelector((state) => state.userData); //{ name: "ali", role: "employee" };
   const id = logIn.token.id;
-  const userData = useSelector((state) => state.usersData.selectedUser);
-  const requestData = useSelector((state) => state.requestData?.requests);
-  const complaintData = useSelector((state) => state.complaintData.complaints);
+  const { usersData, requestData, complaintData } = useSelector(
+    (state) => state
+  );
+  const userData = usersData.selectedUser;
+  const requestDataTable = requestData?.requests;
+  const complaintDataTable = complaintData.complaints;
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(fetchUserById(id));
@@ -72,14 +61,14 @@ function EmployeeDashboardPage({ handleChange }) {
       <Divider sx={{ borderBottomWidth: 2, marginTop: "20px" }} />
       <ExpandTables heading={"Recent Requests"} to={"/requests"} />
       <MyTables
-        data={requestData}
-        tableHeaders={header}
+        data={requestDataTable}
+        tableHeaders={EmployeeDashBoardRequestHeader}
         routes={"/request/detail"}
       />
       <ExpandTables heading={"Recent Complaints"} to={"/complaints"} />
       <MyTables
-        data={complaintData}
-        tableHeaders={compHeader}
+        data={complaintDataTable}
+        tableHeaders={EmployeeDashBoardComplaintsHeader}
         routes={"/complaints/detail"}
       />
     </div>

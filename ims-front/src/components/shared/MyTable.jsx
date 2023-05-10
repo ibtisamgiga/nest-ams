@@ -15,7 +15,7 @@ import { useState } from "react";
 import CircleIcon from "@mui/icons-material/Circle";
 export default function MyTables({
   data,
-
+  noPagination,
   tableHeaders,
   routes,
   query,
@@ -139,17 +139,20 @@ export default function MyTables({
             ))}
         </TableBody>
       </Table>
-      <Pagination
-        sx={{ position: "absolute", right: "0", marginTop: "10px" }}
-        count={data.length / 10}
-        page={page}
-        variant="outlined"
-        shape="rounded"
-        onChange={handleChangePage}
-      />
+      {noPagination ? null : (
+        <Pagination
+          sx={{ position: "absolute", right: "0", marginTop: "10px" }}
+          count={data.length / 10}
+          page={page}
+          variant="outlined"
+          shape="rounded"
+          onChange={handleChangePage}
+        />
+      )}
     </TableContainer>
   );
 }
 MyTables.defaultProps = {
   query: "",
+  noPagination: false,
 };
