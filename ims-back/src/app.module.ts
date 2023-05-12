@@ -2,19 +2,19 @@ import { Global, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { typeOrmConfig } from './configure/typeorm.config';
-import { UserModule } from './user/user.module';
-import { OrganizationModule } from './organization/organization.module';
+import { UserModule } from './modules/user/user.module';
+import { OrganizationModule } from './modules/organization/organization.module';
 import { MailerModule } from '@nestjs-modules/mailer';
-import { OtpModule } from './otp/otp.module';
+import { OtpModule } from './modules/otp/otp.module';
 import { ScheduleModule } from '@nestjs/schedule';
-import { ComplaintModule } from './complaint/complaint.module';
-import { CategoryModule } from './category/category.module';
-import { VendorModule } from './vendor/vendor.module';
-import { ItemModule } from './item/item.module';
-import { RequestModule } from './request/request.module';
-import { RoleModule } from './role/role.module';
-import { PhotoModule } from './photo/photo.module';
-import { DepartmentModule } from './department/department.module';
+import { ComplaintModule } from './modules/complaint/complaint.module';
+import { CategoryModule } from './modules/category/category.module';
+import { VendorModule } from './modules/vendor/vendor.module';
+import { ItemModule } from './modules/item/item.module';
+import { RequestModule } from './modules/request/request.module';
+import { RoleModule } from './modules/role/role.module';
+import { PhotoModule } from './modules/photo/photo.module';
+import { DepartmentModule } from './modules/department/department.module';
 import * as config from 'config'
 const mailConfig=config.get('mail')
 @Module({
