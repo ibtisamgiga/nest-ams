@@ -13,7 +13,7 @@ export class UpdateCategoryDto {
   name: string;
 
   @IsArray()
-  @ArrayMinSize(1)
+  // @ArrayMinSize(1)
   @IsOptional()
   subCategories: any[];
 }

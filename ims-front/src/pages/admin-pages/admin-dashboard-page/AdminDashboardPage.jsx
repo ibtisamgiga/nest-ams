@@ -10,6 +10,7 @@ import { getUsersCount } from "../../../redux/users/usersAction";
 import { getCategoryCount } from "../../../redux/category/categoryAction";
 import { getVendorsCount } from "../../../redux/vendor/vendorAction";
 import { getItemsCount } from "../../../redux/item/itemAction";
+
 import {
   getComplaintCount,
   getComplaintsRequest,
@@ -17,6 +18,9 @@ import {
 import MyTables from "../../../components/shared/MyTable";
 import CircularLoader from "../../../components/shared/circular-loader/CircularLoader";
 import { AdminDashboardHeader } from "../../../constants/table-constants/tableConstants";
+import DownloadHeading from "../../../components/shared/download-heading/DownloadHeading";
+import { generatePdf } from "../../../utils/pdfGenerator";
+import ExpandTables from "../../../components/shared/expand-tables/ExpandTables";
 function AdminDashboardPage() {
   const theme = useTheme();
   const isMatch = useMediaQuery(theme.breakpoints.down("md"));
@@ -76,6 +80,14 @@ function AdminDashboardPage() {
           monthDifference={categoryCount?.currentMonth?.count}
         />
       </div>
+      <DownloadHeading
+        complainAction={() =>
+          generatePdf(complaintCount?.monthlyCount, "monhly complaints")
+        }
+        categoryAction={() =>
+          generatePdf(itemCount?.monthlyCount, "monhly items")
+        }
+      />
       <div className={isMatch ? "barchart" : "barchart"}>
         {itemCount?.monthlyCount.length != 0 ? (
           <Chart
@@ -100,7 +112,8 @@ function AdminDashboardPage() {
           <CircularLoader />
         )}
       </div>
-      <Box sx={{ marginTop: "1%" }}>
+      <ExpandTables heading={"Recent Complaints"} to={"/complaints"} />
+      <Box sx={{ marginTop: "2px" }}>
         <MyTables
           data={complaints}
           tableHeaders={AdminDashboardHeader}

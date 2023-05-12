@@ -11,7 +11,7 @@ function LabelText({ label, content, divider }) {
             {label}
           </Typography>
         </Box>
-        <Box sx={{ width: "60%" }}>
+        <Box sx={{ width: "60%" }} >
           <Typography variant="content">{content}</Typography>
         </Box>
       </Box>

@@ -128,7 +128,9 @@ function MyRoutes({ user }) {
         path="/admin/detail/:id"
         element={
           <PrivateRoutes user={user}>
-            <AdminDetailPage />
+            <ProtectedRoutes role={["superadmin"]} user={user}>
+              <AdminDetailPage />
+            </ProtectedRoutes>
           </PrivateRoutes>
         }
       />
@@ -136,7 +138,9 @@ function MyRoutes({ user }) {
         path="/admin/edit/:id"
         element={
           <PrivateRoutes user={user}>
-            <EditAdminPage />
+            <ProtectedRoutes role={["superadmin"]} user={user}>
+              <EditAdminPage />
+            </ProtectedRoutes>
           </PrivateRoutes>
         }
       />
@@ -144,7 +148,9 @@ function MyRoutes({ user }) {
         path="/organization/detail/:id"
         element={
           <PrivateRoutes user={user}>
-            <OrganizationDetailPage />
+            <ProtectedRoutes role={["superadmin"]} user={user}>
+              <OrganizationDetailPage />
+            </ProtectedRoutes>
           </PrivateRoutes>
         }
       />
@@ -152,7 +158,9 @@ function MyRoutes({ user }) {
         path="/organization/edit/:id"
         element={
           <PrivateRoutes user={user}>
-            <EditOrganizationPage />
+            <ProtectedRoutes role={["superadmin"]} user={user}>
+              <EditOrganizationPage />
+            </ProtectedRoutes>
           </PrivateRoutes>
         }
       />
@@ -298,7 +306,7 @@ function MyRoutes({ user }) {
         element={
           <PrivateRoutes user={user}>
             <ProtectedRoutes role={["admin"]} user={user}>
-             <AddSubCategoryPage/>
+              <AddSubCategoryPage />
             </ProtectedRoutes>
           </PrivateRoutes>
         }

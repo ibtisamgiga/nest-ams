@@ -14,26 +14,25 @@ import { useDispatch } from "react-redux";
 import { createComplaint } from "../../../redux/complaints/complaintAction";
 function CreateComplaintPage() {
   const [url, setUrl] = useState(defaultImage);
-  const dispatch=useDispatch()
+  const dispatch = useDispatch();
   const [formData, setFormData] = useState({
     images: [],
-    description: ""
+    description: "",
   });
-  const handleFiles =async(files) => {
+  const handleFiles = async (files) => {
     const imgdata = new FormData();
     imgdata.append("file", files.fileList[0]);
     imgdata.append("upload_preset", "fqje0r0l");
     imgdata.append("cloud_name", "dntzlt0mt");
     let imageuploaded = await imageUploadHelper(imgdata);
-    formData.images.push(imageuploaded.url)
+    formData.images.push(imageuploaded.url);
     //formData.image = imageuploaded.url;
     setUrl(imageuploaded.url);
     //setUrl(files.base64);
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
-    dispatch(createComplaint(formData))
-    console.log(formData);
+    dispatch(createComplaint(formData));
   };
 
   return (
@@ -49,7 +48,6 @@ function CreateComplaintPage() {
           }}
           value={formData.description}
         />
-       
 
         <FormImageHolder
           handleFiles={handleFiles}
@@ -57,7 +55,7 @@ function CreateComplaintPage() {
           label={"upload image"}
           subLabel={""}
         />
-         <Divider sx={{ borderBottomWidth: 2, marginTop: "20px" }} />
+        <Divider sx={{ borderBottomWidth: 2, marginTop: "20px" }} />
       </form>
     </div>
   );

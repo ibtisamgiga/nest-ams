@@ -71,6 +71,7 @@ export class CategoryController {
     @Body() updateCategoryDto: UpdateCategoryDto,
     @GetUser() user: User,
   ) {
+
     return this.categoryService.updateSubcategory(+id, updateCategoryDto, user);
   }
 

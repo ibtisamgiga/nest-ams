@@ -87,15 +87,20 @@ export class CategoryService {
     const parentCategory = await this.CategoryRepository.findOne({
       where: { id },
     });
-
-    updateData.subCategories.map(async (subCat) => {
-      const childCategory = this.CategoryRepository.create({
-        name: subCat,
-        organizationId,
-        parent: parentCategory,
+    if (updateData.subCategories) {
+      updateData.subCategories.map(async (subCat) => {
+        const childCategory = this.CategoryRepository.create({
+          name: subCat,
+          organizationId,
+          parent: parentCategory,
+        });
+        await this.CategoryRepository.save(childCategory);
       });
-      await this.CategoryRepository.save(childCategory);
-    });
+    } else {
+      found.name = updateData.name;
+      await this.CategoryRepository.save(found);
+    }
+
     return { message: 'updated' };
   }
 

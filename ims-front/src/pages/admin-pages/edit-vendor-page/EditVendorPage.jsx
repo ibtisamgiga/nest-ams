@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import FormHeader from "../../../components/shared/form-header/FormHeader";
-import { Divider } from "@mui/material";
+import { Chip, Divider, Stack } from "@mui/material";
 import FormInput from "../../../components/shared/form-input/FormInput";
 import FormSelect from "../../../components/shared/form-select/FormSelect";
 import MultiSelect from "../../../components/shared/multi-select/MultiSelect";
@@ -33,7 +33,7 @@ function EditVendorPage() {
     subCategories.forEach((item) => {
       formData.categoryIds.push(item);
     });
-    
+
     dispatch(updateVendor(formData, id));
     navigate(-1);
   };
@@ -49,6 +49,7 @@ function EditVendorPage() {
     dispatch(getCategoriesRequest());
     dispatch(getVendorRequest(id));
     setFormData({ ...formData, ...vendor });
+    console.log(vendor);
     //setCurrent(cat[0]);
   }, [dispatch]);
   /*******************************/
@@ -92,6 +93,12 @@ function EditVendorPage() {
           subCategories={subCategories}
         />
       </form>
+
+      <Stack direction="row" spacing={1}>
+        {vendor?.categories.map((subCat) => {
+          return <Chip label={subCat?.name} />;
+        })}
+      </Stack>
     </div>
   );
 }

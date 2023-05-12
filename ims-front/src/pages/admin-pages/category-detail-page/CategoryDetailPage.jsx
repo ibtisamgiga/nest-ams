@@ -6,7 +6,10 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { useEffect } from "react";
 import "./category-detail.css";
-import { getCategoryRequest } from "../../../redux/category/categoryAction";
+import {
+  deleteCategory,
+  getCategoryRequest,
+} from "../../../redux/category/categoryAction";
 function CategoryDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -19,9 +22,10 @@ function CategoryDetailPage() {
     <div className="body">
       <DetailHeader
         deleteAction={() => {
+          dispatch(deleteCategory(id));
           navigate(-1);
         }}
-        editAction={null}
+        editAction={"/category/edit/" + id + "/?edit=true"}
       />
       <LabelText label={"Category Name"} content={category?.parent} />
       <LabelText label={"Sub-Category Name"} content={category?.name} />

@@ -67,7 +67,7 @@ export class ComplaintService {
       user.roles.role == 'admin' ? user.organizationId : null;
     const complaint = await this.ComplaintRepository.findOne({
       where: { id }, // user: { role: role, organizationId }
-      relations: ['user', 'user.organization', 'user.image'],
+      relations: ['user', 'user.organization', 'user.image','images'],
     });
     if (!complaint) throw new NotFoundException('complaint Not Found');
     return complaint;

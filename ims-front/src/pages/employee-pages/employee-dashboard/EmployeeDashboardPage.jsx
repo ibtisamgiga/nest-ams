@@ -64,12 +64,14 @@ function EmployeeDashboardPage({ handleChange }) {
         data={requestDataTable}
         tableHeaders={EmployeeDashBoardRequestHeader}
         routes={"/request/detail"}
+        noPagination={true}
       />
       <ExpandTables heading={"Recent Complaints"} to={"/complaints"} />
       <MyTables
         data={complaintDataTable}
         tableHeaders={EmployeeDashBoardComplaintsHeader}
         routes={"/complaints/detail"}
+        noPagination={true}
       />
     </div>
   );

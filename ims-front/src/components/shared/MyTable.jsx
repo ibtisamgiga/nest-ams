@@ -116,9 +116,16 @@ export default function MyTables({
                   }
                   if (key == "image") {
                     return (
-                      <StyledTableCell align="center">
-                        {" "}
-                        <Avatar src={row[key]} />
+                      <StyledTableCell textAligin="-webkit-center">
+                        <Avatar
+                          src={row[key]}
+                          variant="square"
+                          sx={{
+                            height: 40,
+                            width: 40,
+                            textAligin: "-webkit-center",
+                          }}
+                        />
                       </StyledTableCell>
                     );
                   } else {

@@ -19,11 +19,17 @@ function GroupButton({ id }) {
         sx={{ color: "#2ab38e" }}
         onClick={() => {
           navigate("/category/edit/" + id);
-        }}
+        }} ///?submit=true
       >
         <Add fontSize="small" />
       </IconButton>
-      <IconButton aria-label="delete" size="small">
+      <IconButton
+        aria-label="delete"
+        size="small"
+        onClick={() => {
+          navigate("/category/edit/" + id + "/?edit=true");
+        }}
+      >
         <EditOutlinedIcon fontSize="small" />
       </IconButton>
       <IconButton

@@ -13,14 +13,19 @@ import {
   getCategoryRequest,
   updateCategory,
 } from "../../../redux/category/categoryAction";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import LabelText from "../../../components/shared/text-with-label/LabelText";
 function AddSubCategoryPage() {
   const { id } = useParams();
   const [formData, setFormData] = useState({
     subCategories: [],
   });
-
+  const [editFormData, setEditFormData] = useState({
+    name: "",
+  });
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const check = queryParams.get("edit");
   const theme = useTheme();
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -39,6 +44,13 @@ function AddSubCategoryPage() {
     // dispatch(createCategory(formData));
     navigate(-1);
   };
+
+  const handleEdit = async (e) => {
+    e.preventDefault();
+    dispatch(updateCategory({ name: editFormData?.name }, id));
+    navigate("/categories");
+  };
+
   const inputArr = [
     {
       type: "text",
@@ -74,62 +86,80 @@ function AddSubCategoryPage() {
   };
   useEffect(() => {
     dispatch(getCategoryRequest(id));
+    setEditFormData({ ...editFormData, ...category });
   }, [dispatch]);
   const category = useSelector((state) => state.categoryData?.category);
   return (
     <div className="body">
       <FormHeader heading={"Add New Category"} form={"createCategory"} />
-      <form onSubmit={handleSubmit} id={"createCategory"}>
-        <LabelText label={"Category Name"} content={category?.name} />
-        <Divider sx={{ borderBottomWidth: 2, marginTop: "20px" }} />
-        <Typography
-          variant="h5"
-          component={"h1"}
-          sx={{ fontWeight: "bold", marginTop: "2%" }}
+      {check ? (
+        <form
+          onSubmit={check ? handleEdit : handleSubmit}
+          id={"createCategory"}
         >
-          Sub-Categories
-        </Typography>
-        <div className="column">
-          <div className="fields">
-            {category?.subcategories.map((item, i) => {
-              return (
-                <>
-                  <LabelText
-                    label={"Category Name # " + i}
-                    content={item?.name}
-                  />
-                  <Divider sx={{ borderBottomWidth: 2, marginTop: "20px" }} />
-                </>
-              );
-            })}
+          <FormInput
+            sideLabel={"Category"}
+            placeHolder={"Category"}
+            onChange={(e) => {
+              setEditFormData({ ...editFormData, name: e.target.value });
+            }}
+            defaultValue={category?.name}
+          />
+          <Divider sx={{ borderBottomWidth: 2, marginTop: "20px" }} />
+        </form>
+      ) : (
+        <form onSubmit={handleSubmit} id={"createCategory"}>
+          <LabelText label={"Category Name"} content={category?.name} />
+          <Divider sx={{ borderBottomWidth: 2, marginTop: "20px" }} />
+          <Typography
+            variant="h5"
+            component={"h1"}
+            sx={{ fontWeight: "bold", marginTop: "2%" }}
+          >
+            Sub-Categories
+          </Typography>
+          <div className="column">
             <div className="fields">
-              {arr.map((item, i) => {
+              {category?.subcategories.map((item, i) => {
                 return (
-                  <FormInput
-                    sideLabel={
-                      "sub-Category # " + (i + category?.subcategories.length)
-                    }
-                    placeHolder={"sub-Category"}
-                    id={i}
-                    onChange={handleChange}
-                    value={item.value}
-                  />
+                  <>
+                    <LabelText
+                      label={"Category Name # " + i}
+                      content={item?.name}
+                    />
+                    <Divider sx={{ borderBottomWidth: 2, marginTop: "20px" }} />
+                  </>
                 );
               })}
+              <div className="fields">
+                {arr.map((item, i) => {
+                  return (
+                    <FormInput
+                      sideLabel={
+                        "sub-Category # " + (i + category?.subcategories.length)
+                      }
+                      placeHolder={"sub-Category"}
+                      id={i}
+                      onChange={handleChange}
+                      value={item.value}
+                    />
+                  );
+                })}
+              </div>
             </div>
+            {isMatch ? (
+              <StartIconButton title={"Add"} onClick={addInput} right={true} />
+            ) : (
+              <StartIconButton
+                title={"Add"}
+                width={11}
+                onClick={addInput}
+                left={true}
+              />
+            )}
           </div>
-          {isMatch ? (
-            <StartIconButton title={"Add"} onClick={addInput} right={true} />
-          ) : (
-            <StartIconButton
-              title={"Add"}
-              width={11}
-              onClick={addInput}
-              left={true}
-            />
-          )}
-        </div>
-      </form>
+        </form>
+      )}
     </div>
   );
 }
