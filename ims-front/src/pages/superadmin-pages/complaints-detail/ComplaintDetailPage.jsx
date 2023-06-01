@@ -11,19 +11,20 @@ import {
   getComplaintRequest,
   updateComplaint,
 } from "../../../redux/complaints/complaintAction";
+import { imageBoxContainer, imageBoxStyle, imageStyle } from "./styles";
+import { status } from "../../../utils/enums/statusEnum";
 function ComplaintDetailPage() {
   const { id } = useParams();
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
-  const check = queryParams.get("submit");
+  const checkComplainType = queryParams.get("submit");
   const [enlarge, setEnlarge] = useState(false);
-  const complainData = useSelector((state) => state.complaintData.complaint);
+  const complainData = useSelector((state) => state?.complaintData?.complaint);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   useEffect(() => {
     dispatch(getComplaintRequest(id));
   }, [dispatch]);
-  console.log(complainData);
   return (
     <div className="body">
       <StatusHeader
@@ -31,13 +32,17 @@ function ComplaintDetailPage() {
         heading={complainData?.id}
         status={complainData?.status}
         date={complainData?.submissionDate}
-        nobutton={check ? true : null}
+        nobutton={
+          checkComplainType || complainData?.status == status.RESOLVED
+            ? true
+            : null
+        }
         markResolveAction={
-          check == "true"
+          checkComplainType == "true"
             ? null
             : () => {
-                dispatch(updateComplaint({ status: "Resolved" }, id));
-                navigate(-1);
+                dispatch(updateComplaint({ status: status.RESOLVED }, id));
+               
               }
         }
       />
@@ -45,17 +50,14 @@ function ComplaintDetailPage() {
         <LabelText label={"Description"} content={complainData?.description} />
       </Box>
 
-      <Box sx={{ display: "flex", justifyContent: "center", flexWrap: "wrap" }}>
+      <Box sx={imageBoxStyle}>
+        <p>Attachments</p>
+        <Box sx={imageBoxContainer}>
         {complainData?.images.map((image) => {
           return (
             <Avatar
               src={image?.image}
-              sx={{
-                width: enlarge ? 400 : 100,
-                height: enlarge ? 400 : 100,
-                marginLeft: 2,
-                marginTop: 5,
-              }}
+              sx={imageStyle(enlarge)}
               variant="square"
               onClick={() => {
                 enlarge ? setEnlarge(false) : setEnlarge(true);
@@ -64,12 +66,13 @@ function ComplaintDetailPage() {
           );
         })}
       </Box>
-      {!check && (
+      </Box>
+      {!checkComplainType && (
         <Typography variant="h5" component={"h1"} sx={{ fontWeight: "bold" }}>
           Complaint Submitted by
         </Typography>
       )}
-      {!check && (
+      {!checkComplainType && (
         <ImageText
           image={complainData?.user?.image?.image}
           name={complainData?.user?.name}

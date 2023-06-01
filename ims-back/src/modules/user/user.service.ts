@@ -7,30 +7,36 @@ import { OtpService } from 'src/modules/otp/otp.service';
 import { SendOtpDto } from 'src/modules/otp/dtos/send-otp.dto';
 import { query } from 'express';
 import { PhotoService } from 'src/modules/photo/photo.service';
+import { RoleService } from '../role/role.service';
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User) private userRepository: Repository<User>,
     private otpService: OtpService,
     private photoService: PhotoService,
+    private roleSerive: RoleService,
   ) {}
 
   async getUsers(user: User) {
     const searchRole = user.roles.role == 'superadmin' ? 'admin' : 'employee';
-    if (user.roles.role == 'admin') {
-      const users = await this.userRepository.find({
-        where: {
-          roles: { role: searchRole },
-          organizationId: user.organizationId,
-        },
-        relations: ['organization', 'department'],
-      });
-      return users;
-    }
+    // if (user.roles.role == 'admin') {
+    //   const users = await this.userRepository.find({
+    //     where: {
+    //       roles: { role: searchRole },
+    //       organizationId: user.organizationId,
+    //     },
+    //     relations: ['organization', 'department'],
+    //   });
+    //   return users;
+    // }
     const users = await this.userRepository.find({
-      where: { roles: { role: searchRole } },
+      where: {
+        roles: { role: searchRole },
+        organizationId: user.organizationId,
+      },
       relations: {
         organization: true,
+        department: user.roles.role == 'admin',
       },
     });
     return users;
@@ -76,10 +82,7 @@ export class UserService {
     await this.photoService.updatePhoto(attrs.image);
 
     Object.assign(user, attrs);
-    return {
-      user: await this.userRepository.save(user),
-      message: 'User Updated',
-    };
+    return await this.userRepository.save(user)
   }
 
   async findUserByemail(email: string) {
@@ -99,10 +102,12 @@ export class UserService {
   }
 
   async getCount(currentUser: User) {
-    const role = currentUser.rolesId == 1 ? 2 : 3;
+    const searchRole =
+      currentUser.roles.role == 'superadmin' ? 'admin' : 'employee';
+    const role = await this.roleSerive.getRole(searchRole);
 
     const where =
-      currentUser.rolesId == 1
+      currentUser.roles.role == 'superadmin'
         ? 'user.rolesId = ' + role
         : 'user.rolesId= ' +
           role +
@@ -119,20 +124,22 @@ export class UserService {
       .groupBy('month')
       .getRawMany();
 
-    const total = await this.userRepository
-      .createQueryBuilder('user')
-      .select('COUNT(*)::int  AS Total')
-      .where(where)
-      .getRawOne();
+    const currentDate = new Date();
+    const currentMonthDate = currentDate.toLocaleString('en-us', {
+      month: 'short',
+    });
 
-    const currentMonth = await this.userRepository
-      .createQueryBuilder('user')
-      .select('COUNT(*)::int  AS count')
-      .where('EXTRACT(MONTH from created_at) = EXTRACT(MONTH from now())')
-      .andWhere('EXTRACT(YEAR from created_at) = EXTRACT(YEAR from now())')
-      .andWhere(where)
-      .getRawOne();
+    let totalCount = 0;
+    let currentMonth = null;
+    for (let i = 0; i < monthlyCount.length; i++) {
+      const item = monthlyCount[i];
+      totalCount += item.count;
 
-    return { monthlyCount, currentMonth, total: total.total };
+      if (item.month === currentMonthDate) {
+        currentMonth = { count: item.count };
+      }
+    }
+
+    return { monthlyCount, currentMonth, total: totalCount };
   }
 }

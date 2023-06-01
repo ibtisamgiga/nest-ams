@@ -11,18 +11,20 @@ import { CreateCompalintDto } from './dtos/create-complaint.dto';
 import { updateComplaintStatusDto } from './dtos/update-complaint-status.dto';
 import { Complaint } from './entity/complaint.entity';
 import { PhotoService } from 'src/modules/photo/photo.service';
+import { RoleService } from '../role/role.service';
 
 @Injectable()
 export class ComplaintService {
   constructor(
     @InjectRepository(Complaint)
-    private ComplaintRepository: Repository<Complaint>,
+    private complaintRepository: Repository<Complaint>,
     private photoService: PhotoService,
+    private roleService: RoleService,
   ) {}
   /************************************CREATE-COMPLAINT*************/
   async createCompliant(createComplaintDto: CreateCompalintDto, user: User) {
     const { description, images } = createComplaintDto;
-    const compalint = this.ComplaintRepository.create({
+    const compalint = this.complaintRepository.create({
       images,
       description,
       userId: user.id,
@@ -35,7 +37,7 @@ export class ComplaintService {
         }
         compalint.images = photos;
       }
-      return await this.ComplaintRepository.save(compalint);
+      return await this.complaintRepository.save(compalint);
     } catch (error) {
       throw new InternalServerErrorException();
     }
@@ -45,13 +47,16 @@ export class ComplaintService {
     const role = user.roles.role == 'superadmin' ? 'admin' : 'employee';
     const organizationId =
       user.roles.role == 'admin' ? user.organizationId : null;
-    const compalints = await this.ComplaintRepository.find({
+    const compalints = await this.complaintRepository.find({
       where: { user: { roles: { role }, organizationId } },
       relations: ['user', 'user.organization'],
+      order: { submissionDate: 'DESC' },
+
     });
-    const myCompalints = await this.ComplaintRepository.find({
+    const myCompalints = await this.complaintRepository.find({
       where: { user: { roles: { role: user.roles.role }, id: user.id } },
       relations: ['user', 'user.organization', 'user.image'],
+      order: { submissionDate: 'DESC' },
     });
     if (user.roles.role == 'admin') {
       return { compalints, myCompalints };
@@ -64,7 +69,7 @@ export class ComplaintService {
   async getComplaint(id: number, user: User) {
     const organizationId =
       user.roles.role == 'admin' ? user.organizationId : null;
-    const complaint = await this.ComplaintRepository.findOne({
+    const complaint = await this.complaintRepository.findOne({
       where: { id }, // user: { role: role, organizationId }
       relations: ['user', 'user.organization', 'user.image', 'images'],
     });
@@ -80,92 +85,90 @@ export class ComplaintService {
     const { status } = updatedStatus;
     const complaint = await this.getComplaint(id, user);
     complaint.status = status;
-    return await this.ComplaintRepository.save(complaint);
+    return await this.complaintRepository.save(complaint);
   }
 
   /************************************COUNT-COMPLAINTS*************/
   async getCount(currentUser: User) {
-    const role = currentUser.rolesId == 1 ? 2 : 3;
-    const where =
-      currentUser.rolesId == 1
-        ? 'user.rolesId = ' + role
-        : 'user.rolesId= ' +
-          role +
-          'AND user.organizationId = ' +
-          currentUser.organizationId;
+    const role = currentUser.roles.role == 'superadmin' ? 'admin' : 'employee';
+    const roleId = await this.roleService.getRole(role);
+    const where = this.buildWhereClause(currentUser, roleId);
 
-    const monthlyCount =
-      currentUser.roles.role == 'superadmin'
-        ? await this.ComplaintRepository.createQueryBuilder('complaint')
-            .select(
-              "To_CHAR(TO_DATE(EXTRACT(MONTH FROM DATE_TRUNC('month',complaint.created_at))::text,'MM'),'Mon')AS month,status,count(*):: int",
-            )
-            .innerJoin(User, 'user', 'user.id= complaint.userId')
-            .where(where) //"user.rolesId = :rolesId", { rolesId: 2 }
-            .groupBy('status,month')
-            .getRawMany()
-        : await this.ComplaintRepository.createQueryBuilder('complaint')
-            .select(
-              "TO_CHAR(TO_DATE(EXTRACT(Month from complaint.created_at)::text, 'MM'), 'Mon') AS month",
-            )
-            .addSelect(
-              "COUNT(CASE WHEN complaint.status = 'Pending' THEN 1 ELSE NULL END)",
-              'Pending',
-            )
-            .addSelect(
-              "COUNT(CASE WHEN complaint.status = 'Resolved' THEN 1 ELSE NULL END)",
-              'Resolved',
-            )
-            .innerJoin(User, 'user', 'user.id = complaint.userId')
-            .where(where)
-            .groupBy('month')
-            .getRawMany();
+    const monthlyCount = await this.getMonthlyCount(where, currentUser);
+    let totalPending = 0;
+    let totalResolved = 0;
+    let currentMonthPending = 0;
+    let currentMonthResolved = 0;
+    const currentDate = new Date();
+    const currentMonthDate = currentDate.toLocaleString('default', {
+      month: 'short',
+    });
+    monthlyCount.forEach((entry) => {
+      if (entry.month === currentMonthDate) {
+        if (entry.status === 'Pending') {
+          currentMonthPending += entry.count;
+        } else if (entry.status === 'Resolved') {
+          currentMonthResolved += entry.count;
+        }
+      }
 
-    const currentMonth = await this.ComplaintRepository.createQueryBuilder(
-      'complaint',
-    )
-      .select(
-        "To_CHAR(TO_DATE(EXTRACT(MONTH FROM DATE_TRUNC('month',complaint.created_at))::text,'MM'),'Mon')AS month,status,count(*)::int ",
-      )
-      .innerJoin(User, 'user', 'user.id= complaint.userId')
-      .where(where) //"user.rolesId = :rolesId", { rolesId: 2 }
-      .andWhere(
-        'EXTRACT(MONTH from complaint.created_at) = EXTRACT(MONTH from now())',
-      )
-      .groupBy('status,month')
-      .getRawMany();
+      if (entry.status === 'Pending') {
+        totalPending += entry.count;
+      } else if (entry.status === 'Resolved') {
+        totalResolved += entry.count;
+      }
+    });
 
-    const total = await this.ComplaintRepository.createQueryBuilder('complaint')
-      .select('status,count(*):: int')
-      .innerJoin(User, 'user', 'user.id= complaint.userId')
-      .where(where) //"user.rolesId = :rolesId", { rolesId: 2 }
-      .groupBy('status')
-      .getRawMany();
-
-    const currentMonthData =
-      currentMonth.length == 1
-        ? currentMonth[0].status == 'Resolved'
-          ? { Resolved: currentMonth[0].count, Pending: 0 }
-          : { Pending: currentMonth[0].count, Resolved: 0 }
-        : {
-            Pending: currentMonth[0]?.count,
-            Resolved: currentMonth[1]?.count,
-          };
-
-    const totalData =
-      total.length == 1
-        ? total[0].status == 'Resolved'
-          ? { Resolved: total[0].count, Pending: 0 }
-          : { Pending: total[0].count, Resolved: 0 }
-        : {
-            Pending: total[0]?.count,
-            Resolved: total[1]?.count,
-          };
-
+    const total = { Pending: totalPending, Resolved: totalResolved };
+    const currentMonth = {
+      Pending: currentMonthPending,
+      Resolved: currentMonthResolved,
+    };
     return {
       monthlyCount,
-      currentMonth: currentMonthData,
-      total: totalData,
+      currentMonth,
+      total,
     };
+  }
+
+  /***************PRIVATE-METHODS*************** */
+  private buildWhereClause(currentUser: User, role: any): string {
+    if (currentUser.roles.role == 'superadmin') {
+      return `user.rolesId = ${role}`;
+    } else {
+      return `user.rolesId = ${role} AND user.organizationId = ${currentUser.organizationId}`;
+    }
+  }
+
+  private async getMonthlyCount(where: string, currentUser: User) {
+    if (currentUser.roles.role == 'superadmin') {
+      return await this.complaintRepository
+        .createQueryBuilder('complaint')
+        .select(
+          "TO_CHAR(TO_DATE(EXTRACT(MONTH FROM DATE_TRUNC('month',complaint.created_at))::text,'MM'),'Mon')AS month,status,count(*):: int",
+        )
+        .innerJoin(User, 'user', 'user.id= complaint.userId')
+        .where(where)
+        .groupBy('status,month')
+        .getRawMany();
+    } else {
+      return await this.complaintRepository
+        .createQueryBuilder('complaint')
+        .select(
+          "TO_CHAR(TO_DATE(EXTRACT(Month from complaint.created_at)::text, 'MM'), 'Mon') AS month",
+        )
+        .addSelect(
+          "COUNT(CASE WHEN complaint.status = 'Pending' THEN 1 ELSE NULL END)",
+          'Pending',
+        )
+        .addSelect(
+          "COUNT(CASE WHEN complaint.status = 'Resolved' THEN 1 ELSE NULL END)",
+          'Resolved',
+        )
+        .innerJoin(User, 'user', 'user.id = complaint.userId')
+        .where(where)
+        .groupBy('month')
+        .getRawMany();
+    }
   }
 }

@@ -13,6 +13,12 @@ import { useTheme, useMediaQuery } from "@mui/material";
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import CircleIcon from "@mui/icons-material/Circle";
+import { colorEnum, status } from "../../utils/enums/statusEnum";
+import useScreenSize from "../../utils/checkScreenSize";
+import {
+  tableStyle,
+  tableStyleMd,
+} from "../../constants/table-constants/tableConstants";
 export default function MyTables({
   data,
   noPagination,
@@ -20,18 +26,15 @@ export default function MyTables({
   routes,
   query,
 }) {
-  const theme = useTheme();
-  const isMatch = useMediaQuery(theme.breakpoints.down("md"));
-  const style = isMatch
-    ? { minWidth: 500, width: "100%", display: "block", overflowX: "auto" }
-    : { minWidth: 500 };
+  const isMatch = useScreenSize();
+  const style = isMatch ? tableStyleMd : tableStyle;
   // createData,
   let rows = [];
   const createData = (Data) => {
     return { ...Data };
   };
   data?.forEach((element) => {
-    rows.push(createData(element));
+    rows?.push(createData(element));
   });
 
   const headers = tableHeaders;
@@ -70,7 +73,7 @@ export default function MyTables({
       <Table sx={style} aria-label="customized table">
         <TableHead>
           <TableRow>
-            {headers.map((title) => {
+            {headers?.map((title) => {
               return (
                 <StyledTableCell key={title} align="center">
                   {title}
@@ -80,15 +83,14 @@ export default function MyTables({
           </TableRow>
         </TableHead>
         <TableBody>
-          {rows
-            .slice(
+          {rows?.slice(
               (page - 1) * rowsPerPage,
               (page - 1) * rowsPerPage + rowsPerPage
             )
             .map((row) => (
               // {rows.map((row) => (
               <StyledTableRow key={row.id}>
-                {keys.map((key) => {
+                {keys?.map((key) => {
                   if (key == "roles") {
                     return null;
                   }
@@ -98,15 +100,16 @@ export default function MyTables({
                         <span>
                           <CircleIcon
                             sx={{
+                              marginRight:1,
                               fontSize: 12,
                               color:
-                                row[key] == "Rejected"
-                                  ? "#de0202"
-                                  : row[key] == "Approved"
-                                  ? "#2ab38e"
-                                  : row[key] == "Resolved"
-                                  ? "#2ab38e"
-                                  : "#5184ec",
+                                row[key] == status.REJECTED
+                                  ? colorEnum.Reject
+                                  : row[key] == status.APPROVED
+                                  ? colorEnum.approve
+                                  : row[key] == status.RESOLVED
+                                  ? colorEnum.resolved
+                                  : colorEnum.default,
                             }}
                           />
                           {row[key]}
@@ -116,7 +119,10 @@ export default function MyTables({
                   }
                   if (key == "image") {
                     return (
-                      <StyledTableCell textAligin="-webkit-center">
+                      <StyledTableCell
+                        sx={{ textAlign: "-webkit-center" }}
+                        textAligin="-webkit-center"
+                      >
                         <Avatar
                           src={row[key]}
                           variant="square"
@@ -137,9 +143,9 @@ export default function MyTables({
                   }
                 })}
 
-                {routes ? (
+                {routes ?  (
                   <StyledTableCell align="center">
-                    <Link to={routes + "/" + row.id + query}>view</Link>
+                    <Link style={{ textDecoration: 'none' }} to={routes + "/" + row.id + query}>view</Link>
                   </StyledTableCell>
                 ) : null}
               </StyledTableRow>

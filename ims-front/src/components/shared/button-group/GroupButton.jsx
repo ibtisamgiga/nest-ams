@@ -5,7 +5,10 @@ import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import { Add } from "@mui/icons-material";
 import { useDispatch } from "react-redux";
-import { deleteCategory } from "../../../redux/category/categoryAction";
+import {
+  deleteCategory,
+  getCategoriesDetail,
+} from "../../../redux/category/categoryAction";
 import { useNavigate } from "react-router-dom";
 
 function GroupButton({ id }) {
@@ -38,6 +41,7 @@ function GroupButton({ id }) {
         sx={{ color: "red" }}
         onClick={() => {
           dispatch(deleteCategory(id));
+          dispatch(getCategoriesDetail());
         }}
       >
         <DeleteOutlineOutlinedIcon fontSize="small" />

@@ -1,22 +1,15 @@
 import React, { useEffect, useState } from "react";
 import SearchField from "../../../components/shared/SearchField";
-import SelectField from "../../../components/shared/SelectField";
-import MyTables from "../../../components/shared/MyTable";
 import StartIconButton from "../../../components/shared/StartIconButton";
-import { useTheme, useMediaQuery } from "@mui/material";
-import ExapndableTable from "../../../components/shared/ExapndableTable";
 import CollapsibleTable from "../../../components/shared/CollaspableTable";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  getCategoriesDetail,
-  getCategoriesRequest,
-} from "../../../redux/category/categoryAction";
+import { getCategoriesDetail } from "../../../redux/category/categoryAction";
 import search from "../../../utils/search";
 import CircularLoader from "../../../components/shared/circular-loader/CircularLoader";
+import useScreenSize from "../../../utils/checkScreenSize";
+import { Alert } from "@mui/material";
 function CategoriesPage() {
-  const theme = useTheme();
-  const isMatch = useMediaQuery(theme.breakpoints.down("md"));
-
+  const isMatch = useScreenSize();
   const dispatch = useDispatch();
   const tableData = useSelector((state) => state.categoryData?.details);
   useEffect(() => {
@@ -43,7 +36,11 @@ function CategoriesPage() {
           to={"/category/create"}
         />
       </div>
-      {tableData ? (
+      {tableData ? tableData?.length == 0 ? (
+          <Alert variant="filled" severity="info">
+            No Records Found!
+          </Alert>
+        ) :(
         <CollapsibleTable tableData={filteredData ? filteredData : tableData} />
       ) : (
         <CircularLoader />

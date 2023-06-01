@@ -1,7 +1,8 @@
 import * as React from "react";
 import { useEffect, useState } from "react";
+import AlertTitle from "@mui/material/AlertTitle";
 import Divider from "@mui/material/Divider";
-import { defaultImage, AvatarInput } from "../../../constants/organizationConst";
+import { defaultImage } from "../../../constants/organizationConst";
 import FormHeader from "../../../components/shared/form-header/FormHeader";
 import FormImageHolder from "../../../components/shared/form-image/FormImageHolder";
 import FormInput from "../../../components/shared/form-input/FormInput";
@@ -12,11 +13,14 @@ import { createOrganization } from "../../../redux/organization/organizationActi
 import imageUploadHelper from "../../../utils/imageUpload";
 import { useNavigate } from "react-router-dom";
 import CircularLoader from "../../../components/shared/circular-loader/CircularLoader";
+import createImageHelper from "../../../utils/createImageHelper";
+import { Alert, Typography } from "@mui/material";
+import Notifier from "../../../components/shared/error-meassge/Notifier";
 function CreateOrganizationPage() {
-  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [loader, setLoader] = useState(false);
   const navigate = useNavigate();
   const [url, setUrl] = useState(defaultImage);
-  const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
   const [formData, setFormData] = useState({
     name: "",
@@ -28,34 +32,40 @@ function CreateOrganizationPage() {
     zip: "",
     country: "",
     bio: "",
-    image: "",
+    image: defaultImage,
   });
+  const [formSubmitted, setFormSubmitted] = useState(false);
+  const resp = useSelector((state) => state.organizationData);
+  const error = resp?.error ? resp?.error : null;
   const [countries, setCountries] = useState([]);
   const [cities, setCities] = useState([]);
-  const [currentCountry, setCurrentCountry] = useState({});
-  const response = useSelector((state) => state.organizationData);
   const handleFiles = async (files) => {
-    const imgdata = new FormData();
-    imgdata.append("file", files.fileList[0]);
-    imgdata.append("upload_preset", "fqje0r0l");
-    imgdata.append("cloud_name", "dntzlt0mt");
+    const imgdata = createImageHelper(files);
     setLoading(true);
-    let imageuploaded = await imageUploadHelper(imgdata);
+    const imageuploaded = await imageUploadHelper(imgdata);
     formData.image = imageuploaded.url;
     setUrl(imageuploaded.url);
     setLoading(false);
-    //setUrl(files.base64);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setFormSubmitted(true);
+    setLoader(true);
     dispatch(createOrganization(formData));
-    setError(response?.error);
-    navigate(-1);
   };
+
   useEffect(() => {
     setCountries(Countries.getCountries());
-  }, [response]);
+    if (error !== null && error !== undefined) {
+      console.log("(error", error);
+      setLoader(false);
+    } else if (formSubmitted && error === null) {
+      console.log("(error null", error);
+      navigate(-1);
+      setLoader(false);
+    }
+  }, [error, navigate]);
 
   return (
     <div className="body">
@@ -74,7 +84,13 @@ function CreateOrganizationPage() {
             subLabel={"upload a logo with minimum resoulation of 800*800px"}
           />
         )}
-        {error && <div>{error}</div>}
+        {error && formSubmitted ? (
+          <div>
+            <Notifier error={error} success={false} />
+          </div>
+        ) : formSubmitted ? (
+          <Notifier error={error} success={true} />
+        ) : null}
         <FormInput
           sideLabel={"Name of Organization"}
           placeHolder={"Name of Organization"}
@@ -125,7 +141,9 @@ function CreateOrganizationPage() {
             })[0];
 
             setCities(
-              Cities.getCities({ filters: { country_code: c.iso2.toString() } })
+              Cities.getCities({
+                filters: { country_code: c.iso2.toString() },
+              })
             );
           }}
         />
@@ -140,6 +158,7 @@ function CreateOrganizationPage() {
           }}
         />
         <FormInput
+          type={"number"}
           sideLabel={"  "}
           placeHolder={"Zip Code"}
           onChange={(e) => {
@@ -148,6 +167,9 @@ function CreateOrganizationPage() {
           value={formData.zip}
         />
         <Divider sx={{ borderBottomWidth: 4, marginTop: "20px" }} />
+        <Typography variant="h5" component={"h1"} sx={{ fontWeight: "bold" }}>
+          Credentials
+        </Typography>
         <FormInput
           sideLabel={"Representative Name"}
           placeHolder={"Representative Name"}
@@ -157,6 +179,9 @@ function CreateOrganizationPage() {
           value={formData.repName}
         />
         <FormInput
+          type={"number"}
+          minLength={"11"}
+          maxLength={"13"}
           sideLabel={"Representative Contact No."}
           placeHolder={"Representative Contact No."}
           onChange={(e) => {
@@ -170,8 +195,3 @@ function CreateOrganizationPage() {
 }
 
 export default CreateOrganizationPage;
-// if (response.error) {
-//   setError(response.error);
-// } else {
-//   setError(null);
-// }

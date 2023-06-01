@@ -1,4 +1,4 @@
-import { IsEmail } from 'class-validator';
+import { IsEmail, validate } from 'class-validator';
 import {
   Column,
   Entity,
@@ -20,6 +20,7 @@ import { RoleEntity } from 'src/modules/role/entity/role.entity';
 import { Exclude } from 'class-transformer';
 import { Photo } from 'src/modules/photo/entity/photo.entity';
 import { Department } from 'src/modules/department/entity/department.entity';
+import { IsUniqueContactNo } from '../validators/unique.validator';
 
 @Entity()
 // @Unique(['email','privateEmail'])

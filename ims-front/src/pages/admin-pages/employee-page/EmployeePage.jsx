@@ -4,7 +4,7 @@ import SelectField from "../../../components/shared/SelectField";
 import StartIconButton from "../../../components/shared/StartIconButton";
 import MyTables from "../../../components/shared/MyTable";
 import AddIcon from "@mui/icons-material/Add";
-import { useTheme, useMediaQuery } from "@mui/material";
+import { useTheme, useMediaQuery, Alert } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
 import { fetchUserList } from "../../../redux/users/usersAction";
@@ -45,9 +45,15 @@ function EmployeePage() {
           items={result}
           handleSelect={handleSearch}
         />
-        <StartIconButton title={"add"} to="/employee/create" />
+        {departments.length != 0 ? (
+          <StartIconButton title={"add"} to="/employee/create" />
+        ) : null}
       </div>
-      {tableData.length != 0 ? (
+      {tableData ? tableData?.length == 0 ? (
+          <Alert variant="filled" severity="info">
+            No Records Found!
+          </Alert>
+        ) :(
         <MyTables
           data={filteredData ? filteredData : tableData}
           tableHeaders={AdminEmployeeHeader}
@@ -55,6 +61,7 @@ function EmployeePage() {
         />
       ) : (
         <CircularLoader />
+      
       )}
     </div>
   );

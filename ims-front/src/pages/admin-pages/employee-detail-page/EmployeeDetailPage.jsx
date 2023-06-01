@@ -13,23 +13,32 @@ import {
   AdminEmployeeDetailInventoryHeader,
   AdminEmployeeDetailRequestHeader,
 } from "../../../constants/table-constants/tableConstants";
-import { useTheme, useMediaQuery } from "@mui/material";
 import { boxStyle } from "./employeeDetailStyles";
+import useScreenSize from "../../../utils/checkScreenSize";
 function EmployeeDetailPage() {
   const [index, setIndex] = useState(0);
   const { id } = useParams();
+  const [open,setOpen]=useState(false)
   const userData = useSelector((state) => state.usersData.selectedUser);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   useEffect(() => {
     dispatch(fetchUserById(id));
   }, [dispatch]);
-  const theme = useTheme();
-  const isMatch = useMediaQuery(theme.breakpoints.down("md"));
+  const isMatch = useScreenSize();
   return (
     <div className="body">
       <DetailHeader
         editAction={"/employee/edit/" + id}
+        closeAction={() => {
+          setOpen(false);
+        }}
+        open={open}
+        openAction={() => {
+          setOpen(true);
+          // dispatch(deleteOrganization(id));
+          // navigate(-1);
+        }}
         deleteAction={() => {
           dispatch(deleteUser(id));
           navigate(-1);

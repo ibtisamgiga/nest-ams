@@ -19,20 +19,21 @@ import {
   GET_CATEGORIES_COUNT_FAILURE,
   GET_CATEGORIES_COUNT,
   GET_CATEGORIES_DETAIL_SUCCESS,
-  GET_CATEGORIES_DETAIL_FAILURE
+  GET_CATEGORIES_DETAIL_FAILURE,
 } from "../constants";
 
 const initialState = {
   categories: [],
-  details:[],
+  details: [],
   category: null,
   error: null,
   count: {
     monthlyCount: [],
     currentMonth: {
-      count:0
+      month: null,
+      count: 0,
     },
-    total:0,
+    total: 0,
   },
 };
 
@@ -60,18 +61,18 @@ export const categoryData = (state = initialState, action) => {
         categories: [],
         error: action.payload.error,
       };
-      case GET_CATEGORIES_DETAIL_SUCCESS:
-        return {
-          ...state,
-          details: action.payload.details,
-          error: null,
-        };
-      case GET_CATEGORIES_DETAIL_FAILURE:
-        return {
-          ...state,
-         details: [],
-          error: action.payload.error,
-        };
+    case GET_CATEGORIES_DETAIL_SUCCESS:
+      return {
+        ...state,
+        details: action.payload.details,
+        error: null,
+      };
+    case GET_CATEGORIES_DETAIL_FAILURE:
+      return {
+        ...state,
+        details: [],
+        error: action.payload.error,
+      };
     case GET_CATEGORIES_COUNT_SUCCESS:
       return {
         ...state,
@@ -84,9 +85,10 @@ export const categoryData = (state = initialState, action) => {
         count: {
           monthCount: [],
           currentMonth: {
+            month: null,
             count: 0,
           },
-          total: 0
+          total: 0,
         },
         error: action.payload.error,
       };
@@ -137,9 +139,10 @@ export const categoryData = (state = initialState, action) => {
       return {
         ...state,
         categories: [...state.categories, action.payload.category],
+        error: null,
       };
     case CREATE_CATEGORY_ERROR:
-      return { ...state, error: action.payload.error };
+      return { ...state, error: action.payload };
     default:
       return state;
   }

@@ -5,10 +5,22 @@ import { Button, Typography } from "@mui/material";
 import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 import { useNavigate } from "react-router-dom";
 import { useTheme, useMediaQuery } from "@mui/material";
+import { colorEnum, statusEnum } from "../../../utils/enums/statusEnum";
 
-function StatusHeader({ label, heading, status, date,reject ,nobutton,markResolveAction,rejectAction,markText}) {
+function StatusHeader({
+  label,
+  heading,
+  status,
+  date,
+  reject,
+  nobutton,
+  markResolveAction,
+  rejectAction,
+  markText,
+}) {
   const navigate = useNavigate();
   const theme = useTheme();
+
   const isMatch = useMediaQuery(theme.breakpoints.down("md"));
   return (
     <div>
@@ -35,11 +47,27 @@ function StatusHeader({ label, heading, status, date,reject ,nobutton,markResolv
         <Button
           sx={{
             width: "90px",
-            backgroundColor: "#5184ec",
+            backgroundColor:
+              status == statusEnum.REJECTED
+                ? colorEnum.Reject
+                : status == statusEnum.APPROVED
+                ? colorEnum.approve
+                : status == statusEnum.RESOLVED
+                ? colorEnum.resolved
+                : colorEnum.default,
             color: "white",
             borderRadius: "5px",
             marginLeft: "20px",
-            "&:hover": { backgroundColor: "#5184ec" },
+            "&:hover": {
+              backgroundColor:
+                status == statusEnum.REJECTED
+                  ? colorEnum.Reject
+                  : status == statusEnum.APPROVED
+                  ? colorEnum.approve
+                  : status == statusEnum.RESOLVED
+                  ? colorEnum.resolved
+                  : colorEnum.default,
+            },
           }}
         >
           {status}
@@ -54,20 +82,22 @@ function StatusHeader({ label, heading, status, date,reject ,nobutton,markResolv
           </Typography>
         )}
         <div className={isMatch ? "buttongroup-md" : "buttongroup"}>
-          {nobutton?null:<Button
-          onClick={markResolveAction}
-            sx={{
-              height: "50px",
-              width: "165px",
-              backgroundColor: "#2ab38e",
-              color: "white",
-              borderRadius: "15px",
-              marginLeft: "10px",
-              "&:hover": { backgroundColor: "#2ab38e" },
-            }}
-          >
-           {markText}
-          </Button>}
+          {nobutton ? null : (
+            <Button
+              onClick={markResolveAction}
+              sx={{
+                height: "50px",
+                width: "165px",
+                backgroundColor: "#2ab38e",
+                color: "white",
+                borderRadius: "15px",
+                marginLeft: "10px",
+                "&:hover": { backgroundColor: "#2ab38e" },
+              }}
+            >
+              {markText}
+            </Button>
+          )}
           {reject && (
             <Button
               sx={{
@@ -78,7 +108,6 @@ function StatusHeader({ label, heading, status, date,reject ,nobutton,markResolv
                 borderRadius: "15px",
                 marginLeft: "10px",
                 "&:hover": { backgroundColor: "red" },
-              
               }}
               onClick={rejectAction}
             >
@@ -94,6 +123,6 @@ function StatusHeader({ label, heading, status, date,reject ,nobutton,markResolv
 
 export default StatusHeader;
 
-StatusHeader.defaultProps={
- markText: "Mark as Resolved"
-}
+StatusHeader.defaultProps = {
+  markText: "Mark as Resolved",
+};

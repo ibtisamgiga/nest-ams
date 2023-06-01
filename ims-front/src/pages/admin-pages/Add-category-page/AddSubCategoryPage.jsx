@@ -3,16 +3,15 @@ import FormHeader from "../../../components/shared/form-header/FormHeader";
 import FormInput from "../../../components/shared/form-input/FormInput";
 import { useEffect, useState } from "react";
 import "./add-sub-category.css";
-import { useTheme, useMediaQuery } from "@mui/material";
 import Divider from "@mui/material/Divider";
 import { Typography } from "@mui/material";
 import StartIconButton from "../../../components/shared/StartIconButton";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  createCategory,
   getCategoryRequest,
   updateCategory,
 } from "../../../redux/category/categoryAction";
+import useScreenSize from "../../../utils/checkScreenSize";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import LabelText from "../../../components/shared/text-with-label/LabelText";
 function AddSubCategoryPage() {
@@ -26,19 +25,18 @@ function AddSubCategoryPage() {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const check = queryParams.get("edit");
-  const theme = useTheme();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const [testArr, setTestArr] = useState([]);
-  const isMatch = useMediaQuery(theme.breakpoints.down("md"));
+  const [subCategoriesArray, setsubCategoriesArray] = useState([]);
+  const isMatch = useScreenSize();
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    testArr.forEach((test) => {
+    subCategoriesArray.forEach((test) => {
       formData.subCategories.push(test.value);
     });
 
-    setTestArr([]);
+    setsubCategoriesArray([]);
 
     dispatch(updateCategory(formData, id));
     // dispatch(createCategory(formData));
@@ -51,7 +49,7 @@ function AddSubCategoryPage() {
     navigate("/categories");
   };
 
-  const inputArr = [
+  const dynamicInputArray = [
     {
       type: "text",
       id: 1,
@@ -59,10 +57,10 @@ function AddSubCategoryPage() {
     },
   ];
 
-  const [arr, setArr] = useState(inputArr);
+  const [inputArray, setInputArray] = useState(dynamicInputArray);
 
   const addInput = () => {
-    setArr((s) => {
+    setInputArray((s) => {
       return [
         ...s,
         {
@@ -77,10 +75,10 @@ function AddSubCategoryPage() {
     e.preventDefault();
 
     const index = e.target.id;
-    setArr((s) => {
+    setInputArray((s) => {
       let newArr = s.slice();
       newArr[index].value = e.target.value;
-      setTestArr(newArr);
+      setsubCategoriesArray(newArr);
       return newArr;
     });
   };
@@ -132,7 +130,7 @@ function AddSubCategoryPage() {
                 );
               })}
               <div className="fields">
-                {arr.map((item, i) => {
+                {inputArray.map((item, i) => {
                   return (
                     <FormInput
                       sideLabel={

@@ -36,7 +36,7 @@ export class Request {
   created_at: Date;
 
   @ManyToOne(() => User, (user) => user.requests, {
-    eager: false,
+    eager: false,onDelete:'CASCADE'
   })
   user: User;
   @Column()

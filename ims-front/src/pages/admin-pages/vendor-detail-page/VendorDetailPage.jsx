@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import DetailHeader from "../../../components/shared/details-header/DetailHeader";
 import MyTables from "../../../components/shared/MyTable";
 import LabelText from "../../../components/shared/text-with-label/LabelText";
@@ -9,10 +9,12 @@ import {
   deleteVendor,
   getVendorRequest,
 } from "../../../redux/vendor/vendorAction";
+import { Chip, Stack } from "@mui/material";
 function VendorDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const [open,setOpen]=useState(false)
   useEffect(() => {
     dispatch(getVendorRequest(id));
   }, [dispatch]);
@@ -21,6 +23,15 @@ function VendorDetailPage() {
     <div className="body">
       <DetailHeader
         editAction={"/vendor/edit/" + id}
+        closeAction={() => {
+          setOpen(false);
+        }}
+        open={open}
+        openAction={() => {
+          setOpen(true);
+          // dispatch(deleteOrganization(id));
+          // navigate(-1);
+        }}
         deleteAction={() => {
           dispatch(deleteVendor(id));
           navigate(-1);
@@ -37,6 +48,12 @@ function VendorDetailPage() {
         content={vendor?.categories[0]?.parent?.name}
         divider
       />
+       <Stack direction="row" spacing={1}>
+        {vendor?.categories.map((subCat) => {
+          return <Chip label={subCat?.name} />;
+        })}
+      </Stack>
+  
     </div>
   );
 }

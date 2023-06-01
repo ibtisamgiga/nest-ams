@@ -22,7 +22,7 @@ import {
 
 const initialState = {
   complaints: [],
-  myComp:[],
+  myComp: [],
   complaint: null,
   error: null,
   count: {
@@ -51,18 +51,21 @@ const initialState = {
 export const complaintData = (state = initialState, action) => {
   switch (action.type) {
     case GET_COMPLAINTS_SUCCESS:
-      
       return {
         ...state,
-        complaints: action.payload.complaints.complaints,
-        myComp:action.payload.complaints?.myComplaints?action.payload.complaints.myComplaints:[],
+        complaints: action.payload.complaints?.complaints?
+        action.payload.complaints?.complaints:[]
+        ,
+        myComp: action.payload.complaints?.myComplaints
+          ? action.payload.complaints.myComplaints
+          : [],
         error: null,
       };
     case GET_COMPLAINTS_FAILURE:
       return {
         ...state,
         complaints: [],
-        myComp:[],
+        myComp: [],
         error: action.payload.error,
       };
     case GET_COMPLAINT_COUNT_SUCCESS:
@@ -107,8 +110,8 @@ export const complaintData = (state = initialState, action) => {
       return {
         ...state,
         complaints: state.complaints.map((comp) =>
-          comp.id === action.payload.complaint.id
-            ? action.payload.complaint
+          comp.id === action.payload.complaint.id?
+          comp// ? action.payload.complaint
             : comp
         ),
         complaint: action.payload.complaint,

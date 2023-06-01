@@ -98,6 +98,8 @@ export const AdminDashboardHeader = [
 export const AdminInventoryHeader = [
   "ID",
   "Item Name",
+  'Is Assigined',
+  'Is Faulty',
   "Description",
   "Category",
   "Sub-category",
@@ -186,3 +188,12 @@ export const AdminVendorHeader = [
   "Total Spending",
   "Action",
 ];
+
+export const tableStyleMd = {
+  minWidth: 500,
+  width: "100%",
+  display: "block",
+  overflowX: "auto",
+};
+
+export const tableStyle = { minWidth: 500 };

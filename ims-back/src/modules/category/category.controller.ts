@@ -51,7 +51,7 @@ export class CategoryController {
   @Role(Roles.Admin, Roles.Employee)
   @UseGuards(AuthGuard(), RolesGuard)
   @Serialize(GetCategoriesDto)
-  getCategoriesCount(@GetUser() user: User) {
+  getCategoriesDetail(@GetUser() user: User) {
     return this.categoryService.countCategories(user);
   }
 

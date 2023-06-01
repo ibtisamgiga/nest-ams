@@ -2,9 +2,10 @@ import React, { useEffect, useState } from "react";
 import SearchField from "../../../components/shared/SearchField";
 import SelectField from "../../../components/shared/SelectField";
 import MyTables from "../../../components/shared/MyTable";
+import useScreenSize from "../../../utils/checkScreenSize";
 import { useDispatch, useSelector } from "react-redux";
 import StartIconButton from "../../../components/shared/StartIconButton";
-import { useTheme, useMediaQuery } from "@mui/material";
+import { useTheme, useMediaQuery, Alert } from "@mui/material";
 import { getDepartmentsRequest } from "../../../redux/departments/departmentAction";
 import search from "../../../utils/search";
 import CircularLoader from "../../../components/shared/circular-loader/CircularLoader";
@@ -16,9 +17,7 @@ function DepartmentPage() {
   useEffect(() => {
     dispatch(getDepartmentsRequest());
   }, [dispatch]);
-
-  const theme = useTheme();
-  const isMatch = useMediaQuery(theme.breakpoints.down("md"));
+  const isMatch = useScreenSize();
 
   const [filteredData, setFilteredData] = useState(null);
   const [searchText, setSearchText] = useState("");
@@ -36,11 +35,17 @@ function DepartmentPage() {
         <StartIconButton title={"Add"} to={"/department/create"} />
       </div>
       {tableData ? (
-        <MyTables
-          data={filteredData ? filteredData : tableData}
-          tableHeaders={AdminDepartmentHeader}
-          routes={"/department/detail"}
-        />
+        tableData?.length == 0 ? (
+          <Alert variant="filled" severity="info">
+            No Records Found!
+          </Alert>
+        ) : (
+          <MyTables
+            data={filteredData ? filteredData : tableData}
+            tableHeaders={AdminDepartmentHeader}
+            routes={"/department/detail"}
+          />
+        )
       ) : (
         <CircularLoader />
       )}

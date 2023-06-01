@@ -9,13 +9,10 @@ import {
 } from "../constants";
 import fetchData from "../../utils/fetchData";
 import { setLocalStorage } from "../../utils/localStorageHelper";
+import { endPoint } from "../../constants/api-constants";
 
 function* sendOtpSaga({ data }) {
-  let response = yield fetchData(
-    "POST",
-    data,
-    "http://localhost:5000/users/send-otp"
-  );
+  let response = yield fetchData("POST", data, `${endPoint}/users/send-otp`);
   if (response.error) {
     yield put({ type: SET_OTP_ERROR, payload: { error: response.message } });
   } else {
@@ -27,7 +24,7 @@ function* setPasswordSaga({ data }) {
   let response = yield fetchData(
     "PUT",
     data,
-    "http://localhost:5000/users/reset-password"
+    `${endPoint}/users/reset-password`
   );
   if (response.error) {
     yield put({ type: SET_OTP_ERROR, payload: { error: response.message } });

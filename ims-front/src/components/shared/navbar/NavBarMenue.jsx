@@ -1,9 +1,10 @@
 import * as React from "react";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
-import { Avatar } from "@mui/material";
+import { Avatar, IconButton } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import useScreenSize from "../../../utils/checkScreenSize";
 export default function NavBarMenue({ user }) {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const navigate = useNavigate();
@@ -15,7 +16,7 @@ export default function NavBarMenue({ user }) {
     //setAnchorEl(null);
     logout();
   };
-
+  const isMatch = useScreenSize();
   const handleClosemenue = () => {
     setAnchorEl(null);
   };
@@ -24,19 +25,23 @@ export default function NavBarMenue({ user }) {
     localStorage.clear();
     //navigate("/login");
     navigate("/");
-    navigate(0)
+    navigate(0);
     //history.go(0)
   };
 
   return (
     <div className="row">
-      
       <Avatar
-        onClick={handleClick}
+        onClick={null}
         src={user?.image?.image}
-        sx={{ height: "55px", width: "55px" }}
+        sx={{ height: "50px", width: "50px" }}
       ></Avatar>
-      <span className="black">{user.name}</span>
+      <span className="black">
+        {isMatch ? null : user.name}
+        <IconButton onClick={handleClick}>
+          <KeyboardArrowDownIcon />
+        </IconButton>
+      </span>
 
       <Menu
         id="basic-menu"

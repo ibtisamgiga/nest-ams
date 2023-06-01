@@ -13,41 +13,64 @@ export default function TabsVertical({
   onChange,
   display,
 }) {
-  // const[index,setIndex]=React.useState()
   return (
-    <div>
-      <Tabs
-        aria-label="Vertical tabs"
-        orientation={display}
-        value={index}
-        onChange={onChange} //(event, value) => setIndex(value)
-        //sx={{ minWidth: 300, borderRadius: 'lg'}}
-      >
-        <TabList>
-          <Tab
-            variant={index === 0 ? "solid" : "plain"}
-            color={index === 0 ? "primary" : "neutral"}
-          >
-            {tab1}
-          </Tab>
-          <Tab
-            variant={index === 1 ? "solid" : "plain"}
-            color={index === 1 ? "primary" : "neutral"}
-          >
-            {tab2}
-          </Tab>
-
-          {tab3 ? (
+    <>
+      <div>
+        <Tabs
+          aria-label="Vertical tabs"
+          orientation={display}
+          value={index}
+          onChange={onChange}
+        >
+          <TabList sx={{ backgroundColor: "white" }}>
             <Tab
-              variant={index === 2 ? "solid" : "plain"}
-              color={index === 2 ? "primary" : "neutral"}
+              sx={{
+                width: display == "vertical" ? "200px" : null,
+                color: index == 0 ? "white" : "black",
+                backgroundColor: index == 0 ? "#5184ec" : "white",
+              }}
             >
-              {tab3}
+              {tab1}
             </Tab>
-          ) : null}
-        </TabList>
-      </Tabs>
-    </div>
+            <Tab
+              sx={{
+                width: display == "vertical" ? "200px" : null,
+                color: index == 1 ? "white" : "black",
+                backgroundColor: index == 1 ? "#5184ec" : "white",
+              }}
+            >
+              {tab2}
+            </Tab>
+
+            {tab3 ? (
+              <Tab
+                sx={{
+                  width: display == "vertical" ? "200px" : null,
+                  color: index == 2 ? "white" : "black",
+                  backgroundColor: index == 2 ? "#5184ec" : "white",
+                }}
+              >
+                {tab3}
+              </Tab>
+            ) : null}
+          </TabList>
+        </Tabs>
+      </div>
+      <Divider
+        sx={
+          display == "vertical"
+            ? {
+                borderRightWidth: 4,
+                marginLeft: "20px",
+                orientation: "vertical",
+              }
+            : {
+                borderBottomWidth: 4,
+                margin: "20px",
+              }
+        }
+      />
+    </>
   );
 }
 TabsVertical.defaultProps = {

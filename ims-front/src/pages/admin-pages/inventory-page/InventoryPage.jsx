@@ -3,7 +3,7 @@ import SearchField from "../../../components/shared/SearchField";
 import SelectField from "../../../components/shared/SelectField";
 import MyTables from "../../../components/shared/MyTable";
 import StartIconButton from "../../../components/shared/StartIconButton";
-import { useTheme, useMediaQuery } from "@mui/material";
+import { useTheme, useMediaQuery, Alert } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { getItemsRequest } from "../../../redux/item/itemAction";
 import { getCategoriesRequest } from "../../../redux/category/categoryAction";
@@ -55,13 +55,19 @@ function InventoryPage() {
           items={subCategoryResult}
           handleSelect={handleSearch}
         />
-        <StartIconButton
-          title={"Add Item"}
-          width={7}
-          to={"/inventory/create"}
-        />
+        {categoryResult.length != 0 ? (
+          <StartIconButton
+            title={"Add Item"}
+            width={7}
+            to={"/inventory/create"}
+          />
+        ) : null}
       </div>
-      {tableData ? (
+      {tableData ?tableData?.length == 0 ? (
+          <Alert variant="filled" severity="info">
+            No Records Found!
+          </Alert>
+        ) : (
         <MyTables
           data={
             filteredData
@@ -71,6 +77,7 @@ function InventoryPage() {
               : []
           }
           //data={Array.isArray(Data) ? Data : []}
+        
           tableHeaders={AdminInventoryHeader}
           routes={"/inventory/detail"}
         />

@@ -24,32 +24,25 @@ export class RequestService {
   async createRequest(createRequestDto: CreateRequestDto, user: User) {
     const { description, requestType, itemId } = createRequestDto;
     const request = this.requestRepository.create({
-      itemId,
-      description,
-      requestType,
+      ...createRequestDto,
       userId: user.id,
     });
-
     try {
-      if (requestType == 'Faulty') {
+      if (requestType === 'Faulty') {
         const item = await this.itemService.getItem(itemId, user);
-        const body: UpdateItemDto = {
-          name: item.name,
-          serialNumber: item.serialNumber,
-          description: item.description,
-          vendorId: item.vendorId,
-          categoryId: item.categoryId,
-          price: item.price,
-          faulty: true,
-        };
-        await this.itemService.updateItem(itemId, body, user);
-        return await this.requestRepository.save(request);
+
+        await this.itemService.updateItem(
+          itemId,
+          { ...item, faulty: true },
+          user,
+        );
       }
       return await this.requestRepository.save(request);
     } catch (error) {
       throw new InternalServerErrorException(error.message);
     }
   }
+
   async getRequests(user: User, type) {
     const id = user.roles.role == 'employee' ? user.id : null;
     return await this.requestRepository.find({
@@ -59,17 +52,10 @@ export class RequestService {
         requestType: type,
         user: { id },
       },
+      order: { created_at: 'DESC' },
     });
   }
-  async getReturns(user: User) {
-    return await this.requestRepository.find({
-      relations: ['item', 'item.category.parent', 'user'], //'vendor.categories'
-      where: {
-        item: { category: { organizationId: user.organizationId } },
-        requestType: 'faulty',
-      },
-    });
-  }
+
   async getRequest(id: number, user: User) {
     return await this.requestRepository.findOne({
       relations: ['item', 'item.category.parent', 'user'], //'vendor.categories'
@@ -83,16 +69,16 @@ export class RequestService {
     if (!request) {
       throw new NotFoundException('request Not Found');
     }
-
     Object.assign(request, attrs);
-
     if (request.requestType == 'Acquisition' && attrs.status == 'Approved') {
       const body: AssiginItemDto = {
         userId: request.userId,
       };
       await this.itemService.assiginItem(request.itemId, body, currentUser);
     }
-
+    if (request.requestType == 'Faulty' && attrs.status == 'Approved' && attrs.type=='Replace') {
+      await this.itemService.unAssiginItem(request.itemId, currentUser);
+    }
     return {
       item: await this.requestRepository.save(request),
       message: 'request Updated',

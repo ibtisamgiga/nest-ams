@@ -1,36 +1,39 @@
-import React from "react";
+import { useEffect } from "react";
 import FormHeader from "../../../components/shared/form-header/FormHeader";
 import FormInput from "../../../components/shared/form-input/FormInput";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import "./create-category.css";
-import { useTheme, useMediaQuery } from "@mui/material";
 import Divider from "@mui/material/Divider";
 import { Typography } from "@mui/material";
 import StartIconButton from "../../../components/shared/StartIconButton";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { createCategory } from "../../../redux/category/categoryAction";
 import { useNavigate } from "react-router-dom";
+import useScreenSize from "../../../utils/checkScreenSize";
+import Notifier from "../../../components/shared/error-meassge/Notifier";
 function CreateCategoryPage() {
   const [formData, setFormData] = useState({
     name: "",
     subCategories: [],
   });
-  const theme = useTheme();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const [testArr, setTestArr] = useState([]);
-  const isMatch = useMediaQuery(theme.breakpoints.down("md"));
+  const [loader, setLoader] = useState(false);
+  const [formSubmitted, setFormSubmitted] = useState(false);
+  const [subCategoriesArray, setsubCategoriesArray] = useState([]);
+  const error = useSelector((state) => state.categoryData?.error);
+  const isMatch = useScreenSize();
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    testArr.forEach((test) => {
+    setFormSubmitted(true);
+    setLoader(true);
+    subCategoriesArray.forEach((test) => {
       formData.subCategories.push(test.value);
     });
-    setTestArr([]);
+    setsubCategoriesArray([]);
     dispatch(createCategory(formData));
-    navigate(-1);
   };
-  const inputArr = [
+  const dynamicInputArray = [
     {
       type: "text",
       id: 1,
@@ -38,12 +41,12 @@ function CreateCategoryPage() {
     },
   ];
 
-  const [arr, setArr] = useState(inputArr);
+  const [dynamicArray, setDynamicArray] = useState(dynamicInputArray);
 
   const addInput = () => {
-    setArr((s) => {
+    setDynamicArray((prvArray) => {
       return [
-        ...s,
+        ...prvArray,
         {
           type: "text",
           value: "",
@@ -54,15 +57,23 @@ function CreateCategoryPage() {
 
   const handleChange = (e) => {
     e.preventDefault();
-
     const index = e.target.id;
-    setArr((s) => {
-      let newArr = s.slice();
-      newArr[index].value = e.target.value;
-      setTestArr(newArr);
-      return newArr;
+    setDynamicArray((array) => {
+      let tempSubcategoriesArr = array.slice();
+      tempSubcategoriesArr[index].value = e.target.value;
+      setsubCategoriesArray(tempSubcategoriesArr);
+      return tempSubcategoriesArr;
     });
   };
+
+  useEffect(() => {
+    if (error !== null && error !== undefined) {
+      setLoader(false);
+    } else if (formSubmitted && error === null) {
+      navigate(-1);
+      setLoader(false);
+    }
+  }, [error, navigate]);
   return (
     <div className="body">
       <FormHeader heading={"Add New Category"} form={"createCategory"} />
@@ -76,6 +87,13 @@ function CreateCategoryPage() {
           value={formData.name}
         />
         <Divider sx={{ borderBottomWidth: 2, marginTop: "20px" }} />
+        {error && formSubmitted ? (
+          <div>
+            <Notifier error={error} success={false} />
+          </div>
+        ) : formSubmitted ? (
+          <Notifier error={error} success={true} />
+        ) : null}
         <Typography
           variant="h5"
           component={"h1"}
@@ -85,9 +103,10 @@ function CreateCategoryPage() {
         </Typography>
         <div className="column">
           <div className="fields">
-            {arr.map((item, i) => {
+            {dynamicArray.map((item, i) => {
               return (
                 <FormInput
+                  key={i}
                   sideLabel={"sub-Category # " + (i + 1)}
                   placeHolder={"sub-Category"}
                   id={i}
@@ -100,7 +119,12 @@ function CreateCategoryPage() {
           {isMatch ? (
             <StartIconButton title={"Add"} onClick={addInput} right={true} />
           ) : (
-            <StartIconButton title={"Add sub-category"} width={11} onClick={addInput} left={true} />
+            <StartIconButton
+              title={"Add sub-category"}
+              width={11}
+              onClick={addInput}
+              left={true}
+            />
           )}
         </div>
       </form>

@@ -57,7 +57,7 @@ export const organizationData = (state = initialState, action) => {
       return {
         ...state,
         organizations: [],
-        error: action.payload.error,
+        error: action.payload,
       };
     case GET_ORGANIZATIONS_COUNT_SUCCESS:
       return {
@@ -126,6 +126,7 @@ export const organizationData = (state = initialState, action) => {
     case CREATE_ORGANIZATION_SUCCESS:
       return {
         ...state,
+        error:null,
         organizations: [...state.organizations, action.payload.organization],
       };
     case CREATE_ORGANIZATION_ERROR:

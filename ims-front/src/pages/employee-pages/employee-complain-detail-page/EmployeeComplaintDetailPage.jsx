@@ -1,12 +1,8 @@
-import { Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import StatusHeader from "../../../components/shared/header-with-status/StatusHeader";
-import ImageText from "../../../components/shared/image-with-text/ImageText";
 import LabelText from "../../../components/shared/text-with-label/LabelText";
 import { useParams } from "react-router-dom";
-import { useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { getRequestRequest } from "../../../redux/request/requestAction";
 import { getComplaintRequest } from "../../../redux/complaints/complaintAction";
 function EmployeeComplaintDetailPage() {
   const dispatch = useDispatch();

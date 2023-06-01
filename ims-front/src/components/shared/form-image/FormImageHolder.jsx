@@ -23,6 +23,7 @@ function FormImageHolder({ handleFiles, image, label ,subLabel}) {
           fileTypes={[".png", ".jpg"]}
           base64={true}
           handleFiles={handleFiles}
+          
         >
           <Button
             variant="contained"

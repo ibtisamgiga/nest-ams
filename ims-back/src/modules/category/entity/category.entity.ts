@@ -23,11 +23,11 @@ export class Category {
   @OneToMany(() => Category, (category) => category.parent)
   children: Category[];
 
-  @ManyToOne(() => Category, (category) => category.children)
+  @ManyToOne(() => Category, (category) => category.children,{onDelete: 'CASCADE'})
   parent: Category;
 
   @ManyToOne(() => Organization, (organization) => organization.categories, {
-    eager: false,
+    eager: false,onDelete:'CASCADE'
   })
   organization: Organization;
 

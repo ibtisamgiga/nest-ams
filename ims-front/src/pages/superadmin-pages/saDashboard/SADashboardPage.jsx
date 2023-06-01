@@ -1,10 +1,7 @@
 import React from "react";
 import DataCard from "../../../components/shared/DataCard";
-import { useTheme, useMediaQuery, Box } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { useState, useEffect } from "react";
-// import { BarChart } from '@mui/icons-material';
-// import countBarChart from './BarChart';
 import Chart from "../../../components/shared/Chart";
 import "./sadashboard.css";
 import { getOrganizationsCount } from "../../../redux/organization/organizationAction";
@@ -16,23 +13,25 @@ import {
 import GraphTabs from "../../../components/shared/graph-tabs/GraphTabs";
 import MyTables from "../../../components/shared/MyTable";
 import { SuperAdminDashboardHeader } from "../../../constants/table-constants/tableConstants";
+import { Box } from "@mui/material";
+import useScreenSize from "../../../utils/checkScreenSize";
+import ExpandTables from "../../../components/shared/expand-tables/ExpandTables";
+import { generatePdf } from "../../../utils/pdfGenerator";
 function SADashboardPage() {
   const { complaintData, organizationData, usersData } = useSelector(
     (state) => state
   );
   const tableData = complaintData.complaints;
-  const orgCount = organizationData?.count;
+  const organizationCount = organizationData?.count;
   const userCount = usersData?.count;
   const complaintCount = complaintData?.count;
   const dispatch = useDispatch();
-  const theme = useTheme();
-  const isMatch = useMediaQuery(theme.breakpoints.down("md"));
-
   const [value, setValue] = React.useState(0);
 
   const handleChangeTabs = (event, newValue) => {
     setValue(newValue);
   };
+  const isMatch = useScreenSize();
   useEffect(() => {
     dispatch(getOrganizationsCount());
     dispatch(getUsersCount());
@@ -46,9 +45,13 @@ function SADashboardPage() {
       <div className={isMatch ? "row-md" : "row"}>
         <DataCard
           border={isMatch ? "" : "solid  #e3e3e3 2px"}
-          totalCount={orgCount.total}
+          totalCount={organizationCount.total}
           name={"Organization"}
-          monthDifference={orgCount?.currentMonth?.count}
+          monthDifference={
+            organizationCount?.currentMonth?.count == undefined
+              ? 0
+              : organizationCount?.currentMonth?.count
+          }
         />
         <DataCard
           border={isMatch ? "" : "solid  #e3e3e3 2px"}
@@ -77,19 +80,36 @@ function SADashboardPage() {
           }
         />
       </div>
-      <GraphTabs handleChange={handleChangeTabs} value={value} />
+      <GraphTabs
+        handleChange={handleChangeTabs}
+        value={value}
+        action={() =>
+          generatePdf(
+            value == 0
+              ? organizationCount?.monthlyCount
+              : userCount?.monthlyCount,
+            "monhly data"
+          )
+        }
+      />
       <div className="barchart">
         <Chart
-          data={value == 0 ? orgCount?.monthlyCount : userCount?.monthlyCount}
+          data={
+            value == 0
+              ? organizationCount?.monthlyCount
+              : userCount?.monthlyCount
+          }
           dataKeyX={"month"}
           dataKeyY={"count"}
         />
       </div>
-      <Box sx={{ marginTop: "1%" }}>
+      <ExpandTables heading={"Recent Complaints"} to={"/complaints"} />
+      <Box sx={{ marginTop: "-2%" }}>
         <MyTables
-          data={tableData}
+          data={tableData.slice(0, 5)}
           tableHeaders={SuperAdminDashboardHeader}
           routes={"/complaints/detail"}
+          noPagination={true}
         />
       </Box>
     </div>

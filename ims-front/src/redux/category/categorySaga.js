@@ -3,24 +3,13 @@ import fetchData from "../../utils/fetchData";
 //import { CATEGORY_LIST, SET_CATEGORY_LIST } from "../constants";
 import {
   GET_CATEGORIES_REQUEST,
-  GET_CATEGORIES_FAILURE,
   GET_CATEGORY_REQUEST,
-  GET_CATEGORIES_SUCCESS,
-  GET_CATEGORY_FAILURE,
-  GET_CATEGORY_SUCCESS,
   UPDATE_CATEGORY,
-  UPDATE_CATEGORY_SUCCESS,
-  UPDATE_CATEGORY_ERROR,
   DELETE_CATEGORY,
-  DELETE_CATEGORY_ERROR,
-  DELETE_CATEGORY_SUCCESS,
-  CREATE_CATEGORY,
-  CREATE_CATEGORY_SUCCESS,
-  CREATE_CATEGORY_ERROR,
-  GET_CATEGORIES_COUNT_SUCCESS,
-  GET_CATEGORIES_COUNT_FAILURE,
-  GET_CATEGORIES_COUNT,
   GET_CATEGORIES_DETAIL_REQUEST,
+  GET_CATEGORIES_COUNT,
+  CREATE_CATEGORY,
+  CREATE_CATEGORY_ERROR,
 } from "../constants";
 
 import {
@@ -39,14 +28,11 @@ import {
   deleteCategorySuccess,
   deleteCategoryError,
 } from "./categoryAction";
+import { endPoint } from "../../constants/api-constants";
 // Worker saga for getting all organizations
 function* getCategories() {
   try {
-    const categories = yield fetchData(
-      "GET",
-      null,
-      "http://localhost:5000/category"
-    ); // call your API method here
+    const categories = yield fetchData("GET", null, `${endPoint}category`); // call your API method here
     yield put(getCategoriesSuccess(categories)); // dispatch action to update Redux store with retrieved organizations
   } catch (error) {
     yield put(getCategoriesFailure(error)); // dispatch action to update Redux store with error
@@ -55,11 +41,7 @@ function* getCategories() {
 
 function* getDetails() {
   try {
-    const details = yield fetchData(
-      "GET",
-      null,
-      "http://localhost:5000/category/details"
-    ); // call your API method here
+    const details = yield fetchData("GET", null, `${endPoint}category/details`); // call your API method here
     yield put(getCategoriesDetailSuccess(details)); // dispatch action to update Redux store with retrieved organizations
   } catch (error) {
     yield put(getCategoriesDetailFailure(error)); // dispatch action to update Redux store with error
@@ -67,11 +49,7 @@ function* getDetails() {
 }
 function* getCount() {
   try {
-    const count = yield fetchData(
-      "GET",
-      null,
-      "http://localhost:5000/category/count"
-    ); // call your API method here
+    const count = yield fetchData("GET", null, `${endPoint}category/count`); // call your API method here
 
     yield put(getCategoryCountSuccess(count)); // dispatch action to update Redux store with retrieved organizations
   } catch (error) {
@@ -83,11 +61,7 @@ function* getCategory(action) {
   const { id } = action.payload;
 
   try {
-    const category = yield fetchData(
-      "GET",
-      null,
-      `http://localhost:5000/category/${id}`
-    ); // call your API method here, passing in the ID as a parameter
+    const category = yield fetchData("GET", null, `${endPoint}category/${id}`); // call your API method here, passing in the ID as a parameter
     yield put(getCategorySuccess(category)); // dispatch action to update Redux store with retrieved organization
   } catch (error) {
     yield put(getCategoryFailure(error)); // dispatch action to update Redux store with error
@@ -100,10 +74,14 @@ function* updateCategorySaga(action) {
     const category = yield fetchData(
       "PATCH",
       body,
-      `http://localhost:5000/category/${id}`
+      `${endPoint}category/${id}`
     );
-    //yield call("" action.payload.organization);
-    yield put(updateCategorySuccess(category));
+    if (category.statusCode != 200) {
+      yield put(updateCategoryError(category.message));
+    } else {
+      yield put(updateCategorySuccess(category));
+    }
+    //yield put(updateCategorySuccess(category));
   } catch (error) {
     yield put(updateCategoryError(error));
   }
@@ -112,16 +90,13 @@ function* updateCategorySaga(action) {
 function* createCategorySaga(action) {
   const { body } = action.payload;
   try {
-    const category = yield fetchData(
-      "POST",
-      body,
-      `http://localhost:5000/category`
-    );
+    const category = yield fetchData("POST", body, `${endPoint}category`);
 
-    if (category.error) {
-      yield put(createCategoryError(category.message));
+    if (category.statusCode != 200) {
+      yield put({ type: CREATE_CATEGORY_ERROR, payload: category.message });
+    } else {
+      yield put(createCategorySuccess(category));
     }
-    yield put(createCategorySuccess(category));
   } catch (error) {
     yield put(createCategoryError(error));
   }
@@ -129,8 +104,8 @@ function* createCategorySaga(action) {
 function* deleteCategorySaga(action) {
   const { id } = action.payload;
   try {
-    yield fetchData("DELETE", null, `http://localhost:5000/category/${id}`);
-  
+    yield fetchData("DELETE", null, `${endPoint}category/${id}`);
+
     yield put(deleteCategorySuccess(action.payload.id));
   } catch (error) {
     yield put(deleteCategoryError(error));
@@ -139,14 +114,11 @@ function* deleteCategorySaga(action) {
 
 function* categorySaga() {
   yield takeLatest(GET_CATEGORIES_REQUEST, getCategories);
-  //yield takeEvery(CATEGORY_LIST, getOrganizations);
   yield takeLatest(GET_CATEGORIES_DETAIL_REQUEST, getDetails);
   yield takeLatest(GET_CATEGORY_REQUEST, getCategory);
   yield takeLatest(GET_CATEGORIES_COUNT, getCount);
   yield takeLatest(CREATE_CATEGORY, createCategorySaga);
   yield takeLatest(UPDATE_CATEGORY, updateCategorySaga);
-  yield takeLatest(DELETE_CATEGORY,deleteCategorySaga)
-
-  //   yield takeLatest(DELETE_CATEGORY, deleteOrganizationSaga);
+  yield takeLatest(DELETE_CATEGORY, deleteCategorySaga);
 }
 export default categorySaga;

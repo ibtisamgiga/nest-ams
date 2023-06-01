@@ -50,6 +50,7 @@ import EditEmployeeInfoPage from "../../pages/admin-pages/edit-employee-page/Edi
 import EditVendorPage from "../../pages/admin-pages/edit-vendor-page/EditVendorPage";
 import ResetPasswordPage from "../../pages/reset-password-page/ResetPasswordPage";
 import AddSubCategoryPage from "../../pages/admin-pages/Add-category-page/AddSubCategoryPage";
+import { userRoles } from "../../utils/enums/userRoles";
 function MyRoutes({ user }) {
   return (
     <Routes>
@@ -57,11 +58,11 @@ function MyRoutes({ user }) {
         path="/"
         element={
           <PrivateRoutes user={user}>
-            {user?.role == "superadmin" ? (
+            {user?.role == userRoles.SUPERADMIN ? (
               <SADashboardPage />
-            ) : user?.role == "admin" ? (
+            ) : user?.role == userRoles.ADMIN ? (
               <AdminDashboardPage />
-            ) : user?.role == "employee" ? (
+            ) : user?.role == userRoles.EMPLOYEE ? (
               <EmployeeDashboardPage />
             ) : null}
           </PrivateRoutes>
@@ -95,11 +96,11 @@ function MyRoutes({ user }) {
         path="/complaints"
         element={
           <PrivateRoutes user={user}>
-            {user?.role == "superadmin" ? (
+            {user?.role == userRoles.SUPERADMIN ? (
               <ComplaintsPage />
-            ) : user?.role == "admin" ? (
+            ) : user?.role == userRoles.ADMIN ? (
               <AdminComplaintsPage />
-            ) : user?.role == "employee" ? (
+            ) : user?.role == userRoles.EMPLOYEE ? (
               <EmployeeComplainPage />
             ) : null}
           </PrivateRoutes>
@@ -108,7 +109,7 @@ function MyRoutes({ user }) {
 
       <Route
         exact
-        path="/create/admin"
+        path="/admin/create"
         element={
           <PrivateRoutes user={user}>
             <CreateAdminPage />
@@ -116,7 +117,7 @@ function MyRoutes({ user }) {
         }
       />
       <Route
-        path="/create/organization"
+        path="/organization/create"
         element={
           <PrivateRoutes user={user}>
             <CreateOrganizationPage />
@@ -128,7 +129,7 @@ function MyRoutes({ user }) {
         path="/admin/detail/:id"
         element={
           <PrivateRoutes user={user}>
-            <ProtectedRoutes role={["superadmin"]} user={user}>
+            <ProtectedRoutes role={[userRoles.SUPERADMIN]} user={user}>
               <AdminDetailPage />
             </ProtectedRoutes>
           </PrivateRoutes>
@@ -138,7 +139,7 @@ function MyRoutes({ user }) {
         path="/admin/edit/:id"
         element={
           <PrivateRoutes user={user}>
-            <ProtectedRoutes role={["superadmin"]} user={user}>
+            <ProtectedRoutes role={[userRoles.SUPERADMIN]} user={user}>
               <EditAdminPage />
             </ProtectedRoutes>
           </PrivateRoutes>
@@ -148,7 +149,7 @@ function MyRoutes({ user }) {
         path="/organization/detail/:id"
         element={
           <PrivateRoutes user={user}>
-            <ProtectedRoutes role={["superadmin"]} user={user}>
+            <ProtectedRoutes role={[userRoles.SUPERADMIN]} user={user}>
               <OrganizationDetailPage />
             </ProtectedRoutes>
           </PrivateRoutes>
@@ -158,7 +159,7 @@ function MyRoutes({ user }) {
         path="/organization/edit/:id"
         element={
           <PrivateRoutes user={user}>
-            <ProtectedRoutes role={["superadmin"]} user={user}>
+            <ProtectedRoutes role={[userRoles.SUPERADMIN]} user={user}>
               <EditOrganizationPage />
             </ProtectedRoutes>
           </PrivateRoutes>
@@ -168,7 +169,10 @@ function MyRoutes({ user }) {
         path="/complaint/create"
         element={
           <PrivateRoutes user={user}>
-            <ProtectedRoutes role={["admin", "employee"]} user={user}>
+            <ProtectedRoutes
+              role={[userRoles.ADMIN, userRoles.EMPLOYEE]}
+              user={user}
+            >
               <CreateComplaintPage />
             </ProtectedRoutes>
           </PrivateRoutes>
@@ -178,7 +182,7 @@ function MyRoutes({ user }) {
         path="/complaints/detail/:id"
         element={
           <PrivateRoutes user={user}>
-            {user?.role == "employee" ? (
+            {user?.role == userRoles.EMPLOYEE ? (
               <EmployeeComplaintDetailPage />
             ) : (
               <ComplaintDetailPage />
@@ -191,7 +195,7 @@ function MyRoutes({ user }) {
         path="/categories"
         element={
           <PrivateRoutes user={user}>
-            <ProtectedRoutes role={["admin"]} user={user}>
+            <ProtectedRoutes role={[userRoles.ADMIN]} user={user}>
               <CategoriesPage />
             </ProtectedRoutes>
           </PrivateRoutes>
@@ -201,7 +205,7 @@ function MyRoutes({ user }) {
         path="/inventory"
         element={
           <PrivateRoutes user={user}>
-            <ProtectedRoutes role={["admin"]} user={user}>
+            <ProtectedRoutes role={[userRoles.ADMIN]} user={user}>
               <InventoryPage />
             </ProtectedRoutes>
           </PrivateRoutes>
@@ -211,7 +215,7 @@ function MyRoutes({ user }) {
         path="/inventory/detail/:id"
         element={
           <PrivateRoutes user={user}>
-            <ProtectedRoutes role={["admin"]} user={user}>
+            <ProtectedRoutes role={[userRoles.ADMIN]} user={user}>
               <InventoryDetailPage />
             </ProtectedRoutes>
           </PrivateRoutes>
@@ -221,7 +225,7 @@ function MyRoutes({ user }) {
         path="/inventory/create"
         element={
           <PrivateRoutes user={user}>
-            <ProtectedRoutes role={["admin"]} user={user}>
+            <ProtectedRoutes role={[userRoles.ADMIN]} user={user}>
               <CreateItemPage />
             </ProtectedRoutes>
           </PrivateRoutes>
@@ -231,7 +235,7 @@ function MyRoutes({ user }) {
         path="/inventory/edit/:id"
         element={
           <PrivateRoutes user={user}>
-            <ProtectedRoutes role={["admin"]} user={user}>
+            <ProtectedRoutes role={[userRoles.ADMIN]} user={user}>
               <EditItemPage />
             </ProtectedRoutes>
           </PrivateRoutes>
@@ -242,7 +246,7 @@ function MyRoutes({ user }) {
         path="/departments"
         element={
           <PrivateRoutes user={user}>
-            <ProtectedRoutes role={["admin"]} user={user}>
+            <ProtectedRoutes role={[userRoles.ADMIN]} user={user}>
               <DepartmentPage />
             </ProtectedRoutes>
           </PrivateRoutes>
@@ -252,7 +256,7 @@ function MyRoutes({ user }) {
         path="/department/create"
         element={
           <PrivateRoutes user={user}>
-            <ProtectedRoutes role={["admin"]} user={user}>
+            <ProtectedRoutes role={[userRoles.ADMIN]} user={user}>
               <CreateDepartmentPage />
             </ProtectedRoutes>
           </PrivateRoutes>
@@ -263,7 +267,7 @@ function MyRoutes({ user }) {
         path="/department/detail/:id"
         element={
           <PrivateRoutes user={user}>
-            <ProtectedRoutes role={["admin"]} user={user}>
+            <ProtectedRoutes role={[userRoles.ADMIN]} user={user}>
               <DepartmentDetailPage />
             </ProtectedRoutes>
           </PrivateRoutes>
@@ -274,7 +278,7 @@ function MyRoutes({ user }) {
         path="/department/edit/:id"
         element={
           <PrivateRoutes user={user}>
-            <ProtectedRoutes role={["admin"]} user={user}>
+            <ProtectedRoutes role={[userRoles.ADMIN]} user={user}>
               <EditDepartmentPage />
             </ProtectedRoutes>
           </PrivateRoutes>
@@ -284,7 +288,7 @@ function MyRoutes({ user }) {
         path="/category/create"
         element={
           <PrivateRoutes user={user}>
-            <ProtectedRoutes role={["admin"]} user={user}>
+            <ProtectedRoutes role={[userRoles.ADMIN]} user={user}>
               <CreateCategoryPage />
             </ProtectedRoutes>
           </PrivateRoutes>
@@ -294,7 +298,7 @@ function MyRoutes({ user }) {
         path="/category/detail/:id"
         element={
           <PrivateRoutes user={user}>
-            <ProtectedRoutes role={["admin"]} user={user}>
+            <ProtectedRoutes role={[userRoles.ADMIN]} user={user}>
               <CategoryDetailPage />
             </ProtectedRoutes>
           </PrivateRoutes>
@@ -305,7 +309,7 @@ function MyRoutes({ user }) {
         path="/category/edit/:id"
         element={
           <PrivateRoutes user={user}>
-            <ProtectedRoutes role={["admin"]} user={user}>
+            <ProtectedRoutes role={[userRoles.ADMIN]} user={user}>
               <AddSubCategoryPage />
             </ProtectedRoutes>
           </PrivateRoutes>
@@ -316,7 +320,7 @@ function MyRoutes({ user }) {
         path="/employees"
         element={
           <PrivateRoutes user={user}>
-            <ProtectedRoutes role={["admin"]} user={user}>
+            <ProtectedRoutes role={[userRoles.ADMIN]} user={user}>
               <EmployeePage />
             </ProtectedRoutes>
           </PrivateRoutes>
@@ -326,7 +330,7 @@ function MyRoutes({ user }) {
         path="/employee/create"
         element={
           <PrivateRoutes user={user}>
-            <ProtectedRoutes role={["admin"]} user={user}>
+            <ProtectedRoutes role={[userRoles.ADMIN]} user={user}>
               <CreateEmployeePage />
             </ProtectedRoutes>
           </PrivateRoutes>
@@ -336,7 +340,7 @@ function MyRoutes({ user }) {
         path="/employee/edit"
         element={
           <PrivateRoutes user={user}>
-            <ProtectedRoutes role={["employee"]} user={user}>
+            <ProtectedRoutes role={[userRoles.EMPLOYEE]} user={user}>
               <EditEmployeePage />
             </ProtectedRoutes>
           </PrivateRoutes>
@@ -346,7 +350,7 @@ function MyRoutes({ user }) {
         path="/employee/edit/:id"
         element={
           <PrivateRoutes user={user}>
-            <ProtectedRoutes role={["admin"]} user={user}>
+            <ProtectedRoutes role={[userRoles.ADMIN]} user={user}>
               <EditEmployeeInfoPage />
             </ProtectedRoutes>
           </PrivateRoutes>
@@ -356,7 +360,7 @@ function MyRoutes({ user }) {
         path="/employee/detail/:id"
         element={
           <PrivateRoutes user={user}>
-            <ProtectedRoutes role={["admin"]} user={user}>
+            <ProtectedRoutes role={[userRoles.ADMIN]} user={user}>
               <EmployeeDetailPage />
             </ProtectedRoutes>
           </PrivateRoutes>
@@ -366,7 +370,7 @@ function MyRoutes({ user }) {
         path="/vendors"
         element={
           <PrivateRoutes user={user}>
-            <ProtectedRoutes role={["admin"]} user={user}>
+            <ProtectedRoutes role={[userRoles.ADMIN]} user={user}>
               <VendorPage />
             </ProtectedRoutes>
           </PrivateRoutes>
@@ -376,7 +380,7 @@ function MyRoutes({ user }) {
         path="/vendor/create"
         element={
           <PrivateRoutes user={user}>
-            <ProtectedRoutes role={["admin"]} user={user}>
+            <ProtectedRoutes role={[userRoles.ADMIN]} user={user}>
               <CreateVendorPage />
             </ProtectedRoutes>
           </PrivateRoutes>
@@ -386,7 +390,7 @@ function MyRoutes({ user }) {
         path="/vendor/detail/:id"
         element={
           <PrivateRoutes user={user}>
-            <ProtectedRoutes role={["admin"]} user={user}>
+            <ProtectedRoutes role={[userRoles.ADMIN]} user={user}>
               <VendorDetailPage />
             </ProtectedRoutes>
           </PrivateRoutes>
@@ -396,7 +400,7 @@ function MyRoutes({ user }) {
         path="/vendor/edit/:id"
         element={
           <PrivateRoutes user={user}>
-            <ProtectedRoutes role={["admin"]} user={user}>
+            <ProtectedRoutes role={[userRoles.ADMIN]} user={user}>
               <EditVendorPage />
             </ProtectedRoutes>
           </PrivateRoutes>
@@ -406,10 +410,13 @@ function MyRoutes({ user }) {
         path="/requests"
         element={
           <PrivateRoutes user={user}>
-            <ProtectedRoutes role={["admin", "employee"]} user={user}>
-              {user?.role == "superAdmin" ? (
+            <ProtectedRoutes
+              role={[userRoles.ADMIN, userRoles.EMPLOYEE]}
+              user={user}
+            >
+              {user?.role == userRoles.SUPERADMIN ? (
                 <RequestPage />
-              ) : user?.role == "admin" ? (
+              ) : user?.role == userRoles.ADMIN ? (
                 <RequestPage />
               ) : (
                 <EmployeeRequestPage />
@@ -422,7 +429,7 @@ function MyRoutes({ user }) {
         path="/request/create"
         element={
           <PrivateRoutes user={user}>
-            <ProtectedRoutes role={["employee"]} user={user}>
+            <ProtectedRoutes role={[userRoles.EMPLOYEE]} user={user}>
               <CreateRequestPage />
             </ProtectedRoutes>
           </PrivateRoutes>
@@ -432,8 +439,11 @@ function MyRoutes({ user }) {
         path="/request/detail/:id"
         element={
           <PrivateRoutes user={user}>
-            <ProtectedRoutes role={["admin", "employee"]} user={user}>
-              {user?.role == "admin" ? (
+            <ProtectedRoutes
+              role={[userRoles.ADMIN, userRoles.EMPLOYEE]}
+              user={user}
+            >
+              {user?.role == userRoles.ADMIN ? (
                 <RequestDetailPage />
               ) : (
                 <EmployeeRequestDetailPage />
@@ -447,7 +457,7 @@ function MyRoutes({ user }) {
         path="/returns"
         element={
           <PrivateRoutes user={user}>
-            <ProtectedRoutes role={["admin"]} user={user}>
+            <ProtectedRoutes role={[userRoles.ADMIN]} user={user}>
               <ReturnPage />
             </ProtectedRoutes>
           </PrivateRoutes>
@@ -458,7 +468,7 @@ function MyRoutes({ user }) {
         path="/return/detail/:id"
         element={
           <PrivateRoutes user={user}>
-            <ProtectedRoutes role={["admin"]} user={user}>
+            <ProtectedRoutes role={[userRoles.ADMIN]} user={user}>
               <ReturnDetailPage />
             </ProtectedRoutes>
           </PrivateRoutes>

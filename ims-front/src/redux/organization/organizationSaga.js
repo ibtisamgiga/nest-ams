@@ -3,22 +3,11 @@ import fetchData from "../../utils/fetchData";
 //import { ORGANIZATION_LIST, SET_ORGANIZATION_LIST } from "../constants";
 import {
   GET_ORGANIZATIONS_REQUEST,
-  GET_ORGANIZATIONS_FAILURE,
   GET_ORGANIZATION_REQUEST,
-  GET_ORGANIZATIONS_SUCCESS,
-  GET_ORGANIZATION_FAILURE,
-  GET_ORGANIZATION_SUCCESS,
   UPDATE_ORGANIZATION,
-  UPDATE_ORGANIZATION_SUCCESS,
-  UPDATE_ORGANIZATION_ERROR,
   DELETE_ORGANIZATION,
-  DELETE_ORGANIZATION_ERROR,
-  DELETE_ORGANIZATION_SUCCESS,
   CREATE_ORGANIZATION,
-  CREATE_ORGANIZATION_SUCCESS,
   CREATE_ORGANIZATION_ERROR,
-  GET_ORGANIZATIONS_COUNT_SUCCESS,
-  GET_ORGANIZATIONS_COUNT_FAILURE,
   GET_ORGANIZATIONS_COUNT,
 } from "../constants";
 
@@ -32,10 +21,10 @@ import {
   deleteOrganizationSuccess,
   deleteOrganizationError,
   createOrganizationSuccess,
-  createOrganizationError,
   getOrganizationsCountSuccess,
   getOrganizationsCountFailure,
 } from "./organizationAction";
+import { endPoint } from "../../constants/api-constants";
 
 // Worker saga for getting all organizations
 function* getOrganizations() {
@@ -43,7 +32,7 @@ function* getOrganizations() {
     const organizations = yield fetchData(
       "GET",
       null,
-      "http://localhost:5000/organization"
+      `${endPoint}organization`
     ); // call your API method here
     yield put(getOrganizationsSuccess(organizations)); // dispatch action to update Redux store with retrieved organizations
   } catch (error) {
@@ -52,11 +41,7 @@ function* getOrganizations() {
 }
 function* getCount() {
   try {
-    const count = yield fetchData(
-      "GET",
-      null,
-      "http://localhost:5000/organization/count"
-    ); // call your API method here
+    const count = yield fetchData("GET", null, `${endPoint}organization/count`); // call your API method here
 
     yield put(getOrganizationsCountSuccess(count)); // dispatch action to update Redux store with retrieved organizations
   } catch (error) {
@@ -71,7 +56,7 @@ function* getOrganization(action) {
     const organization = yield fetchData(
       "GET",
       null,
-      `http://localhost:5000/organization/${id}`
+      `${endPoint}organization/${id}`
     ); // call your API method here, passing in the ID as a parameter
     yield put(getOrganizationSuccess(organization)); // dispatch action to update Redux store with retrieved organization
   } catch (error) {
@@ -85,7 +70,7 @@ function* updateOrganizationSaga(action) {
     const organization = yield fetchData(
       "PATCH",
       body,
-      `http://localhost:5000/organization/${id}`
+      `${endPoint}organization/${id}`
     );
     //yield call("" action.payload.organization);
     yield put(updateOrganizationSuccess(organization));
@@ -97,7 +82,7 @@ function* updateOrganizationSaga(action) {
 function* deleteOrganizationSaga(action) {
   const { id } = action.payload;
   try {
-    yield fetchData("DELETE", null, `http://localhost:5000/organization/${id}`);
+    yield fetchData("DELETE", null, `${endPoint}organization/${id}`);
     yield put(deleteOrganizationSuccess(action.payload.id));
   } catch (error) {
     yield put(deleteOrganizationError(error));
@@ -110,24 +95,23 @@ function* createOrganizationSaga(action) {
     const organization = yield fetchData(
       "POST",
       body,
-      `http://localhost:5000/organization`
+      `${endPoint}organization`
     );
-
-    if (organization.error) {
+    if (organization.statusCode !== 200) {
       yield put({
         type: CREATE_ORGANIZATION_ERROR,
         payload: organization.message,
       });
-    }
+    }else{
     yield put(createOrganizationSuccess(organization));
+    }
   } catch (error) {
     yield put({ type: CREATE_ORGANIZATION_ERROR, payload: error });
   }
 }
+
 function* organizationSaga() {
   yield takeLatest(GET_ORGANIZATIONS_REQUEST, getOrganizations);
-  //yield takeEvery(ORGANIZATION_LIST, getOrganizations);
-
   yield takeLatest(GET_ORGANIZATION_REQUEST, getOrganization);
   yield takeLatest(CREATE_ORGANIZATION, createOrganizationSaga);
   yield takeLatest(UPDATE_ORGANIZATION, updateOrganizationSaga);

@@ -1,10 +1,7 @@
 import React, { useEffect, useState } from "react";
 import SearchField from "../../components/shared/SearchField";
 import SelectField from "../../components/shared/SelectField";
-import StartIconButton from "../../components/shared/StartIconButton";
 import MyTables from "../../components/shared/MyTable";
-import AddIcon from "@mui/icons-material/Add";
-import { useTheme, useMediaQuery } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { getComplaintsRequest } from "../../redux/complaints/complaintAction";
 import CircularLoader from "../../components/shared/circular-loader/CircularLoader";
@@ -12,15 +9,15 @@ import { getOrganizationsRequest } from "../../redux/organization/organizationAc
 import extractValue from "../../utils/objectValueExtractor";
 import search from "../../utils/search";
 import { SuperAdminComplainHeader } from "../../constants/table-constants/tableConstants";
+import useScreenSize from "../../utils/checkScreenSize";
+import { status } from "../../utils/enums/statusEnum";
 function ComplaintsPage() {
   const { complaintData, organizationData } = useSelector((state) => state);
-  const tableData = complaintData.complaints;
+  const tableData = complaintData?.complaints;
   const organizations = organizationData?.organizations;
-  const result = extractValue(organizations, "name");
+  const organizationsSelectData = extractValue(organizations, "name");
   const dispatch = useDispatch();
-  const theme = useTheme();
-  const isMatch = useMediaQuery(theme.breakpoints.down("md"));
-
+  const isMatch = useScreenSize();
   const [filteredData, setFilteredData] = useState(null);
   const [searchText, setSearchText] = useState("");
 
@@ -42,12 +39,12 @@ function ComplaintsPage() {
         <SearchField setSearchData={handleSearch} />
         <SelectField
           fieldName={"Organization"}
-          items={result}
+          items={organizationsSelectData}
           handleSelect={handleSearch}
         />
         <SelectField
           fieldName={"Status"}
-          items={["Pending", "Resolved"]}
+          items={[status.PENDING, status.RESOLVED]}
           handleSelect={handleSearch}
         />
       </div>

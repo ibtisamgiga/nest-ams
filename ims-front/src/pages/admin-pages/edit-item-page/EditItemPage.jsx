@@ -15,7 +15,7 @@ function EditItemPage() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { categoryData, itemData } = useSelector((state) => state);
-  const categories = categoryData.categories;
+  const categories = categoryData?.categories;
   const item = itemData?.item;
   const { id } = useParams();
   const cat = categories.filter((obj) => obj.parent === null);
@@ -123,7 +123,7 @@ function EditItemPage() {
           defaultValue={item?.vendor?.id}
           sideLabel={"Select Vendor  "}
           placeHolder={"select Vendor"}
-          items={currSubCat.vendors.length == 0 ? [] : currSubCat.vendors}
+          items={currSubCat.vendors?.length == 0 ? [] : currSubCat?.vendors}
           keyId={1}
           onChange={(e) => {
             setFormData({ ...formData, vendorId: e.target.value });

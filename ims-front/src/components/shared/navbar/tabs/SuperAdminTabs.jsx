@@ -4,7 +4,7 @@ import TabList from "@mui/lab/TabList";
 function SuperAdminTabs({ handleChange, orientation }) {
   return (
     <TabList
-      sx={{ marginTop: "30px" }}
+      sx={{ marginTop: "30px" ,marginLeft:'1%'}}
       orientation={orientation}
       onChange={handleChange}
     >

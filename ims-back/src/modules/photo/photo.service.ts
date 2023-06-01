@@ -11,22 +11,17 @@ export class PhotoService {
   ) {}
 
   async createPhoto(createPhotoDto) {
-    console.log(createPhotoDto)
-    //const img = this.photoRepository.create(createPhotoDto); 
     return await this.photoRepository.save(createPhotoDto);
   }
 
   async updatePhoto(updatePhotoDto) {
-   const {id,image}=updatePhotoDto
-  try{
-    const photo=await this.photoRepository.findOne({where:{id}})
-    photo.image=image
-    return await this.photoRepository.save(photo);}
-    catch(error){
-      console.log(error)
+    const { id, image } = updatePhotoDto;
+    try {
+      const photo = await this.photoRepository.findOne({ where: { id } });
+      photo.image = image;
+      return await this.photoRepository.save(photo);
+    } catch (error) {
+      return error.message;
     }
-    //const img = this.photoRepository.create(createPhotoDto); 
-    //return await this.photoRepository.save(updatePhotoDto);
   }
-
 }

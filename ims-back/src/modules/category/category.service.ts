@@ -10,29 +10,32 @@ import { Category } from './entity/category.entity';
 export class CategoryService {
   constructor(
     @InjectRepository(Category)
-    private CategoryRepository: Repository<Category>,
+    private categoryRepository: Repository<Category>,
   ) {}
   /***********************CREATE-CATEGORY****************************/
   async createCategory(createCategoryDto: CreateCategoryDto, user: User) {
     const category = new Category();
     category.name = createCategoryDto.name;
     category.organizationId = user.organizationId;
-    await this.CategoryRepository.save(category);
+
+
+    await this.categoryRepository.save(category);
     if (createCategoryDto.subCategories) {
       createCategoryDto.subCategories.forEach(async (subCat) => {
-        const subCategory = this.CategoryRepository.create({
+        const subCategory = this.categoryRepository.create({
           name: subCat,
           parent: category,
           organizationId: user.organizationId,
         });
-        await this.CategoryRepository.save(subCategory);
+        
+        await this.categoryRepository.save(subCategory);
       });
     }
     return category;
   }
   /***********************GET-CATEGORIES****************************/
   async getCategories(user: User) {
-    const categories = await this.CategoryRepository.find({
+    const categories = await this.categoryRepository.find({
       relations: [
         'children',
         'vendors',
@@ -43,27 +46,11 @@ export class CategoryService {
       where: { organizationId: user.organizationId },
     });
 
-    const data = await this.CategoryRepository.createQueryBuilder('cat')
-      .select('')
-      .select('cat.name', 'cat_name')
-      .addSelect('cat.id', 'cat_id')
-      .addSelect('sub.name', 'sub_cat_name')
-      .addSelect('sub.id', 'subCat_id')
-      .addSelect('v.name', 'vendor_name')
-      .addSelect('v.id', 'vendor_id')
-      .innerJoin(Category, 'sub', 'sub.parentId = cat.id')
-      .innerJoin('sub.vendors', 'v')
-      .where('cat.organizationId = :organizationId', {
-        organizationId: user.organizationId,
-      })
-      .orderBy('cat.name, sub.name, v.name')
-      .getRawMany();
-
     return categories;
   }
   /***********************GET-CATEGORY****************************/
   async getCategory(id: number, user: User) {
-    const category = await this.CategoryRepository.findOne({
+    const category = await this.categoryRepository.findOne({
       where: { id, organizationId: user.organizationId },
       relations: ['vendors', 'parent', 'items', 'children'],
     });
@@ -73,26 +60,24 @@ export class CategoryService {
   /***********************UPDATE-CATEGORY****************************/
   async updateCategory(id: number, updateData: UpdateCategoryDto, user: User) {
     const { organizationId } = user;
-    const found = await this.CategoryRepository.findOneBy({
+    const found = await this.categoryRepository.findOneBy({
       id,
       organizationId,
     });
     if (!found) throw new NotFoundException('category doesnot exist');
-    const parentCategory = await this.CategoryRepository.findOne({
-      where: { id },
-    });
+
     if (updateData.subCategories) {
       updateData.subCategories.map(async (subCat) => {
-        const childCategory = this.CategoryRepository.create({
+        const childCategory = this.categoryRepository.create({
           name: subCat,
           organizationId,
-          parent: parentCategory,
+          parent: found,
         });
-        await this.CategoryRepository.save(childCategory);
+        await this.categoryRepository.save(childCategory);
       });
     } else {
       found.name = updateData.name;
-      await this.CategoryRepository.save(found);
+      await this.categoryRepository.save(found);
     }
 
     return { message: 'updated' };
@@ -101,73 +86,56 @@ export class CategoryService {
   /***********************DELETE-CATEGORY****************************/
   async deleteCategory(id: number, user: User) {
     const { organizationId } = user;
-    const category = await this.CategoryRepository.findOne({
+    const category = await this.categoryRepository.findOne({
       where: { id, organizationId },
-      relations: { parent: true },
     });
     if (!category) throw new NotFoundException('category doesnot exist');
-    if (category.parent === null) {
-      const categories = await this.CategoryRepository.find({
-        relations: { parent: true },
-        where: [{ id }, { parent: { id } }],
-      });
-      return this.CategoryRepository.remove(categories);
-    }
-    return this.CategoryRepository.remove(category);
+    return this.categoryRepository.remove(category);
   }
+  /**********************FIND-BY-IDS****************************/
   async findByIds(ids: number[]): Promise<Category[]> {
-    const categories = await this.CategoryRepository.createQueryBuilder(
-      'category',
-    )
+    const categories = await this.categoryRepository
+      .createQueryBuilder('category')
       .whereInIds(ids)
       .getMany();
     return categories;
   }
   /***********************CATEGORY-COUNT****************************/
   async getCount(currentUser: User) {
-    const role = currentUser.rolesId == 1 ? 2 : 3;
-    const where =
-      currentUser.rolesId == 1
-        ? 'user.rolesId = ' + role
-        : 'user.rolesId= ' +
-          role +
-          'AND user.organizationId = ' +
-          currentUser.organizationId;
+    const { rolesId, organizationId } = currentUser;
 
-    const monthlyCount = await this.CategoryRepository.createQueryBuilder(
-      'category',
-    )
+    const monthlyCount = await this.categoryRepository
+      .createQueryBuilder('category')
       .select(
-        "To_CHAR(TO_DATE(EXTRACT(MONTH FROM DATE_TRUNC('month',category.created_at))::text,'MM'),'Mon')AS month,count(*)",
+        "TO_CHAR(DATE_TRUNC('month', category.created_at), 'Mon') AS month, count(*)",
       )
-      .where('category.organizationId = :organizationId', {
-        organizationId: currentUser.organizationId,
-      })
-      .groupBy('month')
-      .getRawMany();
-
-    const currentMonth = await this.CategoryRepository.createQueryBuilder(
-      'category',
-    )
-      .select('count(*)::int  AS count')
-      .where('category.organizationId = :organizationId', {
-        organizationId: currentUser.organizationId,
-      })
-      .andWhere(
-        'EXTRACT(MONTH from category.created_at) = EXTRACT(MONTH from now())',
-      )
+      .where({ organizationId })
       .andWhere('category.parent IS NULL')
-      .getRawOne();
+      .groupBy("DATE_TRUNC('month', category.created_at)")
+      .getRawMany();
+    let total = 0;
+    let currentMonthCount = null;
 
-    const total = await this.CategoryRepository.count({
-      where: { organizationId: currentUser.organizationId, parent: IsNull() },
-      relations: { parent: true },
+    const currentMonth = new Date().toLocaleString('default', {
+      month: 'short',
     });
-    return { monthlyCount, currentMonth, total };
+
+    for (let i = 0; i < monthlyCount.length; i++) {
+      const entry = monthlyCount[i];
+      const count = parseInt(entry.count);
+
+      total += count;
+
+      if (entry.month === currentMonth) {
+        currentMonthCount = { month: entry.month, count };
+      }
+    }
+
+    return { monthlyCount, currentMonthCount, total };
   }
 
   async countCategories(user: User) {
-    const categories = await this.CategoryRepository.find({
+    const categories = await this.categoryRepository.find({
       relations: ['children', 'children.vendors', 'children.items'],
       where: { organizationId: user.organizationId, parent: IsNull() },
     });

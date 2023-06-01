@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import StartIconButton from "../../../components/shared/StartIconButton";
 import MyTables from "../../../components/shared/MyTable";
-import AddIcon from "@mui/icons-material/Add";
-import { useTheme, useMediaQuery } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { getComplaintsRequest } from "../../../redux/complaints/complaintAction";
 import { EmployeeComplainPageheader } from "../../../constants/table-constants/tableConstants";
+import useScreenSize from "../../../utils/checkScreenSize";
+import { Alert } from "@mui/material";
 
 function EmployeeComplainPage() {
   const dispatch = useDispatch();
@@ -13,8 +13,7 @@ function EmployeeComplainPage() {
   useEffect(() => {
     dispatch(getComplaintsRequest());
   }, [dispatch]);
-  const theme = useTheme();
-  const isMatch = useMediaQuery(theme.breakpoints.down("md"));
+  const isMatch = useScreenSize();
 
   return (
     <div className="body">
@@ -30,11 +29,17 @@ function EmployeeComplainPage() {
           to={"/complaint/create"}
         />
       </div>
-      <MyTables
-        data={tableData}
-        tableHeaders={EmployeeComplainPageheader}
-        routes={"/complaints/detail"}
-      />
+      {tableData?.length == 0 ? (
+        <Alert variant="filled" severity="info">
+          No Records Found!
+        </Alert>
+      ) : (
+        <MyTables
+          data={tableData}
+          tableHeaders={EmployeeComplainPageheader}
+          routes={"/complaints/detail"}
+        />
+      )}
     </div>
   );
 }

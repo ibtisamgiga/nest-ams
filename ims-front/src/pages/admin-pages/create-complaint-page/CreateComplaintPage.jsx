@@ -8,10 +8,10 @@ import FormHeader from "../../../components/shared/form-header/FormHeader";
 import FormImageHolder from "../../../components/shared/form-image/FormImageHolder";
 import Divider from "@mui/material/Divider";
 import FormInput from "../../../components/shared/form-input/FormInput";
-import FormSelect from "../../../components/shared/form-select/FormSelect";
 import imageUploadHelper from "../../../utils/imageUpload";
 import { useDispatch } from "react-redux";
 import { createComplaint } from "../../../redux/complaints/complaintAction";
+import createImageHelper from "../../../utils/createImageHelper";
 function CreateComplaintPage() {
   const [url, setUrl] = useState(defaultImage);
   const dispatch = useDispatch();
@@ -20,15 +20,10 @@ function CreateComplaintPage() {
     description: "",
   });
   const handleFiles = async (files) => {
-    const imgdata = new FormData();
-    imgdata.append("file", files.fileList[0]);
-    imgdata.append("upload_preset", "fqje0r0l");
-    imgdata.append("cloud_name", "dntzlt0mt");
-    let imageuploaded = await imageUploadHelper(imgdata);
+    const imgdata = createImageHelper(files);
+    const imageuploaded = await imageUploadHelper(imgdata);
     formData.images.push(imageuploaded.url);
-    //formData.image = imageuploaded.url;
     setUrl(imageuploaded.url);
-    //setUrl(files.base64);
   };
   const handleSubmit = async (e) => {
     e.preventDefault();

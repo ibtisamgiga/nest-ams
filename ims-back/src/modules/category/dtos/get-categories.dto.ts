@@ -25,9 +25,13 @@ export class GetCategoriesDto {
 
   @Transform(({ obj }) => {
     let v = 0;
+    let vendorArr = [];
     obj.children.map((item) => {
-      item.vendors.map(() => {
-        v = v + 1;
+      item.vendors.map((a) => {
+        if (!vendorArr.includes(a.name)) {
+          v = v + 1;
+          vendorArr.push(a.name);
+        }
       });
     });
     return v;
@@ -73,6 +77,4 @@ export class GetCategoriesDto {
   })
   @Expose()
   subCat: [];
-
- 
 }

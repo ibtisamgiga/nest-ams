@@ -8,6 +8,7 @@ import {
   DELETE_REQUEST,
   CREATE_REQUEST,
   GET_REQUESTS_COUNT,
+  CREATE_REQUEST_ERROR,
 } from "../constants";
 import {
   getRequestsSuccess,
@@ -23,14 +24,15 @@ import {
   getRequestsCountSuccess,
   getRequestsCountFailure,
 } from "./requestAction";
+import { endPoint } from "../../constants/api-constants";
 
 // Worker saga for getting all requests
 function* getRequests(action) {
   const { reqType } = action.payload;
 
   const url = reqType
-    ? `http://localhost:5000/request/?type=${reqType}`
-    : "http://localhost:5000/request/";
+    ? `${endPoint}request/?type=${reqType}`
+    : `${endPoint}request/`;
   try {
     const requests = yield fetchData(
       "GET",
@@ -46,11 +48,7 @@ function* getRequests(action) {
 }
 function* getCount() {
   try {
-    const count = yield fetchData(
-      "GET",
-      null,
-      "http://localhost:5000/request/count"
-    ); // call your API method here
+    const count = yield fetchData("GET", null, `${endPoint}request/count`); // call your API method here
 
     yield put(getRequestsCountSuccess(count)); // dispatch action to update Redux store with retrieved requests
   } catch (error) {
@@ -62,11 +60,7 @@ function* getRequest(action) {
   const { id } = action.payload;
 
   try {
-    const request = yield fetchData(
-      "GET",
-      null,
-      `http://localhost:5000/request/${id}`
-    ); // call your API method here, passing in the ID as a parameter
+    const request = yield fetchData("GET", null, `${endPoint}request/${id}`); // call your API method here, passing in the ID as a parameter
     yield put(getRequestSuccess(request)); // dispatch action to update Redux store with retrieved request
   } catch (error) {
     yield put(getRequestFailure(error)); // dispatch action to update Redux store with error
@@ -76,11 +70,7 @@ function* getRequest(action) {
 function* updateRequestSaga(action) {
   const { id, body } = action.payload;
   try {
-    const request = yield fetchData(
-      "PATCH",
-      body,
-      `http://localhost:5000/request/${id}`
-    );
+    const request = yield fetchData("PATCH", body, `${endPoint}request/${id}`);
     //yield call("" action.payload.request);
     yield put(updateRequestSuccess(request));
   } catch (error) {
@@ -91,7 +81,7 @@ function* updateRequestSaga(action) {
 function* deleteRequestSaga(action) {
   const { id } = action.payload;
   try {
-    yield fetchData("DELETE", null, `http://localhost:5000/request/${id}`);
+    yield fetchData("DELETE", null, `${endPoint}request/${id}`);
     yield put(deleteRequestSuccess(action.payload.id));
   } catch (error) {
     yield put(deleteRequestError(error));
@@ -101,24 +91,22 @@ function* deleteRequestSaga(action) {
 function* createRequestSaga(action) {
   const { body } = action.payload;
   try {
-    const request = yield fetchData(
-      "POST",
-      body,
-      `http://localhost:5000/request`
-    );
-
-    if (request.error) {
-      yield put(createRequestError(request.message));
+    const request = yield fetchData("POST", body, `${endPoint}request`);
+console.log(request)
+    if (request.statusCode == 400) {
+      yield put({
+        type: CREATE_REQUEST_ERROR,
+        payload: request.message,
+      });
+    } else {
+      yield put(createRequestSuccess(request));
     }
-    yield put(createRequestSuccess(request));
   } catch (error) {
     yield put(createRequestError(error));
   }
 }
 function* requestSaga() {
   yield takeLatest(GET_REQUESTS_REQUEST, getRequests);
-  //yield takeEvery(REQUEST_LIST, getRequests);
-
   yield takeLatest(GET_REQUEST_REQUEST, getRequest);
   yield takeLatest(CREATE_REQUEST, createRequestSaga);
   yield takeLatest(UPDATE_REQUEST, updateRequestSaga);

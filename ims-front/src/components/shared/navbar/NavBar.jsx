@@ -11,6 +11,8 @@ import SuperAdminTabs from "./tabs/SuperAdminTabs";
 import AdminTabs from "./tabs/AdminTabs";
 import EmployeeTabs from "./tabs/EmployeeTabs";
 import currentTab from "../../../utils/currentTab";
+import NotificationBell from "../notifcation-bell/NoticationBell";
+import { useSelector } from "react-redux";
 function NavBar({ user }) {
   const [value, setValue] = React.useState(currentTab);
   let path = window.location.pathname;
@@ -18,6 +20,7 @@ function NavBar({ user }) {
   const theme = useTheme();
   const isMatch = useMediaQuery(theme.breakpoints.down("md"));
   const navigate = useNavigate();
+  const {complaintData} = useSelector((state) => state);
   const handleChange = (event, newValue) => {
     //console.log(location.pathname.toString())
     setValue(newValue);
@@ -46,11 +49,13 @@ function NavBar({ user }) {
           </TabContext>
         )}
         <div className="avatar">
+          <NotificationBell count={complaintData?.complaints?.filter((obj) => obj?.status === 'Pending').length}/>
           <NavBarMenue user={user} />
         </div>
       </Toolbar>
     </AppBar>
   );
+  
 }
 
 export default NavBar;

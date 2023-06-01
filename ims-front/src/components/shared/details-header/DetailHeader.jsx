@@ -6,7 +6,8 @@ import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
 import { useNavigate } from "react-router-dom";
 import { useTheme, useMediaQuery } from "@mui/material";
 import MenueButton from "../menue-button/MenueButton";
-function DetailHeader({ heading,editAction,deleteAction }) {
+import AlertDialog from "../dialouge/Dialouge";
+function DetailHeader({ heading,editAction,deleteAction,open,closeAction,openAction }) {
   const navigate = useNavigate();
   const theme = useTheme();
   const isMatch = useMediaQuery(theme.breakpoints.down("md"));
@@ -32,8 +33,11 @@ function DetailHeader({ heading,editAction,deleteAction }) {
           {heading}
         </Typography>
         <div className="buttongroup">
-          <MenueButton editAction={editAction} deleteAction={deleteAction} />
+          <MenueButton editAction={editAction} deleteAction={openAction} />
         </div>
+        <>
+        <AlertDialog open={open} closeAction={closeAction} deleteAction={deleteAction}/>
+        </>
       </div>
       <Divider sx={{ borderBottomWidth: 4, marginTop: "20px" }} />
     </div>

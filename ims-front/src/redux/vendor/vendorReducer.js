@@ -106,9 +106,10 @@ export const vendorData = (state = initialState, action) => {
       return {
         ...state,
         vendors: [...state.vendors, action.payload.vendor],
+        error: null,
       };
     case CREATE_VENDOR_ERROR:
-      return { ...state, error: action.payload.error };
+      return { ...state, error: action.payload };
     default:
       return state;
   }

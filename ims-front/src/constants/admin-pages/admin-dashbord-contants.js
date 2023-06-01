@@ -1,0 +1,1 @@
+export const border="solid  #e3e3e3 2px"

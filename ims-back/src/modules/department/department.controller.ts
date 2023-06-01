@@ -59,8 +59,6 @@ export class DepartmentController {
   }
 
   @Patch('/:id')
-  @Role(Roles.Admin)
-  @UseGuards(AuthGuard(), RolesGuard)
   updateDepartment(
     @Param('id', ParseIntPipe) id: number,
     @Body() body: UpdateDepartmentDto,

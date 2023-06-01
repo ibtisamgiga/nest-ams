@@ -1,5 +1,4 @@
 import React from "react";
-import { useTheme, useMediaQuery } from "@mui/material";
 import DataCard from "../../../components/shared/DataCard";
 import Chart from "../../../components/shared/Chart";
 import { useDispatch, useSelector } from "react-redux";
@@ -21,9 +20,10 @@ import { AdminDashboardHeader } from "../../../constants/table-constants/tableCo
 import DownloadHeading from "../../../components/shared/download-heading/DownloadHeading";
 import { generatePdf } from "../../../utils/pdfGenerator";
 import ExpandTables from "../../../components/shared/expand-tables/ExpandTables";
+import useScreenSize from "../../../utils/checkScreenSize";
+import { border } from "../../../constants/admin-pages/admin-dashbord-contants";
 function AdminDashboardPage() {
-  const theme = useTheme();
-  const isMatch = useMediaQuery(theme.breakpoints.down("md"));
+  const isMatch = useScreenSize();
   const { usersData, categoryData, vendorData, itemData, complaintData } =
     useSelector((state) => state);
   const userCount = usersData?.count;
@@ -31,8 +31,7 @@ function AdminDashboardPage() {
   const vendorCount = vendorData?.count;
   const itemCount = itemData?.count;
   const complaintCount = complaintData?.count;
-  const complaints = complaintData.complaints;
-
+  const complaints = complaintData.complaints.slice(0, 5);
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(getCategoryCount());
@@ -49,13 +48,13 @@ function AdminDashboardPage() {
 
       <div className={isMatch ? "row-md" : "row"}>
         <DataCard
-          border={isMatch ? "" : "solid  #e3e3e3 2px"}
+          border={isMatch ? "" : border}
           totalCount={userCount?.total}
           name={"Employees"}
           monthDifference={userCount?.currentMonth?.count}
         />
         <DataCard
-          border={isMatch ? "" : "solid  #e3e3e3 2px"}
+          border={isMatch ? "" : border}
           totalCount={itemCount?.total}
           name={"Inventory Items"}
           monthDifference={
@@ -65,7 +64,7 @@ function AdminDashboardPage() {
           }
         />
         <DataCard
-          border={isMatch ? "" : "solid  #e3e3e3 2px"}
+          border={isMatch ? "" : border}
           totalCount={vendorCount?.total}
           name={"Vendors"}
           monthDifference={
@@ -74,10 +73,11 @@ function AdminDashboardPage() {
               : vendorCount?.currentMonth?.count
           }
         />
+
         <DataCard
           totalCount={categoryCount?.total}
           name={"Categories"}
-          monthDifference={categoryCount?.currentMonth?.count}
+          monthDifference={categoryCount?.currentMonthCount?.count}
         />
       </div>
       <DownloadHeading
@@ -89,18 +89,20 @@ function AdminDashboardPage() {
         }
       />
       <div className={isMatch ? "barchart" : "barchart"}>
-        {itemCount?.monthlyCount.length != 0 ? (
+        {itemCount?.monthlyCount ? (
           <Chart
             data={itemCount?.monthlyCount}
             multi={true}
             dataKeyX={"category"}
-            dataKeyY={"Assigned"}
-            dataKeyY2={"Unassigned"}
+            dataKeyY={"assigned"}
+            dataKeyY2={"unassigned"}
           />
         ) : (
           <CircularLoader />
         )}
-        {complaintCount?.monthlyCount.length != 0 ? (
+        {!complaintCount?.monthlyCount ? (
+          <CircularLoader />
+        ) : (
           <Chart
             data={complaintCount?.monthlyCount}
             multi={true}
@@ -108,12 +110,10 @@ function AdminDashboardPage() {
             dataKeyY={"Pending"}
             dataKeyY2={"Resolved"}
           />
-        ) : (
-          <CircularLoader />
         )}
       </div>
       <ExpandTables heading={"Recent Complaints"} to={"/complaints"} />
-      <Box sx={{ marginTop: "2px" }}>
+      <Box sx={{ marginTop: "-2%" }}>
         <MyTables
           data={complaints}
           tableHeaders={AdminDashboardHeader}

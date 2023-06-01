@@ -1,36 +1,18 @@
-const search = (event,tableData,setSearchText) => {
-    setSearchText(event.target.value);
-    const filteredRows = tableData.filter((row) => {
-      let shouldInclude = false;
-      Object.values(row).forEach((value) => {
-        if (
-          typeof value === "string" &&
-          value.toLowerCase().includes(event.target.value.toLowerCase())
-        ) {
-          shouldInclude = true;
-        }
-      });
-      return shouldInclude;
+const search = (event, tableData, setSearchText) => {
+  setSearchText(event.target.value);
+  const filteredRows = tableData.filter((row) => {
+    let shouldInclude = false;
+    Object.values(row).forEach((value) => {
+      if (
+        typeof value === "string" &&
+        value.toLowerCase().includes(event.target.value.toLowerCase())
+      ) {
+        shouldInclude = true;
+      }
     });
-    return filteredRows;
-  };
+    return shouldInclude;
+  });
+  return filteredRows;
+};
 
-  export default search
-
-
-    // const handleSearch = (event) => {
-  //   setSearchText(event.target.value);
-  //   const filteredRows = tableData.filter((row) => {
-  //     let shouldInclude = false;
-  //     Object.values(row).forEach((value) => {
-  //       if (
-  //         typeof value === "string" &&
-  //         value.toLowerCase().includes(event.target.value.toLowerCase())
-  //       ) {
-  //         shouldInclude = true;
-  //       }
-  //     });
-  //     return shouldInclude;
-  //   });
-  //   setFilteredData(filteredRows);
-  // };
+export default search;

@@ -39,16 +39,12 @@ export class OtpService {
       otp: otpCode,
       expiresIn: currentTime,
     };
-    const emailBody = {
-      to: sendOtpDto.email,
-      from: 'm.ibtisam@gigalabs.co',
-      subject: 'OTP VERIFCATION',
-      html: `<p> OTP:${otpCode}</p>`,
-    };
+    const sendEmail = this.emailBody(otpCode, sendOtpDto.email);
+
     const otp = this.otpRepository.create(otpData);
     try {
-     await this.mailService.sendMail(emailBody);
-     
+      await this.mailService.sendMail(sendEmail);
+
       //sendgrid.send(emailBody)
       return await this.otpRepository.save(otp);
     } catch (error) {
@@ -72,6 +68,15 @@ export class OtpService {
     if (!data) throw new NotFoundException('Invalid Otp');
     return data;
   }
+
+  private emailBody = (otpCode, email) => {
+    return {
+      to: email,
+      from: 'm.ibtisam@gigalabs.co',
+      subject: 'OTP VERIFCATION',
+      html: `<p> OTP:${otpCode}</p>`,
+    };
+  };
 }
 
 //const organization = this.organizationRepository.create(organizationData);

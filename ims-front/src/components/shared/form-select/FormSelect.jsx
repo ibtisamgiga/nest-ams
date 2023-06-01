@@ -28,7 +28,7 @@ export default function FormSelect({
       </Box>
       <Box sx={{ width: "40%" }}>
         <TextField
-          sx={{ width: "30%" }}
+          sx={{ width: "45%" }}
           id="demo-simple-select-helper"
           label={placeHolder}
           onChange={onChange}
@@ -36,7 +36,7 @@ export default function FormSelect({
           //defaultValue={''}
           select
         >
-          {items.map((val) => {
+          {items?.map((val) => {
             if (keyId == 1) {
               return (
                 <MenuItem key={val.id} value={val.id}>

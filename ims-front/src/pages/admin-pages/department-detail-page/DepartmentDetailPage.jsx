@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import DetailHeader from "../../../components/shared/details-header/DetailHeader";
 import ImageText from "../../../components/shared/image-with-text/ImageText";
 import { Divider, Typography } from "@mui/material";
@@ -15,6 +15,7 @@ function DepartmentDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const[open,setOpen]=useState(false)
   useEffect(() => {
     dispatch(getDepartmentRequest(id));
   }, [dispatch]);
@@ -24,6 +25,15 @@ function DepartmentDetailPage() {
       <DetailHeader
         heading={"Department Detail"}
         editAction={"/department/edit/" + id}
+        closeAction={() => {
+          setOpen(false);
+        }}
+        open={open}
+        openAction={() => {
+          setOpen(true);
+          // dispatch(deleteOrganization(id));
+          // navigate(-1);
+        }}
         deleteAction={() => {
           dispatch(deleteDepartment(id));
           navigate(-1);

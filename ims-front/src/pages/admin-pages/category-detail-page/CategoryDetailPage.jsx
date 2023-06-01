@@ -1,5 +1,5 @@
 import { Typography } from "@mui/material";
-import React from "react";
+import React, { useState } from "react";
 import DetailHeader from "../../../components/shared/details-header/DetailHeader";
 import LabelText from "../../../components/shared/text-with-label/LabelText";
 import { useNavigate, useParams } from "react-router-dom";
@@ -14,6 +14,7 @@ function CategoryDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const [open, setOpen] = useState(false);
   useEffect(() => {
     dispatch(getCategoryRequest(id));
   }, [dispatch]);
@@ -21,6 +22,15 @@ function CategoryDetailPage() {
   return (
     <div className="body">
       <DetailHeader
+        closeAction={() => {
+          setOpen(false);
+        }}
+        open={open}
+        openAction={() => {
+          setOpen(true);
+          // dispatch(deleteOrganization(id));
+          // navigate(-1);
+        }}
         deleteAction={() => {
           dispatch(deleteCategory(id));
           navigate(-1);

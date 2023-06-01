@@ -12,6 +12,14 @@ export class GetItemsDto {
   @Expose()
   name: string;
 
+  @Transform(({ obj }) => obj?.assigned_to?'YES':'NO') //{console.log(obj)}
+  @Expose()
+  assigined:string;
+
+  @Transform(({ obj }) => obj?.faulty?'YES':'NO') //{console.log(obj)}
+  @Expose()
+  faulty:string;
+
   @Transform(({ obj }) => obj.description) //{console.log(obj)}
   @Expose()
   description: string;

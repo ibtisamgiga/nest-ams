@@ -1,14 +1,16 @@
 .navLogo {
-  width: 55px;
-  height: 55px;
+  width: 60px;
+  height: 60px;
   border-right: solid 1px #e3e3e3;
-  padding-right: 8px;
+  /* padding-right:1% //8px */
+  padding-right: 1%;
 }
 .appbar {
   color: white;
 }
 .avatar {
   margin-left: auto;
+  display: flex;
 }
 
 .Links {
@@ -16,7 +18,7 @@
 }
 .black {
   color: black;
-  margin-top: 20px;
+  margin-top: 15px;
   margin-left: 1rem;
   font-weight: 700;
 }

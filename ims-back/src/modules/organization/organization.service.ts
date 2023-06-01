@@ -21,42 +21,24 @@ export class OrganizationService {
   ) {}
 
   async createOrganization(organizationData: CreateOrganizationDto) {
-    const {
-      name,
-      email,
-      bio,
-      repName,
-      repContactNo,
-      address,
-      city,
-      zip,
-      country,
-      image,
-    } = organizationData;
+    const { image, ...data } = organizationData;
+
     const myImage = image
       ? await this.photoService.createPhoto({ image })
       : null;
-    const organization = this.organizationRepository.create({
-      name,
-      email,
-      bio,
-      repName,
-      repContactNo,
-      address,
-      city,
-      zip,
-      country,
-      image: myImage,
-    });
+
     try {
-      return await this.organizationRepository.save(organization);
+      return await this.organizationRepository.save({
+        ...data,
+        image: myImage,
+      });
     } catch (error) {
       if (error.code === '23505') {
         throw new ConflictException('organization already exists');
-      } else {
-        console.log(error);
-        throw new InternalServerErrorException();
       }
+
+      console.log(error);
+      throw new InternalServerErrorException();
     }
   }
 
@@ -100,7 +82,28 @@ export class OrganizationService {
   }
 
   async getCount() {
-    const monthlyCount = await this.organizationRepository
+    const monthlyCount = await this.getMonthlyCount();
+
+    const currentDate = new Date();
+    const currentMonthDate = currentDate.toLocaleString('default', {
+      month: 'short',
+    });
+
+    let total = 0;
+    let currentMonth = null;
+
+    for (const entry of monthlyCount) {
+      total += entry.count;
+
+      if (entry.month === currentMonthDate) {
+        currentMonth = { month: entry.month, count: entry.count };
+      }
+    }
+    return { monthlyCount, currentMonth, total };
+  }
+
+  private async getMonthlyCount() {
+    return await this.organizationRepository
       .createQueryBuilder('organization')
       .select(
         "To_CHAR(TO_DATE(EXTRACT(MONTH FROM DATE_TRUNC('month',organization.created_at))::text,'MM'),'Mon')AS month,count(*)",
@@ -109,16 +112,5 @@ export class OrganizationService {
       .andWhere('EXTRACT(YEAR from created_at) = EXTRACT(YEAR from now())')
       .groupBy('month')
       .getRawMany();
-
-    const currentMonth = await this.organizationRepository
-      .createQueryBuilder('user')
-      .select('COUNT(*) ::int AS count')
-      .where('EXTRACT(MONTH from created_at) = EXTRACT(MONTH from now())')
-      .andWhere('EXTRACT(YEAR from created_at) = EXTRACT(YEAR from now())')
-      .getRawOne();
-
-    const total = await this.organizationRepository.count();
-
-    return { monthlyCount, currentMonth, total };
   }
 }

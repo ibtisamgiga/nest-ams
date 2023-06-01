@@ -19,7 +19,8 @@ export class CreateOrganizationDto {
 
   @IsNotEmpty()
   @IsString()
-  @MinLength(100)
+  // @MaxLength(100)
+  // @MinLength(5)
   bio: string;
 
   @IsString()

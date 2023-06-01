@@ -1,9 +1,8 @@
 import React, { useEffect } from "react";
-import { useTheme, useMediaQuery, Divider, Typography } from "@mui/material";
+import { Alert, Divider } from "@mui/material";
 import "./employee-dashboard.css";
 import StartIconButton from "../../../components/shared/StartIconButton";
 import UserDetails from "../../../components/shared/user-detail-component/UserDetails";
-import { Link } from "react-router-dom";
 import ExpandTables from "../../../components/shared/expand-tables/ExpandTables";
 import MyTables from "../../../components/shared/MyTable";
 import { useDispatch, useSelector } from "react-redux";
@@ -14,17 +13,17 @@ import {
   EmployeeDashBoardComplaintsHeader,
   EmployeeDashBoardRequestHeader,
 } from "../../../constants/table-constants/tableConstants";
-function EmployeeDashboardPage({ handleChange }) {
-  const theme = useTheme();
-  const isMatch = useMediaQuery(theme.breakpoints.down("md"));
+import useScreenSize from "../../../utils/checkScreenSize";
+function EmployeeDashboardPage() {
+  const isMatch = useScreenSize();
   const logIn = useSelector((state) => state.userData); //{ name: "ali", role: "employee" };
   const id = logIn.token.id;
   const { usersData, requestData, complaintData } = useSelector(
     (state) => state
   );
   const userData = usersData.selectedUser;
-  const requestDataTable = requestData?.requests;
-  const complaintDataTable = complaintData.complaints;
+  const requestDataTable = requestData?.requests.slice(0, 5);
+  const complaintDataTable = complaintData.complaints.slice(0, 5);
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(fetchUserById(id));
@@ -60,19 +59,32 @@ function EmployeeDashboardPage({ handleChange }) {
       />
       <Divider sx={{ borderBottomWidth: 2, marginTop: "20px" }} />
       <ExpandTables heading={"Recent Requests"} to={"/requests"} />
-      <MyTables
-        data={requestDataTable}
-        tableHeaders={EmployeeDashBoardRequestHeader}
-        routes={"/request/detail"}
-        noPagination={true}
-      />
+      {requestDataTable?.length == 0 ? (
+        <Alert variant="filled" severity="info">
+          No Records Found!
+        </Alert>
+      ) : (
+        <MyTables
+          data={requestDataTable}
+          tableHeaders={EmployeeDashBoardRequestHeader}
+          routes={"/request/detail"}
+          noPagination={true}
+        />
+      )}
       <ExpandTables heading={"Recent Complaints"} to={"/complaints"} />
-      <MyTables
-        data={complaintDataTable}
-        tableHeaders={EmployeeDashBoardComplaintsHeader}
-        routes={"/complaints/detail"}
-        noPagination={true}
-      />
+      {complaintDataTable?.length == 0 ? (
+        <Alert variant="filled" severity="info">
+          No Records Found!
+        </Alert>
+      ) : (
+        <MyTables
+          data={complaintDataTable}
+          tableHeaders={EmployeeDashBoardComplaintsHeader}
+          routes={"/complaints/detail"}
+          noPagination={true}
+        />
+        
+      )}
     </div>
   );
 }

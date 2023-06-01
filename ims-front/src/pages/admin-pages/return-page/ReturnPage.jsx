@@ -3,7 +3,7 @@ import SearchField from "../../../components/shared/SearchField";
 import SelectField from "../../../components/shared/SelectField";
 import StartIconButton from "../../../components/shared/StartIconButton";
 import MyTables from "../../../components/shared/MyTable";
-import { useTheme, useMediaQuery } from "@mui/material";
+import { useTheme, useMediaQuery, Alert } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { getRequestsRequest } from "../../../redux/request/requestAction";
 import search from "../../../utils/search";
@@ -45,11 +45,17 @@ function ReturnPage() {
         />
       </div>
       {tableData ? (
-        <MyTables
-          data={filteredData ? filteredData : tableData}
-          tableHeaders={AdminReturnHeader}
-          routes={"/return/detail"}
-        />
+        tableData?.length == 0 ? (
+          <Alert variant="filled" severity="info">
+            No Records Found!
+          </Alert>
+        ) : (
+          <MyTables
+            data={filteredData ? filteredData : tableData}
+            tableHeaders={AdminReturnHeader}
+            routes={"/return/detail"}
+          />
+        )
       ) : (
         <CircularLoader />
       )}

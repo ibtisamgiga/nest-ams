@@ -14,7 +14,7 @@ function ExpandTables({ heading, to }) {
       >
         {heading}
       </Typography>
-      <Link to={to} underline="none">
+      <Link to={to} style={{ textDecoration: 'none' }}underline="none">
         <Typography
           fontWeight={"bold"}
           variant="p"

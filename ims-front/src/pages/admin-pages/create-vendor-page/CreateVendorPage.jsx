@@ -8,6 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { getCategoriesRequest } from "../../../redux/category/categoryAction";
 import { createVendor } from "../../../redux/vendor/vendorAction";
 import { useNavigate } from "react-router-dom";
+import Notifier from "../../../components/shared/error-meassge/Notifier";
 function CreateVendorPage() {
   const [formData, setFormData] = useState({
     name: "",
@@ -16,10 +17,15 @@ function CreateVendorPage() {
   });
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const categories = useSelector((state) => state.categoryData.categories);
-  const cat = categories.filter((obj) => obj.parent === null);
-  const [current, setCurrent] = useState(cat[0]);
-  //const cat =
+  const [loader, setLoader] = useState(false);
+  const [formSubmitted, setFormSubmitted] = useState(false);
+
+  const { categoryData, vendorData } = useSelector((state) => state);
+  const categories = categoryData?.categories;
+  const error = vendorData?.error;
+  const setCategories = categories.filter((obj) => obj.parent === null);
+  const [current, setCurrent] = useState(setCategories[0]);
+  //const setCategories =
   const [subCategories, setsubCategories] = useState([]);
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -27,8 +33,9 @@ function CreateVendorPage() {
     subCategories.forEach((item) => {
       formData.categoryIds.push(item);
     });
+    setFormSubmitted(true);
+    setLoader(true);
     dispatch(createVendor(formData));
-    navigate(-1);
   };
   /*******************************/
   const handleChange = (event) => {
@@ -40,7 +47,13 @@ function CreateVendorPage() {
   /*******************************/
   useEffect(() => {
     dispatch(getCategoriesRequest());
-  }, [dispatch]);
+    if (error !== null && error !== undefined) {
+      setLoader(false);
+    } else if (formSubmitted && error === null) {
+      navigate(-1);
+      setLoader(false);
+    }
+  }, [error, navigate, dispatch]);
   /*******************************/
   return (
     <div className="body">
@@ -55,6 +68,13 @@ function CreateVendorPage() {
           value={formData.name}
         />
         <Divider sx={{ borderBottomWidth: 4, marginTop: "20px" }} />
+        {error && formSubmitted ? (
+          <div>
+            <Notifier error={error} success={false} />
+          </div>
+        ) : formSubmitted ? (
+          <Notifier error={error} success={true} />
+        ) : null}
         <FormInput
           sideLabel={"ContactNumber"}
           placeHolder={"Contact Number"}
@@ -68,11 +88,13 @@ function CreateVendorPage() {
         <FormSelect
           sideLabel={"Select Category"}
           placeHolder={"select Category"}
-          items={cat}
+          items={setCategories}
           keyId={1}
-          defaultValue={cat[0]}
+          defaultValue={setCategories[0]}
           onChange={(e) => {
-            setCurrent(...cat.filter((obj) => obj.id == e.target.value));
+            setCurrent(
+              ...setCategories.filter((obj) => obj.id == e.target.value)
+            );
           }}
         />
         <MultiSelect

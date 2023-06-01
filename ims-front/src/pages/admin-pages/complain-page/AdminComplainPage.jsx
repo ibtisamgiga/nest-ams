@@ -5,7 +5,7 @@ import StartIconButton from "../../../components/shared/StartIconButton";
 import MyTables from "../../../components/shared/MyTable";
 import AddIcon from "@mui/icons-material/Add";
 import { Box } from "@mui/system";
-import { useTheme, useMediaQuery } from "@mui/material";
+import { useTheme, useMediaQuery, Divider } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import TabsVertical from "../../../components/shared/verticat-tabs/TabVertical";
 import {
@@ -17,73 +17,88 @@ import {
   AdminComplainHeader,
   AdminEmpComplainHeader,
 } from "../../../constants/table-constants/tableConstants";
+import useScreenSize from "../../../utils/checkScreenSize";
+import { status } from "../../../utils/enums/statusEnum";
 function AdminComplaintsPage() {
   const [index, setIndex] = useState(0);
 
   const { complaintData } = useSelector((state) => state);
-  const tableData = complaintData.complaints;
-  const tableData2 = complaintData.myComp;
+  const tableDataSubmittedComplain = complaintData?.complaints;
+  const tableDataMycomplain = complaintData?.myComp;
 
   const dispatch = useDispatch();
-  const theme = useTheme();
-  const isMatch = useMediaQuery(theme.breakpoints.down("md"));
+  const isMatch = useScreenSize();
 
-  const [filteredData, setFilteredData] = useState(null);
-  const [filteredData2, setFilteredData2] = useState(null);
+  const [filteredDataComplaints, setFilteredDataComplaints] = useState(null);
+  const [filteredDataMyComplaints, setFilteredDataMyComplaints] =
+    useState(null);
   const [searchText, setSearchText] = useState("");
-  const [searchText2, setSearchText2] = useState("");
+  const [sarchTextMyComplaints, setSearchTextMyComplaints] = useState("");
   useEffect(() => {
     dispatch(getComplaintsRequest());
   }, [dispatch]);
 
   const handleSearch = (event) => {
-    setFilteredData(search(event, tableData, setSearchText));
-    setFilteredData2(search(event, tableData2, setSearchText2));
+    setFilteredDataComplaints(
+      search(event, tableDataSubmittedComplain, setSearchText)
+    );
+    setFilteredDataMyComplaints(
+      search(event, tableDataMycomplain, setSearchTextMyComplaints)
+    );
   };
-
+console.log(tableDataSubmittedComplain)
+console.log(tableDataMycomplain,'my')
   return (
     <div className="body">
       <div className={isMatch ? "uppersection-md" : "uppersection"}>
-        <div>
+        <div style={{marginRight:isMatch ?null:'3%'}}>
           <h1>Complaints</h1>
         </div>
         <SearchField setSearchData={handleSearch} />
 
         <SelectField
           fieldName={"Status"}
-          items={["Pending", "Resolved"]}
+          items={[status.PENDING, status.RESOLVED]}
           handleSelect={handleSearch}
         />
         {index == 0 ? null : (
-          <StartIconButton
-            title={"create"}
-            //width={11}
-            to={"/complaint/create"}
-          />
+          <StartIconButton title={"create"} to={"/complaint/create"} />
         )}
       </div>
-      <Box sx={{ display: "flex" }}>
+      <Box sx={{ display: "flex", flexDirection: isMatch ? "column" : "row" }}>
         <TabsVertical
           tab1={"Employees"}
           tab2={"Submittied"}
-          //tab3={"Request"}
+          display={isMatch ? "horizontal" : "vertical"}
           index={index}
           onChange={(event, value) => setIndex(value)}
         />
 
         {index == 0 ? (
-          <MyTables
-            data={filteredData ? filteredData : tableData}
-            tableHeaders={AdminEmpComplainHeader}
-            routes={"/complaints/detail"}
-          />
+          <Box sx={{ width: "100%", marginLeft: "4%" }}>
+            <MyTables
+              data={
+                filteredDataComplaints
+                  ? filteredDataComplaints
+                  : tableDataSubmittedComplain
+              }
+              tableHeaders={AdminEmpComplainHeader}
+              routes={"/complaints/detail"}
+            />
+          </Box>
         ) : (
-          <MyTables
-            data={filteredData2 ? filteredData2 : tableData2}
-            tableHeaders={AdminComplainHeader}
-            query={"/?submit=true"}
-            routes={"/complaints/detail"}
-          />
+          <Box sx={{ width: "100%", marginLeft: "4%" }}>
+            <MyTables
+              data={
+                filteredDataMyComplaints
+                  ? filteredDataMyComplaints
+                  : tableDataMycomplain
+              }
+              tableHeaders={AdminComplainHeader}
+              query={"/?submit=true"}
+              routes={"/complaints/detail"}
+            />
+          </Box>
         )}
       </Box>
     </div>

@@ -11,6 +11,7 @@ import { UserService } from './user.service';
 import { OtpModule } from 'src/modules/otp/otp.module';
 import * as config from 'config';
 import { PhotoModule } from 'src/modules/photo/photo.module';
+import { RoleModule } from '../role/role.module';
 const jwtConfig = config.get('jwt');
 
 @Module({
@@ -24,7 +25,8 @@ const jwtConfig = config.get('jwt');
     }),
     TypeOrmModule.forFeature([User]),
     OtpModule,
-    PhotoModule
+    PhotoModule,
+    RoleModule
   ],
   providers: [
     JwtStrategy,

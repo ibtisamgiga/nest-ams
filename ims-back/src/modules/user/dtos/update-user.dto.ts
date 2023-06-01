@@ -45,6 +45,6 @@ export class UpdateUserDto {
 
 
   @IsOptional()
-  image:{}
+  image:any
 
 }

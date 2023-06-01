@@ -1,5 +1,5 @@
 import { Divider, Typography } from "@mui/material";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import DetailHeader from "../../../components/shared/details-header/DetailHeader";
 import ImageText from "../../../components/shared/image-with-text/ImageText";
 import LabelText from "../../../components/shared/text-with-label/LabelText";
@@ -11,14 +11,22 @@ function InventoryDetailPage() {
   const { id } = useParams();
 const navigate=useNavigate()
   const dispatch = useDispatch();
-
+const [open,setOpen]=useState(false)
   useEffect(() => {
     dispatch(getItemRequest(id));
   }, [dispatch]);
   const item = useSelector((state) => state.itemData?.item);
   return (
     <div className="body">
-      <DetailHeader editAction={"/inventory/edit/"+id} deleteAction={()=>{dispatch(deleteItem(id));navigate(-1)}} />
+      <DetailHeader editAction={"/inventory/edit/"+id}   closeAction={() => {
+          setOpen(false);
+        }}
+        open={open}
+        openAction={() => {
+          setOpen(true);
+          // dispatch(deleteOrganization(id));
+          // navigate(-1);
+        }} deleteAction={()=>{dispatch(deleteItem(id));navigate(-1)}} />
       <div className="row-inv">
         <LabelText label={"Item Name"} content={item?.name} />
         <LabelText label={"Serial Number"} content={item?.serialNumber} />

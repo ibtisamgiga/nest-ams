@@ -78,22 +78,22 @@ export const usersData = (state = initialState, action) => {
     case CREATE_USER_ERROR:
       return {
         ...state,
-        error: action.payload.error,
+        error: action.payload,
       };
     case UPDATE_USER_SUCCESS:
       return {
         ...state,
+        selectedUser: action.payload.user,
+        error: null,
         userList: state.userList.map((user) =>
           user.id === action.payload.user.id ? action.payload.user : user
         ),
-        selectedUser: action.payload.user,
-        error: null,
+       
       };
     case UPDATE_USER_ERROR:
-      state.error = action.payload.error;
-
       return {
         ...state,
+        error: action.payload,
       };
     case DELETE_USER_SUCCESS:
       return {

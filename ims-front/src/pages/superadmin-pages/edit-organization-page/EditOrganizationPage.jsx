@@ -1,22 +1,20 @@
 import * as React from "react";
 import { useEffect, useState } from "react";
 import Divider from "@mui/material/Divider";
-import { defaultImage, AvatarInput } from "../../../constants/organizationConst";
 import FormHeader from "../../../components/shared/form-header/FormHeader";
 import FormImageHolder from "../../../components/shared/form-image/FormImageHolder";
 import FormInput from "../../../components/shared/form-input/FormInput";
-import { Countries, States, Cities } from "countries-states-cities-service";
+import { Countries, Cities } from "countries-states-cities-service";
 import FormSelect from "../../../components/shared/form-select/FormSelect";
 import { useParams } from "react-router-dom";
-import fetchData from "../../../utils/fetchData";
 import {
-  fetchOrgaizationList,
   getOrganizationRequest,
   updateOrganization,
 } from "../../../redux/organization/organizationAction";
 import imageUploadHelper from "../../../utils/imageUpload";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import createImageHelper from "../../../utils/createImageHelper";
 function EditOrganizationPage() {
   const [formData, setFormData] = useState({
     name: "",
@@ -30,40 +28,37 @@ function EditOrganizationPage() {
     country: "",
     bio: "",
   });
-  const navigate=useNavigate()
+  const navigate = useNavigate();
   const { id } = useParams();
   const [once, setOnce] = useState(false);
-  const orgData = useSelector((state) => state.organizationData.organization);
+  const organizationData = useSelector(
+    (state) => state.organizationData.organization
+  );
   const [url, setUrl] = useState(formData?.image?.image);
   const dispatch = useDispatch();
   const [countries, setCountries] = useState([]);
   const [cities, setCities] = useState([]);
-  const [currentCountry, setCurrentCountry] = useState({});
   const handleFiles = async (files) => {
-    //formData.image.image=files.base64
-    const imgdata = new FormData();
-    imgdata.append("file", files.fileList[0]);
-    imgdata.append("upload_preset", "fqje0r0l");
-    imgdata.append("cloud_name", "dntzlt0mt");
-    let imageuploaded = await imageUploadHelper(imgdata);
+    const imgdata = createImageHelper(files);
+    const imageuploaded = await imageUploadHelper(imgdata);
     formData.image.image = imageuploaded.url;
     setUrl(imageuploaded.url);
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
     dispatch(updateOrganization(formData, id));
-    navigate(-1)
+    navigate(-1);
   };
 
   useEffect(() => {
     if (!once) {
       dispatch(getOrganizationRequest(id));
       setCountries(Countries.getCountries());
-      setFormData({ ...formData, ...orgData });
-      setUrl(orgData.image.image);
+      setFormData({ ...formData, ...organizationData });
+      setUrl(organizationData.image.image);
       setOnce(true);
     }
-  }, [orgData]);
+  }, [organizationData]);
 
   return (
     <div className="body">
@@ -76,7 +71,7 @@ function EditOrganizationPage() {
           subLabel={"upload a logo with minimum resoulation of 800*800px"}
         />
         <FormInput
-          defaultValue={orgData?.name}
+          defaultValue={organizationData?.name}
           sideLabel={"Name of Organization"}
           placeHolder={"Name of Organization"}
           onChange={(e) => {
@@ -90,7 +85,7 @@ function EditOrganizationPage() {
           onChange={(e) => {
             setFormData({ ...formData, email: e.target.value });
           }}
-          defaultValue={orgData?.email}
+          defaultValue={organizationData?.email}
         />
         <Divider sx={{ borderBottomWidth: 4, marginTop: "20px" }} />
         <FormInput
@@ -100,7 +95,7 @@ function EditOrganizationPage() {
           onChange={(e) => {
             setFormData({ ...formData, bio: e.target.value });
           }}
-          defaultValue={orgData?.bio}
+          defaultValue={organizationData?.bio}
         />
         <Divider sx={{ borderBottomWidth: 4, marginTop: "20px" }} />
         <FormInput
@@ -109,7 +104,7 @@ function EditOrganizationPage() {
           onChange={(e) => {
             setFormData({ ...formData, address: e.target.value });
           }}
-          defaultValue={orgData?.address}
+          defaultValue={organizationData?.address}
         />
 
         <FormSelect
@@ -143,7 +138,7 @@ function EditOrganizationPage() {
           onChange={(e) => {
             setFormData({ ...formData, zip: e.target.value });
           }}
-          defaultValue={orgData?.zip}
+          defaultValue={organizationData?.zip}
         />
         <Divider sx={{ borderBottomWidth: 4, marginTop: "20px" }} />
         <FormInput
@@ -152,7 +147,7 @@ function EditOrganizationPage() {
           onChange={(e) => {
             setFormData({ ...formData, repName: e.target.value });
           }}
-          defaultValue={orgData?.repName}
+          defaultValue={organizationData?.repName}
         />
         <FormInput
           sideLabel={"Representative Contact No."}
@@ -160,7 +155,7 @@ function EditOrganizationPage() {
           onChange={(e) => {
             setFormData({ ...formData, repContactNo: e.target.value });
           }}
-          defaultValue={orgData?.repContactNo}
+          defaultValue={organizationData?.repContactNo}
         />
       </form>
     </div>

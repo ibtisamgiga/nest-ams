@@ -9,6 +9,8 @@ import {
   getRequestRequest,
   updateRequest,
 } from "../../../redux/request/requestAction";
+import { approved, rejected } from "../../../constants/return-constants";
+import { status } from "../../../utils/enums/statusEnum";
 function RequestDetailPage() {
   const { id } = useParams();
   const requestData = useSelector((state) => state.requestData.request);
@@ -24,13 +26,14 @@ function RequestDetailPage() {
         heading={requestData?.id}
         status={requestData?.status}
         date={requestData?.created_at}
-        reject={"reject"}
+        nobutton={requestData?.status == status.PENDING ? false : true}
+        reject={requestData?.status == status.PENDING ? "reject" : null}
         markResolveAction={() => {
-          dispatch(updateRequest({ status: "Approved" }, id));
+          dispatch(updateRequest(approved, id));
           navigate(-1);
         }}
         rejectAction={() => {
-          dispatch(updateRequest({ status: "Rejected" }, id));
+          dispatch(updateRequest(rejected, id));
           navigate(-1);
         }}
       />

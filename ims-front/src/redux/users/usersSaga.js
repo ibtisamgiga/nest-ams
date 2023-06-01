@@ -5,9 +5,10 @@ import {
   CREATE_USER,
   UPDATE_USER,
   DELETE_USER,
-  GET_USERS_COUNT_FAILURE,
-  GET_USERS_COUNT_SUCCESS,
   GET_USERS_COUNT,
+  CREATE_USER_ERROR,
+  UPDATE_USER_ERROR,
+  UPDATE_USER_SUCCESS,
 } from "../constants";
 import {
   fetchUserListSuccess,
@@ -24,10 +25,11 @@ import {
   getUsersCountSuccess,
 } from "./usersAction";
 import fetchData from "../../utils/fetchData";
+import { endPoint } from "../../constants/api-constants";
 
 function* fetchUserListSaga() {
   try {
-    const users = yield fetchData("GET", null, "http://localhost:5000/users"); //yield call(api.get, '/users');
+    const users = yield fetchData("GET", null, `${endPoint}users`); //yield call(api.get, '/users');
 
     yield put(fetchUserListSuccess(users));
   } catch (error) {
@@ -38,11 +40,8 @@ function* fetchUserListSaga() {
 function* fetchUserByIdSaga(action) {
   const { id } = action.payload;
   try {
-    const user = yield fetchData(
-      "GET",
-      null,
-      `http://localhost:5000/users/${id}`
-    );
+    const user = yield fetchData("GET", null, `${endPoint}users/${id}`);
+
     yield put(fetchUserByIdSuccess(user));
   } catch (error) {
     yield put(fetchUserByIdError(error));
@@ -50,11 +49,7 @@ function* fetchUserByIdSaga(action) {
 }
 function* getCount() {
   try {
-    const count = yield fetchData(
-      "GET",
-      null,
-      "http://localhost:5000/users/count"
-    ); // call your API method here
+    const count = yield fetchData("GET", null, `${endPoint}users/count`); // call your API method here
 
     yield put(getUsersCountSuccess(count)); // dispatch action to update Redux store with retrieved organizations
   } catch (error) {
@@ -64,13 +59,17 @@ function* getCount() {
 
 function* createUserSaga(action) {
   const { body } = action.payload;
+
   try {
-    const user = yield fetchData(
-      "POST",
-      body,
-      `http://localhost:5000/users/signup`
-    );
-    yield put(createUserSuccess(user));
+    const user = yield fetchData("POST", body, `${endPoint}users/signup`);
+    if (user.statusCode == 400) {
+      yield put({
+        type: CREATE_USER_ERROR,
+        payload: user.message,
+      });
+    } else {
+      yield put(createUserSuccess(user));
+    }
   } catch (error) {
     yield put(createUserError(error));
   }
@@ -79,26 +78,23 @@ function* createUserSaga(action) {
 function* updateUserSaga(action) {
   const { body, id } = action.payload;
 
-  const user = yield fetchData(
-    "PATCH",
-    body,
-    `http://localhost:5000/users/${id}`
-  );
-
-  if (user.statusCode == 400) {
-    yield put(updateUserError(user.message));
+  const user = yield fetchData("PATCH", body, `${endPoint}users/${id}`);
+  console.log(user)
+  try {
+    if (user.statusCode == 400) {
+      yield put({ type: UPDATE_USER_ERROR, payload: user.message });
+    } else {
+      yield put(updateUserSuccess(user));
+    }
+  } catch (error) {
+    yield put({ type: UPDATE_USER_ERROR, payload: error });
   }
-  yield put(updateUserSuccess(user));
 }
 
 function* deleteUserSaga(action) {
   const { id } = action.payload;
   try {
-    const response = yield fetchData(
-      "DELETE",
-      null,
-      `http://localhost:5000/users/${id}`
-    ); //call(api.delete, /users/${id});
+    const response = yield fetchData("DELETE", null, `${endPoint}users/${id}`); //call(api.delete, /users/${id});
 
     yield put(deleteUserSuccess(id));
   } catch (error) {

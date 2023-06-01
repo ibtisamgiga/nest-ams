@@ -27,7 +27,7 @@ export class Department {
   contactNo: string;
 
   @ManyToOne(() => Organization, (organization) => organization.departments, {
-    eager: false,
+    eager: false,onDelete:'CASCADE'
   })
   organization: Organization;
 

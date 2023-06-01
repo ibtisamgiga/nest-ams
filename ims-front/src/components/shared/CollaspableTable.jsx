@@ -119,7 +119,7 @@ export default function CollapsibleTable({ tableData }) {
                           {historyRow.qFaulty}
                         </TableCell>
                         <TableCell align="center">
-                        <Link to={"/category/detail" + "/" + historyRow.id}>view</Link>
+                        <Link  style={{ textDecoration: 'none' }} to={"/category/detail" + "/" + historyRow.id}>view</Link>
                         </TableCell>
                       </TableRow>
                     ))}

@@ -3,8 +3,6 @@ import SearchField from "../../components/shared/SearchField";
 import SelectField from "../../components/shared/SelectField";
 import StartIconButton from "../../components/shared/StartIconButton";
 import MyTables from "../../components/shared/MyTable";
-import AddIcon from "@mui/icons-material/Add";
-import { useTheme, useMediaQuery } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchUserList } from "../../redux/users/usersAction";
 import { useEffect } from "react";
@@ -13,15 +11,15 @@ import CircularLoader from "../../components/shared/circular-loader/CircularLoad
 import extractValue from "../../utils/objectValueExtractor";
 import search from "../../utils/search";
 import { SuperAdminHeaderAdmin } from "../../constants/table-constants/tableConstants";
+import useScreenSize from "../../utils/checkScreenSize";
 
 function AdminPage() {
   const { usersData, organizationData } = useSelector((state) => state);
   const tableData = usersData.userList;
   const organizations = organizationData?.organizations;
-  const result = extractValue(organizations, "name");
+  const organizationResult = extractValue(organizations, "name");
   const dispatch = useDispatch();
-  const theme = useTheme();
-  const isMatch = useMediaQuery(theme.breakpoints.down("md"));
+  const isMatch = useScreenSize();
   const [filteredData, setFilteredData] = useState(null);
   const [searchText, setSearchText] = useState("");
 
@@ -42,10 +40,10 @@ function AdminPage() {
         <SearchField setSearchData={handleSearch} />
         <SelectField
           fieldName={"Organization"}
-          items={result}
+          items={organizationResult}
           handleSelect={handleSearch}
         />
-        <StartIconButton title={"add"} to="/create/admin" />
+        <StartIconButton title={"add"} to="/admin/create" />
       </div>
       {tableData.length != 0 ? (
         <MyTables

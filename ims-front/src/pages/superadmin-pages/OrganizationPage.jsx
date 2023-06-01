@@ -1,32 +1,28 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import SearchField from "../../components/shared/SearchField";
 import SelectField from "../../components/shared/SelectField";
 import StartIconButton from "../../components/shared/StartIconButton";
 import MyTables from "../../components/shared/MyTable";
-import AddIcon from "@mui/icons-material/Add";
-import { useTheme, useMediaQuery } from "@mui/material";
-import {
-  fetchOrgaizationList,
-  getOrganizationsRequest,
-} from "../../redux/organization/organizationAction";
+import { getOrganizationsRequest } from "../../redux/organization/organizationAction";
 import { useDispatch, useSelector } from "react-redux";
 import CircularLoader from "../../components/shared/circular-loader/CircularLoader";
 import search from "../../utils/search";
 import { SuperAdminOrganizationHeader } from "../../constants/table-constants/tableConstants";
+import useScreenSize from "../../utils/checkScreenSize";
+import extractValue from "../../utils/objectValueExtractor";
 
 function OrganizationPage() {
   const tableData = useSelector(
     (state) => state.organizationData?.organizations
   );
   const dispatch = useDispatch();
-  const theme = useTheme();
-  const isMatch = useMediaQuery(theme.breakpoints.down("md"));
-
+  const isMatch = useScreenSize();
   const [filteredData, setFilteredData] = useState(null);
   const [searchText, setSearchText] = useState("");
-
+  let locationResult = extractValue(tableData, "location");
   useEffect(() => {
     dispatch(getOrganizationsRequest());
+    //locationResult = extractValue(tableData, "location");
   }, [dispatch]);
 
   const handleSearch = (event) => {
@@ -41,10 +37,10 @@ function OrganizationPage() {
         <SearchField setSearchData={handleSearch} />
         <SelectField
           fieldName={"Location"}
-          items={["Lahore", "Islamabad"]}
+          items={locationResult?locationResult:[]}
           handleSelect={handleSearch}
         />
-        <StartIconButton title={"add"} to="/create/organization" />
+        <StartIconButton title={"add"} to="/organization/create" />
       </div>
       {tableData.length != 0 ? (
         <MyTables

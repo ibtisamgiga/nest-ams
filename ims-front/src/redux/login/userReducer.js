@@ -15,7 +15,7 @@ export const userData = (data ={token:getFromLocalStorage()}, action) => {
       return {
         ...data,
         error: action.payload.error,
-        token: ""
+        token: ''
       }
     default:
       return data;

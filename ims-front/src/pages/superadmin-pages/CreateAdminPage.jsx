@@ -1,5 +1,4 @@
-import * as React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { defaultImage, AvatarInput } from "../../constants/organizationConst";
 import FormHeader from "../../components/shared/form-header/FormHeader";
 import FormImageHolder from "../../components/shared/form-image/FormImageHolder";
@@ -12,40 +11,49 @@ import { Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { createUser } from "../../redux/users/usersAction";
 import CircularLoader from "../../components/shared/circular-loader/CircularLoader";
+import createImageHelper from "../../utils/createImageHelper";
+import Notifier from "../../components/shared/error-meassge/Notifier";
 function CreateAdminPage() {
   const navigate = useNavigate();
   const [url, setUrl] = useState(defaultImage);
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
+  const [loader, setLoader] = useState(false);
+  const [formSubmitted, setFormSubmitted] = useState(false);
   const { organizationData, usersData } = useSelector((state) => state);
   const organizations = organizationData.organizations;
-  const error = usersData.error;
+  const error = usersData?.error;
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     password: "",
     privateEmail: "",
     contactNo: "",
-    image: "",
+    image: defaultImage,
     organizationId: null,
   });
   const handleFiles = async (files) => {
-    const imgdata = new FormData();
-    imgdata.append("file", files.fileList[0]);
-    imgdata.append("upload_preset", "fqje0r0l");
-    imgdata.append("cloud_name", "dntzlt0mt");
+    const imgdata = createImageHelper(files);
     setLoading(true);
-    let imageuploaded = await imageUploadHelper(imgdata);
+    const imageuploaded = await imageUploadHelper(imgdata);
     formData.image = imageuploaded.url;
     setUrl(imageuploaded.url);
     setLoading(false);
-    //setUrl(files.base64);
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setFormSubmitted(true);
+    setLoader(true);
     dispatch(createUser(formData));
-    navigate(-1);
   };
+  useEffect(() => {
+    if (error !== null && error !== undefined) {
+      setLoader(false);
+    } else if (formSubmitted && error === null) {
+      navigate(-1);
+      setLoader(false);
+    }
+  }, [error, navigate]);
   return (
     <div className="body">
       <FormHeader heading={"Add New Admin"} form={"createAdmin"} />
@@ -60,6 +68,13 @@ function CreateAdminPage() {
             subLabel={"upload high resoulation with clear face"}
           />
         )}
+        {error && formSubmitted ? (
+          <div>
+            <Notifier error={error} success={false} />
+          </div>
+        ) : formSubmitted ? (
+          <Notifier error={error} success={true} />
+        ) : null}
         <FormInput
           sideLabel={"Name"}
           placeHolder={"Full Name"}
@@ -70,6 +85,7 @@ function CreateAdminPage() {
         />
         <Divider sx={{ borderBottomWidth: 4, marginTop: "20px" }} />
         <FormInput
+          type={"email"}
           sideLabel={"Email Address"}
           placeHolder={"Email Address"}
           onChange={(e) => {
@@ -78,7 +94,6 @@ function CreateAdminPage() {
           value={formData.privateEmaill}
         />
         <Divider sx={{ borderBottomWidth: 4, marginTop: "20px" }} />
-        {/* <FormInput sideLabel={"Organization"} placeHolder={"Organization"} /> */}
         <FormSelect
           defaultValue={organizations[0]}
           keyId={1}
@@ -92,6 +107,9 @@ function CreateAdminPage() {
 
         <Divider sx={{ borderBottomWidth: 4, marginTop: "20px" }} />
         <FormInput
+          type={"number"}
+          title={"please enter valid number"}
+          pattren={"^(?=.*d)[d]{11,13}$"}
           sideLabel={"Contact Number"}
           placeHolder={"Contact Number"}
           onChange={(e) => {
@@ -107,6 +125,7 @@ function CreateAdminPage() {
           Below are one time created credentials.
         </Typography>
         <FormInput
+          type={"email"}
           sideLabel={"Email"}
           placeHolder={"Email"}
           onChange={(e) => {
@@ -115,6 +134,7 @@ function CreateAdminPage() {
           value={formData.email}
         />
         <FormInput
+          type={"password"}
           sideLabel={"Password"}
           placeHolder={"Password"}
           onChange={(e) => {

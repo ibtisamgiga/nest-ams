@@ -8,21 +8,30 @@ import { getCategoriesRequest } from "../../../redux/category/categoryAction";
 import { SignalCellularNullSharp } from "@mui/icons-material";
 import { createItem } from "../../../redux/item/itemAction";
 import { useNavigate } from "react-router-dom";
+import Notifier from "../../../components/shared/error-meassge/Notifier";
 function CreateItemPage() {
   const dispatch = useDispatch();
 
-  const categories = useSelector((state) => state.categoryData.categories);
-const navigate=useNavigate()
-  const cat = categories.filter((obj) => obj.parent === null);
-  const [current, setCurrent] = useState(cat[0]); //cat.filter(obj => obj.parent === null);
-  const [currSubCat, setCurrSubCat] = useState(
-    cat[0]?.children[0] ? cat[0]?.children[0] : [{}]
+  const { categoryData, itemData } = useSelector((state) => state);
+  const categories = categoryData?.categories;
+  const error = itemData?.error;
+  const [loader, setLoader] = useState(false);
+  const [formSubmitted, setFormSubmitted] = useState(false);
+  const navigate = useNavigate();
+  const categoriesFilter = categories?.filter((obj) => obj.parent === null);
+  const [current, setCurrent] = useState(categoriesFilter[0]); //categoriesFilter.filter(obj => obj.parent === null);
+  const [currSubCategory, setCurrSubCat] = useState(
+    categoriesFilter[0]?.children[0] ? categoriesFilter[0]?.children[0] : [{}]
   );
+
   useEffect(() => {
     dispatch(getCategoriesRequest());
-    //setCurrent(cat[0]);
-  }, [dispatch]);
-
+    if (error !== null && error !== undefined) {
+      setLoader(false);
+    } else if (formSubmitted && !error === null) {
+      setLoader(false);
+    }
+  }, [error, navigate, dispatch]);
   const [formData, setFormData] = useState({
     name: "",
     serialNumber: "",
@@ -33,8 +42,9 @@ const navigate=useNavigate()
   });
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setFormSubmitted(true);
+    setLoader(true);
     dispatch(createItem(formData));
-    navigate(-1)
   };
 
   return (
@@ -50,6 +60,13 @@ const navigate=useNavigate()
           value={formData.name}
         />
         <Divider sx={{ borderBottomWidth: 4, marginTop: "20px" }} />
+        {error && formSubmitted ? (
+          <div>
+            <Notifier error={error} success={false} />
+          </div>
+        ) : formSubmitted ? (
+          <Notifier error={error} success={true} />
+        ) : null}
         <FormInput
           sideLabel={"Serial Number"}
           placeHolder={"Serial Number"}
@@ -73,11 +90,13 @@ const navigate=useNavigate()
           defaultValue={""}
           sideLabel={"Select Category "}
           placeHolder={"select Category"}
-          items={cat}
+          items={categoriesFilter}
           keyId={1}
           onChange={(e) => {
             setFormData({ ...formData, categoryId: e.target.value });
-            setCurrent(...cat.filter((obj) => obj.id == e.target.value));
+            setCurrent(
+              ...categoriesFilter?.filter((obj) => obj.id == e.target.value)
+            );
           }}
         />
         <FormSelect
@@ -89,12 +108,13 @@ const navigate=useNavigate()
           onChange={(e) => {
             setFormData({ ...formData, categoryId: e.target.value });
             setCurrSubCat(
-              ...current.children.filter((obj) => obj.id == e.target.value)
+              ...current?.children?.filter((obj) => obj.id == e.target.value)
             );
           }}
         />
         <Divider sx={{ borderBottomWidth: 4, marginTop: "20px" }} />
         <FormInput
+          type={"number"}
           sideLabel={"price"}
           placeHolder={"price"}
           onChange={(e) => {
@@ -107,7 +127,11 @@ const navigate=useNavigate()
           defaultValue={""}
           sideLabel={"Select Vendor  "}
           placeHolder={"select Vendor"}
-          items={currSubCat.vendors.length == 0 ? [] : currSubCat.vendors}
+          items={
+            currSubCategory?.vendors?.length == 0
+              ? []
+              : currSubCategory?.vendors
+          }
           keyId={1}
           onChange={(e) => {
             setFormData({ ...formData, vendorId: e.target.value });

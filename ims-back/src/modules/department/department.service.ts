@@ -16,26 +16,26 @@ import { UpdateDepartmentDto } from './dtos/update-department.dto';
 export class DepartmentService {
   constructor(
     @InjectRepository(Department)
-    private DepartmentRepository: Repository<Department>,
+    private departmentRepository: Repository<Department>,
   ) {}
 
   async createDepartment(createDepartmentDto: CreateDepartmentDto, user: User) {
     const { name, contactNo, email } = createDepartmentDto;
-    const department = this.DepartmentRepository.create({
+    const department = this.departmentRepository.create({
       name,
       contactNo,
       email,
       organizationId: user.organizationId,
     });
     try {
-      return await this.DepartmentRepository.save(department);
+      return await this.departmentRepository.save(department);
     } catch (error) {
       throw new InternalServerErrorException(error.message);
     }
   }
   async getDepartments(user: User) {
     const { organizationId } = user;
-    const departments = await this.DepartmentRepository.find({
+    const departments = await this.departmentRepository.find({
       where: { organizationId },
     });
     return departments;
@@ -43,7 +43,7 @@ export class DepartmentService {
 
   async getDepartment(id: number, user: User) {
     const { organizationId } = user;
-    const department = await this.DepartmentRepository.findOne({
+    const department = await this.departmentRepository.findOne({
       where: { id }, // user: { role: role, organizationId }
       relations: ['organization'],
     });
@@ -57,7 +57,7 @@ export class DepartmentService {
     const department = await this.getDepartment(id, user);
     if (!department) throw new NotFoundException('Department Not Found');
     return {
-      user: await this.DepartmentRepository.remove(department),
+      user: await this.departmentRepository.remove(department),
       message: 'Department Deleted',
     };
   }
@@ -66,13 +66,13 @@ export class DepartmentService {
     attrs: UpdateDepartmentDto,
     currentUser: User,
   ) {
-    const department = await this.DepartmentRepository.findOneBy({ id });
+    const department = await this.departmentRepository.findOneBy({ id });
     if (!department) {
-      throw new NotFoundException('Item Not Found');
+      throw new NotFoundException('department Not Found');
     }
     Object.assign(department, attrs);
     return {
-      item: await this.DepartmentRepository.save(department),
+      department: await this.departmentRepository.save(department),
       message: 'deparment Updated',
     };
   }

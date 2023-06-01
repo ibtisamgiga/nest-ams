@@ -5,7 +5,7 @@ import SelectField from "../../../components/shared/SelectField";
 import StartIconButton from "../../../components/shared/StartIconButton";
 import { useDispatch, useSelector } from "react-redux";
 import MyTables from "../../../components/shared/MyTable";
-import { useTheme, useMediaQuery } from "@mui/material";
+import { useTheme, useMediaQuery, Alert } from "@mui/material";
 import { getVendorsRequest } from "../../../redux/vendor/vendorAction";
 import search from "../../../utils/search";
 import CircularLoader from "../../../components/shared/circular-loader/CircularLoader";
@@ -58,14 +58,26 @@ function VendorPage() {
           items={subCategoryResult}
           handleSelect={handleSearch}
         />
-        <StartIconButton title={"Add Vendor"} width={8} to={"/vendor/create"} />
+        {categories.length != 0 ? (
+          <StartIconButton
+            title={"Add Vendor"}
+            width={8}
+            to={"/vendor/create"}
+          />
+        ) : null}
       </div>
-      {tableData.length != 0 ? (
-        <MyTables
-          data={filteredData ? filteredData : tableData}
-          tableHeaders={AdminVendorHeader}
-          routes={"/vendor/detail"}
-        />
+      {tableData ? (
+        tableData?.length == 0 ? (
+          <Alert variant="filled" severity="info">
+            No Records Found!
+          </Alert>
+        ) : (
+          <MyTables
+            data={filteredData ? filteredData : tableData}
+            tableHeaders={AdminVendorHeader}
+            routes={"/vendor/detail"}
+          />
+        )
       ) : (
         <CircularLoader />
       )}

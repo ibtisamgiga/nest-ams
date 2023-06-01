@@ -1,24 +1,18 @@
-import React, { useEffect, useState } from "react";
-import SearchField from "../../../components/shared/SearchField";
-import SelectField from "../../../components/shared/SelectField";
+import React, { useEffect } from "react";
 import MyTables from "../../../components/shared/MyTable";
 import StartIconButton from "../../../components/shared/StartIconButton";
-import { useTheme, useMediaQuery } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { getRequestsRequest } from "../../../redux/request/requestAction";
 import { EmployeeRequestPageheader } from "../../../constants/table-constants/tableConstants";
+import useScreenSize from "../../../utils/checkScreenSize";
+import { Alert } from "@mui/material";
 function EmployeeRequestPage() {
   const tableData = useSelector((state) => state.requestData?.requests);
-
   const dispatch = useDispatch();
-
   useEffect(() => {
     dispatch(getRequestsRequest(null));
   }, [dispatch]);
-
-  const theme = useTheme();
-  const isMatch = useMediaQuery(theme.breakpoints.down("md"));
-
+  const isMatch = useScreenSize();
   return (
     <div className="body">
       <div className={isMatch ? "uppersection-md" : "uppersection"}>
@@ -33,11 +27,18 @@ function EmployeeRequestPage() {
           to={"/request/create"}
         />
       </div>
-      <MyTables
-        data={tableData}
-        tableHeaders={EmployeeRequestPageheader}
-        routes={"/request/detail"}
-      />
+      {tableData?.length == 0 ? (
+        <Alert variant="filled" severity="info">
+          No Records Found!
+        </Alert>
+      ) : (
+        <MyTables
+          data={tableData}
+          tableHeaders={EmployeeRequestPageheader}
+          routes={"/request/detail"}
+        />
+      
+      )}
     </div>
   );
 }

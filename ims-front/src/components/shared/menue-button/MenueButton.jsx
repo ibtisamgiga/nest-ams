@@ -36,7 +36,7 @@ export default function MenueButton({editAction,deleteAction}) {
           >
             <MoreVertIcon />
           </IconButton>
-          <Menu {...bindMenu(popupState)}>
+          <Menu {...bindMenu(popupState)} >
             <MenuItem sx={{ color: "#5184ec" }} onClick={editFunction}>
               <ListItemIcon sx={{ color: "#5184ec" }}>
                 <EditOutlinedIcon />

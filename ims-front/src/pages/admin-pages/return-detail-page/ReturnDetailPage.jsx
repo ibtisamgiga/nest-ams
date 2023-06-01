@@ -9,12 +9,14 @@ import {
   getRequestRequest,
   updateRequest,
 } from "../../../redux/request/requestAction";
+import { status, type } from "../../../utils/enums/statusEnum";
+import { repair, replace } from "../../../constants/return-constants";
 
 function ReturnDetailPage() {
   const { id } = useParams();
   const requestData = useSelector((state) => state.requestData.request);
   const dispatch = useDispatch();
-const navigate=useNavigate()
+  const navigate = useNavigate();
   useEffect(() => {
     dispatch(getRequestRequest(id));
   }, [dispatch]);
@@ -26,16 +28,16 @@ const navigate=useNavigate()
         status={requestData?.status}
         date={requestData?.created_at}
         markText={"Repair"}
+        nobutton={requestData?.status == status.APPROVED ? true : false}
         markResolveAction={() => {
-          dispatch(updateRequest({ status: "Approved", type: "Repair" }, id));
-          navigate(-1)
-        
+          dispatch(updateRequest(repair, id));
+          navigate(-1);
         }}
-        rejectAction={() =>{
-          dispatch(updateRequest({ status: "Approved", type: "Replace" }, id))
-          navigate(-1)}
-        }
-        reject={"Replace"}
+        rejectAction={() => {
+          dispatch(updateRequest(replace, id));
+          navigate(-1);
+        }}
+        reject={requestData?.status == status.APPROVED ? null : "Replace"}
       />
       <LabelText
         label={"Description"}

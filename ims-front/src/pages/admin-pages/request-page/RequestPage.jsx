@@ -4,7 +4,7 @@ import SelectField from "../../../components/shared/SelectField";
 import StartIconButton from "../../../components/shared/StartIconButton";
 import { useDispatch, useSelector } from "react-redux";
 import MyTables from "../../../components/shared/MyTable";
-import { useTheme, useMediaQuery } from "@mui/material";
+import { useTheme, useMediaQuery, Alert } from "@mui/material";
 import { getRequestsRequest } from "../../../redux/request/requestAction";
 import search from "../../../utils/search";
 import CircularLoader from "../../../components/shared/circular-loader/CircularLoader";
@@ -41,7 +41,12 @@ function RequestPage() {
           handleSelect={handleSearch}
         />
       </div>
-      {tableData ? (
+      {tableData ?tableData?.length == 0 ? (
+          <Alert variant="filled" severity="info">
+            No Records Found!
+          </Alert>
+        ) : (
+          
         <MyTables
           data={filteredData ? filteredData : tableData}
           tableHeaders={AdminRequestHeader}

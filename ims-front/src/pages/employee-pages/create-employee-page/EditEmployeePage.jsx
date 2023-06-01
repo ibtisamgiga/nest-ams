@@ -1,27 +1,26 @@
 import * as React from "react";
 import { useState } from "react";
-import {
-  defaultImage,
-  AvatarInput,
-} from "../../../constants/organizationConst";
 import FormHeader from "../../../components/shared/form-header/FormHeader";
 import FormImageHolder from "../../../components/shared/form-image/FormImageHolder";
 import Divider from "@mui/material/Divider";
 import FormInput from "../../../components/shared/form-input/FormInput";
-import FormSelect from "../../../components/shared/form-select/FormSelect";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchUserById, updateUser } from "../../../redux/users/usersAction";
 import imageUploadHelper from "../../../utils/imageUpload";
-import { getRequestsRequest } from "../../../redux/request/requestAction";
-import { getComplaintsRequest } from "../../../redux/complaints/complaintAction";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import createImageHelper from "../../../utils/createImageHelper";
+import { formBody } from "../../../constants/edit-employee-contants";
+import Notifier from "../../../components/shared/error-meassge/Notifier";
 function EditEmployeePage() {
   const logIn = useSelector((state) => state.userData); //{ name: "ali", role: "employee" };
   const id = logIn.token.id;
   const dispatch = useDispatch();
-  const userData = useSelector((state) => state.usersData.selectedUser);
-  const error = useSelector((state) => state.usersData);
+  const { usersData } = useSelector((state) => state);
+  const userData = usersData?.selectedUser;
+  const error = usersData?.error;
+  const [loader, setLoader] = useState(false);
+  const [formSubmitted, setFormSubmitted] = useState(false);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -36,35 +35,28 @@ function EditEmployeePage() {
   const [url, setUrl] = useState(formData?.image?.image);
   const navigate = useNavigate();
   const handleFiles = async (files) => {
-    const imgdata = new FormData();
-    imgdata.append("file", files.fileList[0]);
-    imgdata.append("upload_preset", "fqje0r0l");
-    imgdata.append("cloud_name", "dntzlt0mt");
-    let imageuploaded = await imageUploadHelper(imgdata);
-    formData.image.image = imageuploaded.url;
+    const imgdata = createImageHelper(files);
+    const imageuploaded = await imageUploadHelper(imgdata);
+    formData.image = imageuploaded.url;
     setUrl(imageuploaded.url);
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const body = {
-      name: formData.name,
-      privateEmail: formData.privateEmail,
-      contactNo: formData.contactNo,
-      organizationId: formData.organizationId,
-      designation: formData.designation,
-      education: formData.education,
-      totalExp: formData.totalExp,
-      compExp: formData.companyExperience,
-      image: formData?.image,
-    };
-    dispatch(updateUser(body, id));
-    navigate(-1);
+    setFormSubmitted(true);
+    setLoader(true);
+    dispatch(updateUser(formBody(formData), id));
+  
   };
   useEffect(() => {
     dispatch(fetchUserById(id));
     setFormData({ ...formData, ...userData });
-
     setUrl(userData?.image?.image);
+    if (error !== null && error !== undefined) {
+      setLoader(false);
+    } else if (formSubmitted && error === null) {
+      setLoader(false);
+      navigate(-1)
+    }
   }, [dispatch]);
   return (
     <div className="body">
@@ -76,6 +68,13 @@ function EditEmployeePage() {
           label={"Picture"}
           subLabel={"upload high resoulation with clear face"}
         />
+        {error && formSubmitted ? (
+          <div>
+            <Notifier error={error} success={false} />
+          </div>
+        ) : formSubmitted ? (
+          <Notifier error={error} success={true} />
+        ) : null}
         <FormInput
           sideLabel={"Name"}
           placeHolder={"Full Name"}

@@ -1,6 +1,9 @@
 import * as React from "react";
 import { useEffect, useState } from "react";
-import { defaultImage, AvatarInput } from "../../../constants/organizationConst";
+import {
+  defaultImage,
+  AvatarInput,
+} from "../../../constants/organizationConst";
 import FormHeader from "../../../components/shared/form-header/FormHeader";
 import FormImageHolder from "../../../components/shared/form-image/FormImageHolder";
 import Divider from "@mui/material/Divider";
@@ -11,6 +14,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchUserById, updateUser } from "../../../redux/users/usersAction";
 import imageUploadHelper from "../../../utils/imageUpload";
 import { useNavigate } from "react-router-dom";
+import createImageHelper from "../../../utils/createImageHelper";
 function EditAdminPage() {
   const [formData, setFormData] = useState({
     name: "",
@@ -29,13 +33,8 @@ function EditAdminPage() {
   const [url, setUrl] = useState(formData?.image?.image);
   const dispatch = useDispatch();
   const handleFiles = async (files) => {
-    // formData.image.image=files.base64
-    // setUrl(files.base64);
-    const imgdata = new FormData();
-    imgdata.append("file", files.fileList[0]);
-    imgdata.append("upload_preset", "fqje0r0l");
-    imgdata.append("cloud_name", "dntzlt0mt");
-    let imageuploaded = await imageUploadHelper(imgdata);
+    const imgdata = createImageHelper(files);
+    const imageuploaded = await imageUploadHelper(imgdata);
     formData.image.image = imageuploaded.url;
     setUrl(imageuploaded.url);
   };
@@ -50,7 +49,6 @@ function EditAdminPage() {
     };
     dispatch(updateUser(body, id));
     navigate(-1);
-    //dispatch(updateOrganization(formData,id));
   };
   useEffect(() => {
     if (!once) {
@@ -89,7 +87,7 @@ function EditAdminPage() {
           defaultValue={adminData?.privateEmail}
         />
         <Divider sx={{ borderBottomWidth: 4, marginTop: "20px" }} />
-        {/* <FormInput sideLabel={"Organization"} placeHolder={"Organization"} /> */}
+
         <FormSelect
           defaultValue={adminData?.organizationId}
           keyId={1}
